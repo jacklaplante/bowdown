@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset=utf-8>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="js/three.js"></script>
+        <script type="x-shader/x-vertex" id="vertexShader">
+			varying vec3 vWorldPosition;
+			void main() {
+				vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+				vWorldPosition = worldPosition.xyz;
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			}
+		</script>
+        <script type="x-shader/x-fragment" id="fragmentShader">
+			uniform vec3 topColor;
+			uniform vec3 bottomColor;
+			uniform float offset;
+			uniform float exponent;
+			varying vec3 vWorldPosition;
+			void main() {
+				float h = normalize( vWorldPosition + offset ).y;
+				gl_FragColor = vec4( mix( bottomColor, topColor, max( pow( max( h , 0.0), exponent ), 0.0 ) ), 1.0 );
+			}
+		</script>
+		<script>
+			var scene = new THREE.Scene();
+            scene.background = new THREE.Color().setHSL( 0.6, 0, 1 );
+            scene.fog = new THREE.Fog( scene.background, 1, 5000 );
+            var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true;
+            renderer.shadowMap.enabled = true;
+            document.body.appendChild( renderer.domElement );
+            var geometry = new THREE.BoxGeometry( 1, 1, 1 );
+            var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+            var cube = new THREE.Mesh( geometry, material );
+            cube.castShadow = true;
+            cube.receiveShadow = true;
+            scene.add( cube );
+            
+            // HEMISPHERE LIGHT
+            var hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+            hemiLight.color.setHSL( 0.6, 1, 0.6 );
+            hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+            hemiLight.position.set( 0, 50, 0 );
+            hemiLight.visible = true;
+            scene.add( hemiLight );
+            // DIRECTIONAL LIGHT
+            var dirLight = new THREE.DirectionalLight( 0xffffff, 1 );
+            dirLight.color.setHSL( 0.1, 1, 0.95 );
+            dirLight.position.set( - 1, 1.75, 1 );
+            dirLight.position.multiplyScalar( 30 );
+            scene.add( dirLight );
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            var d = 50;
+            dirLight.shadow.camera.left = - d;
+            dirLight.shadow.camera.right = d;
+            dirLight.shadow.camera.top = d;
+            dirLight.shadow.camera.bottom = - d;
+            dirLight.shadow.camera.far = 3500;
+            dirLight.shadow.bias = - 0.0001;
+            dirLight.visible = true;
+            
+            var mouseX = 0, mouseY = 0;
+            var windowHalfX = window.innerWidth / 2;
+			var windowHalfY = window.innerHeight / 2;
+            document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame( animate );
+                render();
+            }
+            
+            function render() {
+                camera.position.x += ( mouseX - camera.position.x ) * .05;
+				camera.position.y += ( - mouseY - camera.position.y ) * .05;
+                renderer.render( scene, camera );
+            }
+            
+            function onDocumentMouseMove( event ) {
+				mouseX = ( event.clientX - windowHalfX ) * 0.01;
+				mouseY = ( event.clientY - windowHalfY ) * 0.01;
+			}
+            
+            animate();
+            
+		</script>
+	</body>
+</html>
