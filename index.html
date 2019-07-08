@@ -66,6 +66,7 @@
             var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
             document.addEventListener( 'mousemove', onMouseMove);
+            document.addEventListener('keypress', onKeyPress);
             document.addEventListener('click', onClick);
             window.addEventListener('resize', resize);
 
@@ -94,6 +95,23 @@
             
             function render() {
                 renderer.render( scene, camera );
+            }
+
+            function onKeyPress(event) {
+                switch(event.key) {
+                    case 'w':
+                        cube.position.z -= 0.2;
+                        break;
+                    case 'a':
+                        cube.position.x -= 0.2;
+                        break;
+                    case 's':
+                        cube.position.z += 0.2;
+                        break;
+                    case 'd':
+                        cube.position.x += 0.2;
+                        break;
+                }
             }
 
             function onClick(event) {
