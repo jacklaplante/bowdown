@@ -35,7 +35,9 @@
             var renderer = initRenderer();            
             document.body.appendChild( renderer.domElement );
 
-            scene.add( getCube() );
+            var cube = getCube();
+            scene.add( cube );
+            
             scene.add( getHemisphereLight() );
             scene.add( getDirectionalLight() );
             scene.add( getGround() );
@@ -70,9 +72,13 @@
             }
             
             function render() {
-                camera.position.x += ( mouseX - camera.position.x ) * .05;
-				camera.position.y += ( - mouseY - camera.position.y ) * .05;
+                updateCamera();
                 renderer.render( scene, camera );
+            }
+
+            function updateCamera() {
+                camera.position.x += ( mouseX - camera.position.x ) * .3;
+				camera.position.y += ( - mouseY - camera.position.y ) * .3;
             }
             
             function onDocumentMouseMove( event ) {
