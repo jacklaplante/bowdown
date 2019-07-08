@@ -45,8 +45,9 @@
 
             var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
-            document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-            window.addEventListener('resize', resize)
+            document.addEventListener( 'mousemove', onMouseMove);
+            document.addEventListener('click', onClick);
+            window.addEventListener('resize', resize);
 
             function initScene() {
                 var scene = new THREE.Scene();
@@ -72,12 +73,14 @@
             }
             
             function render() {
-                // LOCK THE CURSOR (CHANGE LATER)
-                document.body.requestPointerLock();
                 renderer.render( scene, camera );
             }
+
+            function onClick(event) {
+                document.body.requestPointerLock();
+            }
             
-            function onDocumentMouseMove( event ) {
+            function onMouseMove( event ) {
                 var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
                 var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
                 var euler = new THREE.Euler( 0, 0, 0, 'YXZ' );
