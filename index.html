@@ -72,18 +72,19 @@
             }
             
             function render() {
-                updateCamera();
+                // LOCK THE CURSOR (CHANGE LATER)
+                document.body.requestPointerLock();
                 renderer.render( scene, camera );
-            }
-
-            function updateCamera() {
-                camera.position.x += ( mouseX - camera.position.x ) * .3;
-				camera.position.y += ( - mouseY - camera.position.y ) * .3;
             }
             
             function onDocumentMouseMove( event ) {
-				mouseX = ( event.clientX - windowHalfX ) * 0.01;
-				mouseY = ( event.clientY - windowHalfY ) * 0.01;
+                var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+                var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+                var euler = new THREE.Euler( 0, 0, 0, 'YXZ' );
+                euler.setFromQuaternion( camera.quaternion );
+                euler.y -= movementX * 0.002;
+                euler.x -= movementY * 0.002;
+                camera.quaternion.setFromEuler( euler );
             }
 
             function resize() {
