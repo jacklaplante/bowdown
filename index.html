@@ -44,6 +44,7 @@
             var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
             document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+            window.addEventListener('resize', resize)
 
             function initScene() {
                 var scene = new THREE.Scene();
@@ -77,6 +78,12 @@
             function onDocumentMouseMove( event ) {
 				mouseX = ( event.clientX - windowHalfX ) * 0.01;
 				mouseY = ( event.clientY - windowHalfY ) * 0.01;
+            }
+
+            function resize() {
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectMatrix();
             }
 
             function getCube() {
