@@ -6,9 +6,25 @@
 		<style>
 			body { margin: 0; height: 100vh}
 			canvas { display: block }
+            #info {
+                position: absolute;
+                bottom: 10px;
+                width: 100%;
+                text-align: right;
+                z-index: 100;
+                display: block;
+                font-size: 20pt;
+                color: orange;
+            }
 		</style>
 	</head>
 	<body>
+        <div id="info">
+            <p id="info0"></p>
+            <p id="info1"></p>
+            <p id="info2"></p>
+            <p id="info3"></p>
+        </div>
 		<script src="js/three.js"></script>
         <script type="x-shader/x-vertex" id="vertexShader">
 			varying vec3 vWorldPosition;
@@ -35,6 +51,10 @@
             var camera = initCamera();
             var renderer = initRenderer();            
             document.body.appendChild( renderer.domElement );
+
+            var cameraTarget = new THREE.Vector3( 0, 0, 0 );
+            var theta = 0
+            var phi = 0
 
             var cube = getCube();
             scene.add( cube );
@@ -83,11 +103,19 @@
             function onMouseMove( event ) {
                 var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
                 var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-                var euler = new THREE.Euler( 0, 0, 0, 'YXZ' );
-                euler.setFromQuaternion( camera.quaternion );
-                euler.y -= movementX * 0.002;
-                euler.x -= movementY * 0.002;
-                camera.quaternion.setFromEuler( euler );
+
+                theta -= movementX * 0.2
+                phi -= movementY * 0.2
+                camera.position.x = cameraTarget.x + 10 * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+                camera.position.y = cameraTarget.y + 10 * Math.sin(phi * Math.PI / 360);
+                camera.position.z = cameraTarget.z + 10 * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+                camera.lookAt(cameraTarget);
+                camera.updateMatrix();
+
+                // document.getElementById("info0").textContent = "";
+                // document.getElementById("info1").textContent = "";
+                // document.getElementById("info2").textContent = "";
+                // document.getElementById("info3").textContent = "";
             }
 
             function resize() {
