@@ -17,7 +17,8 @@
 				vWorldPosition = worldPosition.xyz;
 				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 			}
-		</script>
+        </script>
+        <!-- I'm not sure if these are actually needed -->
         <script type="x-shader/x-fragment" id="fragmentShader">
 			uniform vec3 topColor;
 			uniform vec3 bottomColor;
@@ -42,7 +43,6 @@
             scene.add( getDirectionalLight() );
             scene.add( getGround() );
 
-            var mouseX = 0, mouseY = 0;
             var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
             document.addEventListener( 'mousemove', onDocumentMouseMove, false );
