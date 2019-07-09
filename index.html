@@ -52,7 +52,7 @@
             var renderer = initRenderer();            
             document.body.appendChild( renderer.domElement );
 
-            var cameraTarget = new THREE.Vector3( 0, 0, 0 );
+            var cameraTarget = new THREE.Vector3( 0, 1, 0 );
             var theta = 0
             var phi = 0
 
@@ -99,25 +99,38 @@
 
             function onKeyPress(event) {
                 var movementSpeed = 0.3;
+                var direction = new THREE.Vector3();
+                camera.getWorldDirection(direction)
+               
+                // make direction 2d and normalize
+                // then multiply by movement speed
+                var b = 1/(abs(direction.x)+abs(direction.z));
+                var directionX = b*direction.x;
+                var directionZ = b*direction.z;
+                document.getElementById("info0").textContent = "direction:";
+                document.getElementById("info1").textContent = "X: "+directionX;
+                document.getElementById("info3").textContent = "Z: "+directionZ;
                 switch(event.key) {
                     case 'w':
-                        cube.position.z -= movementSpeed;
-                        cameraTarget.z -= movementSpeed;
+                        cube.position.z += directionZ;
+                        cameraTarget.z += directionZ;
+                        cube.position.x += directionX;
+                        cameraTarget.x += directionX;
                         updateCamera()
                         break;
                     case 'a':
-                        cube.position.x -= movementSpeed;
-                        cameraTarget.x -= movementSpeed;
+                        
                         updateCamera()
                         break;
                     case 's':
-                        cube.position.z += movementSpeed;
-                        cameraTarget.z += movementSpeed;
+                        cube.position.z -= directionZ;
+                        cameraTarget.z -= directionZ;
+                        cube.position.x -= directionX;
+                        cameraTarget.x -= directionX;
                         updateCamera()
                         break;
                     case 'd':
-                        cube.position.x += movementSpeed;
-                        cameraTarget.x += movementSpeed;
+                        
                         updateCamera()
                         break;
                 }
@@ -128,9 +141,10 @@
             }
             
             function updateCamera() {
-                camera.position.x = cameraTarget.x + 10 * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-                camera.position.y = cameraTarget.y + 10 * Math.sin(phi * Math.PI / 360);
-                camera.position.z = cameraTarget.z + 10 * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+                var distance = 5;
+                camera.position.x = cameraTarget.x + distance * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+                camera.position.y = cameraTarget.y + distance * Math.sin(phi * Math.PI / 360);
+                camera.position.z = cameraTarget.z + distance * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
                 camera.lookAt(cameraTarget);
                 camera.updateMatrix();
             }
@@ -141,11 +155,6 @@
                 theta -= movementX * 0.2
                 phi -= movementY * 0.2
                 updateCamera();
-
-                // document.getElementById("info0").textContent = "";
-                // document.getElementById("info1").textContent = "";
-                // document.getElementById("info2").textContent = "";
-                // document.getElementById("info3").textContent = "";
             }
 
             function resize() {
@@ -200,6 +209,10 @@
                 dirLight.shadow.bias = - 0.0001;
                 dirLight.visible = true;
                 return dirLight;
+            }
+
+            function abs(num) {
+                return Math.abs(num);
             }
             
             animate();
