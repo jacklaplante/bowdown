@@ -98,18 +98,27 @@
             }
 
             function onKeyPress(event) {
+                var movementSpeed = 0.3;
                 switch(event.key) {
                     case 'w':
-                        cube.position.z -= 0.2;
+                        cube.position.z -= movementSpeed;
+                        cameraTarget.z -= movementSpeed;
+                        updateCamera()
                         break;
                     case 'a':
-                        cube.position.x -= 0.2;
+                        cube.position.x -= movementSpeed;
+                        cameraTarget.x -= movementSpeed;
+                        updateCamera()
                         break;
                     case 's':
-                        cube.position.z += 0.2;
+                        cube.position.z += movementSpeed;
+                        cameraTarget.z += movementSpeed;
+                        updateCamera()
                         break;
                     case 'd':
-                        cube.position.x += 0.2;
+                        cube.position.x += movementSpeed;
+                        cameraTarget.x += movementSpeed;
+                        updateCamera()
                         break;
                 }
             }
@@ -118,17 +127,20 @@
                 document.body.requestPointerLock();
             }
             
-            function onMouseMove( event ) {
-                var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-                var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-                theta -= movementX * 0.2
-                phi -= movementY * 0.2
+            function updateCamera() {
                 camera.position.x = cameraTarget.x + 10 * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
                 camera.position.y = cameraTarget.y + 10 * Math.sin(phi * Math.PI / 360);
                 camera.position.z = cameraTarget.z + 10 * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
                 camera.lookAt(cameraTarget);
                 camera.updateMatrix();
+            }
+            
+            function onMouseMove( event ) {
+                var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+                var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+                theta -= movementX * 0.2
+                phi -= movementY * 0.2
+                updateCamera();
 
                 // document.getElementById("info0").textContent = "";
                 // document.getElementById("info1").textContent = "";
