@@ -40,8 +40,8 @@
             var left = false
             var right = false
 
-            var cube = getCube();
-            scene.add( cube );
+            var player = getPlayer();
+            scene.add( player );
             
             scene.add( getHemisphereLight() );
             scene.add( getDirectionalLight() );
@@ -99,27 +99,27 @@
 
                 var x, z;
                 if (forward) {
-                    cube.position.z += directionZ;
+                    player.position.z += directionZ;
                     cameraTarget.z += directionZ;
-                    cube.position.x += directionX;
+                    player.position.x += directionX;
                     cameraTarget.x += directionX;
                 }
                 if (backward) {
-                    cube.position.z -= directionZ;
+                    player.position.z -= directionZ;
                     cameraTarget.z -= directionZ;
-                    cube.position.x -= directionX;
+                    player.position.x -= directionX;
                     cameraTarget.x -= directionX;
                 }
                 if (left) {
-                    cube.position.z -= directionX;
+                    player.position.z -= directionX;
                     cameraTarget.z -= directionX;
-                    cube.position.x += directionZ;
+                    player.position.x += directionZ;
                     cameraTarget.x += directionZ;
                 }
                 if (right) {
-                    cube.position.z += directionX;
+                    player.position.z += directionX;
                     cameraTarget.z += directionX;
-                    cube.position.x -= directionZ;
+                    player.position.x -= directionZ;
                     cameraTarget.x -= directionZ;
                 }
             }
@@ -176,13 +176,13 @@
                 camera.updateProjectionMatrix();
             }
 
-            function getCube() {
+            function getPlayer() {
                 var geometry = new THREE.BoxGeometry( 1, 1, 1 );
                 var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
-                var cube = new THREE.Mesh( geometry, material );
-                cube.castShadow = true;
-                cube.receiveShadow = true;
-                return cube;
+                var player = new THREE.Mesh( geometry, material );
+                player.castShadow = true;
+                player.receiveShadow = true;
+                return player;
             }
 
             function getGround() {
