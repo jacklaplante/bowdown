@@ -55,6 +55,10 @@
             var cameraTarget = new THREE.Vector3( 0, 1, 0 );
             var theta = 0
             var phi = 0
+            var forward = false
+            var backward = false
+            var left = false
+            var right = false
 
             var cube = getCube();
             scene.add( cube );
@@ -66,7 +70,8 @@
             var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
             document.addEventListener( 'mousemove', onMouseMove);
-            document.addEventListener('keypress', onKeyPress);
+            document.addEventListener('keydown', onKeyDown);
+            document.addEventListener('keyup', onKeyUp);
             document.addEventListener('click', onClick);
             window.addEventListener('resize', resize);
 
@@ -90,6 +95,10 @@
             
             function animate() {
                 requestAnimationFrame( animate );
+                if (forward || backward || left || right) {
+                    movePlayer();
+                    updateCamera();
+                }
                 render();
             }
             
@@ -97,43 +106,67 @@
                 renderer.render( scene, camera );
             }
 
-            function onKeyPress(event) {
+            function movePlayer() {
                 var movementSpeed = 0.3;
                 var direction = new THREE.Vector3();
                 camera.getWorldDirection(direction)
                
-                // make direction 2d and normalize
+                // make direction 2d (x,z) and normalize
                 // then multiply by movement speed
                 var b = 1/(abs(direction.x)+abs(direction.z));
                 var directionX = b*direction.x;
                 var directionZ = b*direction.z;
-                document.getElementById("info0").textContent = "direction:";
-                document.getElementById("info1").textContent = "X: "+directionX;
-                document.getElementById("info3").textContent = "Z: "+directionZ;
+
+                var x, z;
+                if (forward) {
+                    cube.position.z += directionZ;
+                    cameraTarget.z += directionZ;
+                    cube.position.x += directionX;
+                    cameraTarget.x += directionX;
+                }
+                if (backward) {
+                    cube.position.z -= directionZ;
+                    cameraTarget.z -= directionZ;
+                    cube.position.x -= directionX;
+                    cameraTarget.x -= directionX;
+                }
+                if (left) {
+                    cube.position.z -= directionX;
+                    cameraTarget.z -= directionX;
+                    cube.position.x += directionZ;
+                    cameraTarget.x += directionZ;
+                }
+                if (right) {
+                    cube.position.z += directionX;
+                    cameraTarget.z += directionX;
+                    cube.position.x -= directionZ;
+                    cameraTarget.x -= directionZ;
+                }
+            }
+
+            function toggleKey(event, toggle) {
                 switch(event.key) {
                     case 'w':
-                        cube.position.z += directionZ;
-                        cameraTarget.z += directionZ;
-                        cube.position.x += directionX;
-                        cameraTarget.x += directionX;
-                        updateCamera()
+                        forward = toggle;
                         break;
                     case 'a':
-                        
-                        updateCamera()
+                        left = toggle;
                         break;
                     case 's':
-                        cube.position.z -= directionZ;
-                        cameraTarget.z -= directionZ;
-                        cube.position.x -= directionX;
-                        cameraTarget.x -= directionX;
-                        updateCamera()
+                        backward = toggle;
                         break;
                     case 'd':
-                        
-                        updateCamera()
+                        right = toggle;
                         break;
                 }
+            }
+
+            function onKeyDown(event) {
+                toggleKey(event, true);
+            }
+
+            function onKeyUp(event) {
+                toggleKey(event, false);
             }
 
             function onClick(event) {
