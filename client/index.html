@@ -64,7 +64,13 @@
 
             ws.onmessage = function onMessage(message) {
                 document.getElementById("info0").innerText = "message: "+message.data;
-                scene.add(player2);
+                var message = JSON.parse(message.data)
+                if (message.message == "sup fucker") {
+                    scene.add(player2);
+                }
+                if (message.x && message.z) {
+                    movePlayer(player2, x, z)
+                }
             }
 
             function initScene() {
@@ -88,8 +94,7 @@
             function animate() {
                 requestAnimationFrame( animate );
                 if (forward || backward || left || right) {
-                    movePlayer();
-                    updateCamera();
+                    movePlayer1();
                 }
                 render();
             }
@@ -98,47 +103,47 @@
                 renderer.render( scene, camera );
             }
 
-            function movePlayer() {
+            function movePlayer1(){
                 var movementSpeed = 0.3;
                 var direction = new THREE.Vector3();
                 camera.getWorldDirection(direction)
-               
                 // make direction 2d (x,z) and normalize
                 // then multiply by movement speed
                 var b = 1/(abs(direction.x)+abs(direction.z));
                 var directionX = b*direction.x;
                 var directionZ = b*direction.z;
                 if (forward) {
-                    player1.position.z += directionZ;
-                    cameraTarget.z += directionZ;
-                    player1.position.x += directionX;
-                    cameraTarget.x += directionX;
+                    z = player1.position.z + directionZ;
+                    x = player1.position.x + directionX;
                 }
                 if (backward) {
-                    player1.position.z -= directionZ;
-                    cameraTarget.z -= directionZ;
-                    player1.position.x -= directionX;
-                    cameraTarget.x -= directionX;
+                    z = player1.position.z - directionZ;
+                    x = player1.position.x - directionX;
                 }
                 if (left) {
-                    player1.position.z -= directionX;
-                    cameraTarget.z -= directionX;
-                    player1.position.x += directionZ;
-                    cameraTarget.x += directionZ;
+                    z = player1.position.z - directionX;
+                    x = player1.position.x + directionZ;
                 }
                 if (right) {
-                    player1.position.z += directionX;
-                    cameraTarget.z += directionX;
-                    player1.position.x -= directionZ;
-                    cameraTarget.x -= directionZ;
+                    z = player1.position.z + directionX;
+                    x = player1.position.x - directionZ;
                 }
+                cameraTarget.z = z;
+                cameraTarget.x = x;
+                movePlayer(player1, x, z);
+                updateCamera();
                 ws.send(JSON.stringify(
                     {
                         x: player1.position.x,
                         z: player1.position.z
                     }
-                )
-                )
+                ))
+            }
+
+            function movePlayer(player, x, z) {
+                player.position.z = z;
+                player.position.x = x;
+                
             }
 
             function toggleKey(event, toggle) {
