@@ -55,6 +55,12 @@
             document.addEventListener('click', onClick);
             window.addEventListener('resize', resize);
 
+            const ws = new WebSocket('ws://localhost:18181');
+
+            ws.onopen = function open() {
+                ws.send('something');
+            };
+
             function initScene() {
                 var scene = new THREE.Scene();
                 return scene;
