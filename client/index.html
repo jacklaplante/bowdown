@@ -40,8 +40,9 @@
             var left = false
             var right = false
 
-            var player = getPlayer();
-            scene.add( player );
+            var player1 = getPlayer(0x00ff00);
+            scene.add(player1);
+            var player2 = getPlayer(0xf58742);
             
             scene.add( getHemisphereLight() );
             scene.add( getDirectionalLight() );
@@ -63,6 +64,7 @@
 
             ws.onmessage = function onMessage(message) {
                 document.getElementById("info0").innerText = "message: "+message.data;
+                scene.add(player2);
             }
 
             function initScene() {
@@ -107,33 +109,33 @@
                 var directionX = b*direction.x;
                 var directionZ = b*direction.z;
                 if (forward) {
-                    player.position.z += directionZ;
+                    player1.position.z += directionZ;
                     cameraTarget.z += directionZ;
-                    player.position.x += directionX;
+                    player1.position.x += directionX;
                     cameraTarget.x += directionX;
                 }
                 if (backward) {
-                    player.position.z -= directionZ;
+                    player1.position.z -= directionZ;
                     cameraTarget.z -= directionZ;
-                    player.position.x -= directionX;
+                    player1.position.x -= directionX;
                     cameraTarget.x -= directionX;
                 }
                 if (left) {
-                    player.position.z -= directionX;
+                    player1.position.z -= directionX;
                     cameraTarget.z -= directionX;
-                    player.position.x += directionZ;
+                    player1.position.x += directionZ;
                     cameraTarget.x += directionZ;
                 }
                 if (right) {
-                    player.position.z += directionX;
+                    player1.position.z += directionX;
                     cameraTarget.z += directionX;
-                    player.position.x -= directionZ;
+                    player1.position.x -= directionZ;
                     cameraTarget.x -= directionZ;
                 }
                 ws.send(JSON.stringify(
                     {
-                        x: player.position.x,
-                        z: player.position.z
+                        x: player1.position.x,
+                        z: player1.position.z
                     }
                 )
                 )
@@ -191,9 +193,9 @@
                 camera.updateProjectionMatrix();
             }
 
-            function getPlayer() {
+            function getPlayer(color) {
                 var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-                var material = new THREE.MeshLambertMaterial( { color: 0x00ff00 } );
+                var material = new THREE.MeshLambertMaterial( { color: color } );
                 var player = new THREE.Mesh( geometry, material );
                 player.castShadow = true;
                 player.receiveShadow = true;
