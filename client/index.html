@@ -58,7 +58,7 @@
             const ws = new WebSocket('ws://localhost:18181');
 
             ws.onopen = function open() {
-                ws.send('client connected!');
+                ws.send(JSON.stringify({message: "sup fucker"}));
             };
 
             ws.onmessage = function onMessage(message) {
@@ -130,11 +130,12 @@
                     player.position.x -= directionZ;
                     cameraTarget.x -= directionZ;
                 }
-                ws.send(
+                ws.send(JSON.stringify(
                     {
                         x: player.position.x,
                         z: player.position.z
                     }
+                )
                 )
             }
 
