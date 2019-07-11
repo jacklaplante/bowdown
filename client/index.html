@@ -58,8 +58,12 @@
             const ws = new WebSocket('ws://localhost:18181');
 
             ws.onopen = function open() {
-                ws.send('something');
+                ws.send('client connected!');
             };
+
+            ws.onmessage = function onMessage(message) {
+                document.getElementById("info0").innerText = "message: "+message.data;
+            }
 
             function initScene() {
                 var scene = new THREE.Scene();
@@ -102,8 +106,6 @@
                 var b = 1/(abs(direction.x)+abs(direction.z));
                 var directionX = b*direction.x;
                 var directionZ = b*direction.z;
-
-                var x, z;
                 if (forward) {
                     player.position.z += directionZ;
                     cameraTarget.z += directionZ;
@@ -128,6 +130,12 @@
                     player.position.x -= directionZ;
                     cameraTarget.x -= directionZ;
                 }
+                ws.send(
+                    {
+                        x: player.position.x,
+                        z: player.position.z
+                    }
+                )
             }
 
             function toggleKey(event, toggle) {
