@@ -3,13 +3,21 @@ const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ port: 18181 });
 
+var players = []
+
+function addPlayer(client) {
+    players[players.length] = client;
+}
+
 wss.on('connection', function connection(ws) {
+    addPlayer(ws)
     ws.on('message', function incoming(message) {
         console.log('received: %s', message);
         message = JSON.parse(message)
-        wss.clients.forEach(function each(client) {
+        players.forEach(function each(client, playerIndex) {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
-              client.send(JSON.stringify(message));
+                message.player = playerIndex
+                client.send(JSON.stringify(message));
             }
           });
     });
