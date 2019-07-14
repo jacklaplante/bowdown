@@ -42,7 +42,7 @@
 
             var player1 = getPlayer(0x00ff00);
             scene.add(player1);
-            var player2 = getPlayer(0xf58742);
+            var players = {}
             
             scene.add( getHemisphereLight() );
             scene.add( getDirectionalLight() );
@@ -58,18 +58,27 @@
 
             const ws = new WebSocket('ws://localhost:18181');
 
+            var playerUuid = uuid();
             ws.onopen = function open() {
-                ws.send(JSON.stringify({message: "sup fucker"}));
+                sendMessage({message: "sup fucker"})
             };
+            
+            // add player uuid and send message
+            function sendMessage(message) {
+                message.player = playerUuid
+                ws.send(JSON.stringify(message))
+            }
 
             ws.onmessage = function onMessage(message) {
-                document.getElementById("info0").innerText = "message: "+message.data;
+                document.getElementById("info0").innerText = "message: " + message.data;
                 var message = JSON.parse(message.data)
-                if (message.message == "sup fucker") {
-                    scene.add(player2);
+                if (!players[message.player]) {
+                    var player = getPlayer(0xf58742);
+                    scene.add(player);
+                    players[message.player] = player;
                 }
                 if (message.x && message.z) {
-                    movePlayer(player2, message.x, message.z)
+                    movePlayer(players[message.player], message.x, message.z)
                 }
             }
 
@@ -132,12 +141,12 @@
                 cameraTarget.x = x;
                 movePlayer(player1, x, z);
                 updateCamera();
-                ws.send(JSON.stringify(
+                sendMessage(
                     {
                         x: player1.position.x,
                         z: player1.position.z
                     }
-                ))
+                )
             }
 
             function movePlayer(player, x, z) {
@@ -244,6 +253,13 @@
                 dirLight.shadow.bias = - 0.0001;
                 dirLight.visible = true;
                 return dirLight;
+            }
+            
+            function uuid() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
             }
 
             function abs(num) {
