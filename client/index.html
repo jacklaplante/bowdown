@@ -40,7 +40,7 @@
             var left = false
             var right = false
 
-            var player1 = getPlayer(0x00ff00);
+            var player1 = createPlayer(0x00ff00);
             scene.add(player1);
             var players = {}
             
@@ -72,14 +72,29 @@
             ws.onmessage = function onMessage(message) {
                 document.getElementById("info0").innerText = "message: " + message.data;
                 var message = JSON.parse(message.data)
-                if (!players[message.player]) {
-                    var player = getPlayer(0xf58742);
-                    scene.add(player);
-                    players[message.player] = player;
+                if (message.players) {
+                    initPlayers(message.players);
+                }
+                if (message.player && !players[message.player] && message.player != playerUuid) {
+                    addPlayer(message.player)
                 }
                 if (message.x && message.z) {
                     movePlayer(players[message.player], message.x, message.z)
                 }
+            }
+
+            function initPlayers(newPlayers) {
+                Object.keys(newPlayers).forEach(
+                    (playerUuid) => {
+                        addPlayer(playerUuid);
+                        movePlayer(players[playerUuid], newPlayers[playerUuid].x, newPlayers[playerUuid].z)
+                    })
+            }
+
+            function addPlayer(uuid) {
+                var player = createPlayer(0xf58742);
+                scene.add(player);
+                players[uuid] = player;
             }
 
             function initScene() {
@@ -207,7 +222,7 @@
                 camera.updateProjectionMatrix();
             }
 
-            function getPlayer(color) {
+            function createPlayer(color) {
                 var geometry = new THREE.BoxGeometry( 1, 1, 1 );
                 var material = new THREE.MeshLambertMaterial( { color: color } );
                 var player = new THREE.Mesh( geometry, material );
