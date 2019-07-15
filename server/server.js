@@ -26,12 +26,16 @@ wss.on('connection', function connection(ws, req) {
             if (client !== ws && client.readyState === WebSocket.OPEN) {
                 sendMessage(client, message);
             }
-            console.log('sending: %s', JSON.stringify(message));
           });
     });
     ws.on('close', function onClose(code, req){
-        console.log("player "+this.player+" disconnected");
+        var player = this.player
+        console.log("player "+player+" disconnected");
         delete players[this.player];
+        wss.clients.forEach(function each(client) {
+            sendMessage(client, {player: player,
+            status: 'disconnected'})
+        })
     })
     // ws.send('something');
 });
