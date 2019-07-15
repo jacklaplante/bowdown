@@ -75,11 +75,18 @@
                 if (message.players) {
                     initPlayers(message.players);
                 }
-                if (message.player && !players[message.player] && message.player != playerUuid) {
-                    addPlayer(message.player)
-                }
-                if (message.x && message.z) {
-                    movePlayer(players[message.player], message.x, message.z)
+                if (message.player) {
+                	var player = message.player;
+                	if (!players[player] && player != playerUuid) {
+                    	addPlayer(player)
+					} else if (message.status==='disconnected') {
+						// player disconnected, remove
+						scene.remove(players[player])
+						delete players[player]
+					}
+					if (message.x && message.z) {
+						movePlayer(players[message.player], message.x, message.z)
+					}
                 }
             }
 
