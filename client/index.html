@@ -159,27 +159,27 @@
                     z = player1.position.z + directionX;
                     x = player1.position.x - directionZ;
                 }
-                if(collisionDetected()){
+                if(collisionDetected(x, z)){
                 	document.getElementById("info3").innerText = "COLLISION";
                 } else {
                 	document.getElementById("info3").innerText = "";
+                	cameraTarget.z = z;
+					cameraTarget.x = x;
+					movePlayer(player1, x, z);
+					updateCamera();
+					sendMessage(
+						{
+							x: player1.position.x,
+							z: player1.position.z
+						}
+					)
                 }
-                cameraTarget.z = z;
-                cameraTarget.x = x;
-                movePlayer(player1, x, z);
-                updateCamera();
-                sendMessage(
-                    {
-                        x: player1.position.x,
-                        z: player1.position.z
-                    }
-                )
             }
 
-            function collisionDetected(){
+            function collisionDetected(x, z){
                 for(var i=0; i<player1.geometry.vertices.length; i++){
                 	var vert = player1.geometry.vertices[i]
-                	var ray = new THREE.Raycaster(player1.position, vert.clone().normalize())
+                	var ray = new THREE.Raycaster(new THREE.Vector3(x, 0, z), vert.clone().normalize())
                 	var collisionResults = ray.intersectObjects(Object.values(players));
                 	new THREE.Line3(new THREE.Vector3(), vert).distance()
                 	if ( collisionResults.length > 0 && collisionResults[0].distance <= new THREE.Line3(new THREE.Vector3(), vert).distance()) {
@@ -249,7 +249,7 @@
 
             function createPlayer(color) {
                 var geometry = new THREE.BoxGeometry(1, 1, 1);
-                var material = new THREE.MeshLambertMaterial({color: color, wireframe: true});
+                var material = new THREE.MeshLambertMaterial({color: color});
                 var player = new THREE.Mesh( geometry, material );
                 player.castShadow = true;
                 player.receiveShadow = true;
