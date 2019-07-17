@@ -26,10 +26,12 @@
             <p id="info3"></p>
         </div>
 		<script src="js/three.js"></script>
+		<script src="js/vox.min.js"></script>
 		<script>
 			var scene = initScene();
             var camera = initCamera();
-            var renderer = initRenderer();            
+            var renderer = initRenderer();
+            collidableEnvironment = []
             document.body.appendChild( renderer.domElement );
 
             var cameraTarget = new THREE.Vector3( 0, 1, 0 );
@@ -39,6 +41,16 @@
             var backward = false
             var left = false
             var right = false
+
+			// vox
+            var parser = new vox.Parser();
+            parser.parse("models/castle.vox").then(function(voxelData) {
+				var builder = new vox.MeshBuilder(voxelData);
+				var mesh = builder.createMesh();
+				scene.add(mesh);
+				// Eventually you're going to need to make a more simplistic collidable mesh for each vox mesh because more complicated vox meshes will be inefficient to calculate collisions on
+				collidableEnvironment.push(mesh);
+			});
 
             var player1 = createPlayer(0x00ff00);
             scene.add(player1);
@@ -180,7 +192,7 @@
                 for(var i=0; i<player1.geometry.vertices.length; i++){
                 	var vert = player1.geometry.vertices[i]
                 	var ray = new THREE.Raycaster(new THREE.Vector3(x, 0, z), vert.clone().normalize())
-                	var collisionResults = ray.intersectObjects(Object.values(players));
+                	var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment));
                 	new THREE.Line3(new THREE.Vector3(), vert).distance()
                 	if ( collisionResults.length > 0 && collisionResults[0].distance <= new THREE.Line3(new THREE.Vector3(), vert).distance()) {
 						return true
