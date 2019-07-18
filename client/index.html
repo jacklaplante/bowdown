@@ -32,6 +32,7 @@
 		<script>
 			var scene = initScene();
             var camera = initCamera();
+            var clock = new THREE.Clock();
             var renderer = initRenderer();
             collidableEnvironment = []
             document.body.appendChild( renderer.domElement );
@@ -54,10 +55,12 @@
 				collidableEnvironment.push(mesh);
 			});
 			var loader = new THREE.GLTFLoader();
-			var adam;
+			var mixer;
 			loader.load( 'models/ADAM_Idle_with_skin.glb', function ( gltf ) {
-				adam = gltf;
 				scene.add( gltf.scene );
+				mixer = new THREE.AnimationMixer(gltf.scene);
+				mixer.clipAction( gltf.animations[ 0 ] ).play();
+				animate();
 			}, undefined, function ( error ) {
 				console.error( error );
 			});
@@ -146,6 +149,8 @@
             
             function animate() {
                 requestAnimationFrame( animate );
+                var delta = clock.getDelta();
+				mixer.update( delta );
                 if (forward || backward || left || right) {
                     movePlayer1();
                 }
@@ -327,8 +332,6 @@
             function abs(num) {
                 return Math.abs(num);
             }
-            
-            animate();
             
 		</script>
 	</body>
