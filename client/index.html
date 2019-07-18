@@ -26,6 +26,8 @@
             <p id="info3"></p>
         </div>
 		<script src="js/three.js"></script>
+		<!-- 	eventually you should download a minified version of GLTF loader -->
+		<script src="https://cdn.rawgit.com/mrdoob/three.js/master/examples/js/loaders/GLTFLoader.js"></script>
 		<script src="js/vox.min.js"></script>
 		<script>
 			var scene = initScene();
@@ -50,6 +52,14 @@
 				scene.add(mesh);
 				// Eventually you're going to need to make a more simplistic collidable mesh for each vox mesh because more complicated vox meshes will be inefficient to calculate collisions on
 				collidableEnvironment.push(mesh);
+			});
+			var loader = new THREE.GLTFLoader();
+			var adam;
+			loader.load( 'models/ADAM_Idle_with_skin.glb', function ( gltf ) {
+				adam = gltf;
+				scene.add( gltf.scene );
+			}, undefined, function ( error ) {
+				console.error( error );
 			});
 
             var player1 = createPlayer(0x00ff00);
@@ -77,7 +87,7 @@
             
             // add player uuid and send message
             function sendMessage(message) {
-                message.player = playerUuid
+                message.player = playerUuid;
                 ws.send(JSON.stringify(message))
             }
 
@@ -249,7 +259,7 @@
                 var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
                 var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
                 theta -= movementX * 0.2
-                phi -= movementY * 0.2
+                phi += movementY * 0.2
                 updateCamera();
             }
 
@@ -274,7 +284,7 @@
                 var material = new THREE.MeshBasicMaterial({map: texture, side: THREE.DoubleSide});
                 var plane = new THREE.Mesh( geometry, material );
                 plane.rotateX(Math.PI/2);
-                plane.translateZ(2);
+                plane.translateZ(0.5);
                 plane.receiveShadow = true;
                 return plane;
             }
