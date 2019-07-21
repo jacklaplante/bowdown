@@ -48,7 +48,7 @@ function sendMessage(client, message) {
 
 // static client server
 var static = require('node-static');
-var file = new static.Server('../client');
+var file = new static.Server('../client/dist');
 var port = 8080
 require('http').createServer(function (request, response) {
     request.addListener('end', function () {
