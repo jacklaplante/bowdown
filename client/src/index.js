@@ -36,7 +36,7 @@ loader.load( Adam, function ( gltf ) {
 }, undefined, function ( error ) {
     console.error( error );
 });
-var player1 = createPlayer(0x00ff00);
+var player1 = createPlayer(0x4287f5);
 scene.add(player1);
 var players = {}
 
