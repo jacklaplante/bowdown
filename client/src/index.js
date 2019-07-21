@@ -38,7 +38,7 @@ loader.load( Adam, function ( gltf ) {
 });
 var player1 = createPlayer(0x4287f5);
 scene.add(player1);
-var players = {}
+var players = { }
 
 scene.add( getHemisphereLight() );
 scene.add( getDirectionalLight() );
@@ -130,6 +130,7 @@ function movePlayer1(){
     var b = 1/(abs(direction.x)+abs(direction.z));
     var directionX = movementSpeed*b*direction.x;
     var directionZ = movementSpeed*b*direction.z;
+    var z, x;
     if (forward) {
         z = player1.position.z + directionZ;
         x = player1.position.x + directionX;

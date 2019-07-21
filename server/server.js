@@ -49,10 +49,10 @@ function sendMessage(client, message) {
 // static client server
 var static = require('node-static');
 var file = new static.Server('../client/dist');
-var port = 8080
+var port = 8081
 require('http').createServer(function (request, response) {
     request.addListener('end', function () {
         file.serve(request, response);
     }).resume();
 }).listen(port);
-console.log("serving index.html at: http://localhost:"+8080);
+console.log("serving index.html at: http://localhost:"+port);
