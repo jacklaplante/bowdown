@@ -2,7 +2,7 @@ import {Scene, Clock, Vector3, AnimationMixer, PerspectiveCamera, WebGLRenderer,
     DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial, TextureLoader, PlaneGeometry, MeshLambertMaterial} from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 import Grass from '../textures/grass.png'
-import Adam from '../models/ADAM_Idle_with_skin.glb'
+import Adam from '../models/CesiumMan.glb'
 import Fort from '../models/fort.glb'
 
 var scene = initScene();
@@ -30,6 +30,7 @@ var right = false
 var loader = new GLTFLoader();
 var mixer;
 loader.load( Adam, function ( gltf ) {
+//     gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     mixer.clipAction( gltf.animations[ 0 ] ).play();
