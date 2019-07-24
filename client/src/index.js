@@ -27,10 +27,13 @@ var right = false
 //     // Eventually you're going to need to make a more simplistic collidable mesh for each vox mesh because more complicated vox meshes will be inefficient to calculate collisions on
 //     collidableEnvironment.push(mesh);
 // });
+
+var player1;
 var loader = new GLTFLoader();
 var mixer;
 loader.load( Adam, function ( gltf ) {
-//     gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
+    // gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
+    player1 = gltf;
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     mixer.clipAction( gltf.animations[ 0 ] ).play();
@@ -41,16 +44,14 @@ loader.load(Fort, function (gltf) {
     mesh.scale.addScalar(2.0)
     mesh.position.y -=15
     scene.add(mesh);
+    collidableEnvironment.push(mesh.children[0])
 });
-var player1 = createPlayer(0x4287f5);
-scene.add(player1);
+
 var players = { }
 
-scene.add( getHemisphereLight() );
-scene.add( getDirectionalLight() );
-scene.add( getGround() );
-var windowHalfX = window.innerWidth / 2;
-var windowHalfY = window.innerHeight / 2;
+scene.add(getHemisphereLight());
+scene.add(getDirectionalLight());
+scene.add(getGround());
 document.addEventListener( 'mousemove', onMouseMove);
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
@@ -138,45 +139,49 @@ function movePlayer1(){
     var directionZ = movementSpeed*b*direction.z;
     var z, x;
     if (forward) {
-        z = player1.position.z + directionZ;
-        x = player1.position.x + directionX;
+        z = player1.scene.position.z + directionZ;
+        x = player1.scene.position.x + directionX;
     }
     if (backward) {
-        z = player1.position.z - directionZ;
-        x = player1.position.x - directionX;
+        z = player1.scene.position.z - directionZ;
+        x = player1.scene.position.x - directionX;
     }
     if (left) {
-        z = player1.position.z - directionX;
-        x = player1.position.x + directionZ;
+        z = player1.scene.position.z - directionX;
+        x = player1.scene.position.x + directionZ;
     }
     if (right) {
-        z = player1.position.z + directionX;
-        x = player1.position.x - directionZ;
+        z = player1.scene.position.z + directionX;
+        x = player1.scene.position.x - directionZ;
     }
     if(!collisionDetected(x, z)){
         cameraTarget.z = z;
         cameraTarget.x = x;
-        movePlayer(player1, x, z);
+        movePlayer(player1.scene, x, z);
         updateCamera();
         sendMessage(
             {
-                x: player1.position.x,
-                z: player1.position.z
+                x: player1.scene.position.x,
+                z: player1.scene.position.z
             }
         )
     }
 }
 function collisionDetected(x, z){
-    for(var i=0; i<player1.geometry.vertices.length; i++){
-        var vert = player1.geometry.vertices[i]
-        var ray = new Raycaster(new Vector3(x, 0, z), vert.clone().normalize())
-        var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment));
-        new Line3(new Vector3(), vert).distance()
-        if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
-            return true
+    for(var a=0; a<=1; a++){
+        for(var b=0; b<=1; b++){
+            for(var c=0; c<=1; c++){
+                var vert = new Vector3(a, b, c);
+                var ray = new Raycaster(new Vector3(x, 0, z), vert.clone().normalize());
+                var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment), true);
+                new Line3(new Vector3(), vert).distance()
+                if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
+                    return true
+                }
+            }
         }
     }
-    return false
+    return false;
 }
 function movePlayer(player, x, z) {
     player.position.z = z;
