@@ -141,6 +141,7 @@ function movePlayer1(){
     if (forward) {
         z = player1.scene.position.z + directionZ;
         x = player1.scene.position.x + directionX;
+        player1.scene.rotation.y = Math.atan2(directionX, directionZ)-Math.PI/2
     }
     if (backward) {
         z = player1.scene.position.z - directionZ;
