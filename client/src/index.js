@@ -173,6 +173,7 @@ function collisionDetected(x, z){
             for(var c=0; c<=1; c++){
                 var vert = new Vector3(a, b, c);
                 var ray = new Raycaster(new Vector3(x, 0, z), vert.clone().normalize());
+                // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
                 var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment), true);
                 new Line3(new Vector3(), vert).distance()
                 if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
