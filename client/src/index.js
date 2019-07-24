@@ -36,7 +36,7 @@ loader.load( Adam, function ( gltf ) {
     player1 = gltf;
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
-    mixer.clipAction( gltf.animations[ 0 ] ).play();
+    
     animate();
 });
 loader.load(Fort, function (gltf) {
@@ -121,6 +121,9 @@ function animate() {
     mixer.update( delta );
     if (forward || backward || left || right) {
         movePlayer1();
+        mixer.clipAction( player1.animations[ 0 ] ).play();
+    } else {
+        mixer.clipAction( player1.animations[ 0 ] ).stop();
     }
     render();
 }
