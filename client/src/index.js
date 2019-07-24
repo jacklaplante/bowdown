@@ -146,14 +146,17 @@ function movePlayer1(){
     if (backward) {
         z = player1.scene.position.z - directionZ;
         x = player1.scene.position.x - directionX;
+        player1.scene.rotation.y = Math.atan2(directionX, directionZ)+Math.PI/2
     }
     if (left) {
         z = player1.scene.position.z - directionX;
         x = player1.scene.position.x + directionZ;
+        player1.scene.rotation.y = Math.atan2(directionX, directionZ)
     }
     if (right) {
         z = player1.scene.position.z + directionX;
         x = player1.scene.position.x - directionZ;
+        player1.scene.rotation.y = Math.atan2(directionX, directionZ)+Math.PI
     }
     if(!collisionDetected(x, z)){
         cameraTarget.z = z;
