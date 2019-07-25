@@ -70,28 +70,33 @@ ws.onmessage = function onMessage(message) {
     if (message.player) {
         var player = message.player;
         if (!players[player] && player != playerUuid) {
-            addPlayer(player)
+            addPlayer(player, message.x, message.y)
         } else if (message.status==='disconnected') {
             // player disconnected, remove
             scene.remove(players[player])
             delete players[player]
-        }
-        if (message.x && message.z) {
-            movePlayer(players[message.player], message.x, message.z)
+        } else if (players[player] && message.x && message.z) {
+            movePlayer(player, message.x, message.y)
         }
     }
 }
 function initPlayers(newPlayers) {
     Object.keys(newPlayers).forEach(
         (playerUuid) => {
-            addPlayer(playerUuid);
-            movePlayer(players[playerUuid], newPlayers[playerUuid].x, newPlayers[playerUuid].z)
+            addPlayer(playerUuid, newPlayers[playerUuid].x, newPlayers[playerUuid].z);
         })
 }
-function addPlayer(uuid) {
-    var player = createPlayer(0xf58742);
-    scene.add(player);
-    players[uuid] = player;
+function addPlayer(uuid, x, z) {
+    loader.load( Adam, function ( gltf ) {
+        var player = gltf;
+        if (x&&z) {
+            movePlayer(player, x, z)
+        }
+        scene.add( gltf.scene );
+        mixer = new AnimationMixer(gltf.scene);
+        players[uuid] = player;
+        animate();
+    });
 }
 function initScene() {
     var scene = new Scene();
@@ -147,7 +152,7 @@ function movePlayer1(){
     if(!collisionDetected(x, z)){
         cameraTarget.z = z;
         cameraTarget.x = x;
-        movePlayer(player1.scene, x, z);
+        movePlayer(player1, x, z);
         updateCamera(theta, phi);
         sendMessage(
             {
@@ -165,19 +170,19 @@ function collisionDetected(x, z){
                 var vert = new Vector3(a, b, c);
                 var ray = new Raycaster(new Vector3(x, 0, z), vert.clone().normalize());
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
-                var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment), true);
-                new Line3(new Vector3(), vert).distance()
-                if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
-                    return true
-                }
+//                 var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment), true);
+//                 new Line3(new Vector3(), vert).distance()
+//                 if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
+//                     return true
+//                 }
             }
         }
     }
     return false;
 }
 function movePlayer(player, x, z) {
-    player.position.z = z;
-    player.position.x = x;
+    player.scene.position.x = x;
+    player.scene.position.z = z;
     
 }
 function toggleKey(event, toggle) {
@@ -218,14 +223,7 @@ function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }
-function createPlayer(color) {
-    var geometry = new BoxGeometry(1, 1, 1);
-    var material = new MeshLambertMaterial({color: color});
-    var player = new Mesh( geometry, material );
-    player.castShadow = true;
-    player.receiveShadow = true;
-    return player;
-}
+
 function getHemisphereLight() {
     var hemiLight = new HemisphereLight( 0xffffff, 0xffffff, 0.6 );
     hemiLight.color.setHSL( 0.6, 1, 0.6 );
