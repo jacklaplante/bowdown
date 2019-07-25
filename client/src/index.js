@@ -1,17 +1,21 @@
-import {Scene, Clock, Vector3, AnimationMixer, PerspectiveCamera, WebGLRenderer, Raycaster, Line3, BoxGeometry,
+import {Scene, Clock, Vector3, AnimationMixer, WebGLRenderer, Raycaster, Line3, BoxGeometry,
     DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial, TextureLoader, PlaneGeometry, MeshLambertMaterial} from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import Grass from '../textures/grass.png'
+
+import { uuid } from './utils'
+import { initRenderer } from './renderer'
+import { camera, cameraTarget, updateCamera } from './camera'
+import { ws, sendMessage } from './websocket'
+
 import Adam from '../models/CesiumMan.glb'
 import Fort from '../models/fort.glb'
 
+
 var scene = initScene();
-var camera = initCamera();
 var clock = new Clock();
 var renderer = initRenderer();
 var collidableEnvironment = []
 document.body.appendChild( renderer.domElement );
-var cameraTarget = new Vector3( 0, 1, 0 );
 var theta = 0
 var phi = 0
 var forward = false
@@ -51,23 +55,13 @@ var players = { }
 
 scene.add(getHemisphereLight());
 scene.add(getDirectionalLight());
-scene.add(getGround());
 document.addEventListener( 'mousemove', onMouseMove);
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 document.addEventListener('click', onClick);
 window.addEventListener('resize', resize);
-const ws = new WebSocket('ws://localhost:18181');
 var playerUuid = uuid();
-ws.onopen = function open() {
-    sendMessage({message: "sup fucker"})
-};
 
-// add player uuid and send message
-function sendMessage(message) {
-    message.player = playerUuid;
-    ws.send(JSON.stringify(message))
-}
 ws.onmessage = function onMessage(message) {
     var message = JSON.parse(message.data)
     if (message.players) {
@@ -102,17 +96,6 @@ function addPlayer(uuid) {
 function initScene() {
     var scene = new Scene();
     return scene;
-}
-function initCamera() {
-    var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-    camera.position.z = 5;
-    return camera;
-}
-function initRenderer() {
-    var renderer = new WebGLRenderer();
-    renderer.setClearColor("#e5e5e5");
-    renderer.setSize( window.innerWidth, window.innerHeight );
-    return renderer;
 }
 
 function animate() {
@@ -165,9 +148,10 @@ function movePlayer1(){
         cameraTarget.z = z;
         cameraTarget.x = x;
         movePlayer(player1.scene, x, z);
-        updateCamera();
+        updateCamera(theta, phi);
         sendMessage(
             {
+                player: playerUuid,
                 x: player1.scene.position.x,
                 z: player1.scene.position.z
             }
@@ -222,21 +206,12 @@ function onClick(event) {
     document.body.requestPointerLock();
 }
 
-function updateCamera() {
-    var distance = 5;
-    camera.position.x = cameraTarget.x + distance * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-    camera.position.y = cameraTarget.y + distance * Math.sin(phi * Math.PI / 360);
-    camera.position.z = cameraTarget.z + distance * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-    camera.lookAt(cameraTarget);
-    camera.updateMatrix();
-}
-
 function onMouseMove( event ) {
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
     theta -= movementX * 0.2
     phi += movementY * 0.2
-    updateCamera();
+    updateCamera(theta, phi);
 }
 function resize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -250,17 +225,6 @@ function createPlayer(color) {
     player.castShadow = true;
     player.receiveShadow = true;
     return player;
-}
-function getGround() {
-    var geometry = new PlaneGeometry(10, 20, 0);
-    var texture = new TextureLoader().load(Grass)
-    // var material = new MeshBasicMaterial({map: texture, side: DoubleSide});
-    var material = new MeshBasicMaterial({map: texture});
-    var plane = new Mesh( geometry, material );
-    plane.rotateX(Math.PI/2);
-    plane.translateZ(0.5);
-    plane.receiveShadow = true;
-    return plane;
 }
 function getHemisphereLight() {
     var hemiLight = new HemisphereLight( 0xffffff, 0xffffff, 0.6 );
@@ -290,12 +254,6 @@ function getDirectionalLight() {
     return dirLight;
 }
 
-function uuid() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
 function abs(num) {
     return Math.abs(num);
 }
