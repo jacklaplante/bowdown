@@ -75,8 +75,8 @@ ws.onmessage = function onMessage(message) {
             // player disconnected, remove
             scene.remove(players[player])
             delete players[player]
-        } else if (players[player] && message.x && message.z) {
-            movePlayer(player, message.x, message.y)
+        } else if (players[player].scene && message.x && message.z) {
+            movePlayer(players[player], message.x, message.z)
         }
     }
 }
@@ -87,6 +87,7 @@ function initPlayers(newPlayers) {
         })
 }
 function addPlayer(uuid, x, z) {
+    players[uuid] = 'loading'
     loader.load( Adam, function ( gltf ) {
         var player = gltf;
         if (x&&z) {
