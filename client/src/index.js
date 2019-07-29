@@ -75,8 +75,8 @@ ws.onmessage = function onMessage(message) {
             // player disconnected, remove
             scene.remove(players[player])
             delete players[player]
-        } else if (players[player].scene && message.x && message.z) {
-            movePlayer(players[player], message.x, message.z)
+        } else if (players[player].scene && message.x && message.z && message.rotation) {
+            movePlayer(players[player], message.x, message.z, message.rotation)
         }
     }
 }
@@ -87,11 +87,13 @@ function initPlayers(newPlayers) {
         })
 }
 function addPlayer(uuid, x, z) {
+    // this is a hacky way to make sure the player model isn't loaded multiple times
     players[uuid] = 'loading'
+
     loader.load( Adam, function ( gltf ) {
         var player = gltf;
         if (x&&z) {
-            movePlayer(player, x, z)
+            movePlayer(player, x, z, 0)
         }
         scene.add( gltf.scene );
         mixer = new AnimationMixer(gltf.scene);
@@ -129,37 +131,38 @@ function movePlayer1(){
     var b = 1/(abs(direction.x)+abs(direction.z));
     var directionX = movementSpeed*b*direction.x;
     var directionZ = movementSpeed*b*direction.z;
-    var z, x;
+    var z, x, rotation;
     if (forward) {
         z = player1.scene.position.z + directionZ;
         x = player1.scene.position.x + directionX;
-        player1.scene.rotation.y = Math.atan2(directionX, directionZ)-Math.PI/2
+        rotation = Math.atan2(directionX, directionZ)-Math.PI/2
     }
     if (backward) {
         z = player1.scene.position.z - directionZ;
         x = player1.scene.position.x - directionX;
-        player1.scene.rotation.y = Math.atan2(directionX, directionZ)+Math.PI/2
+        rotation = Math.atan2(directionX, directionZ)+Math.PI/2
     }
     if (left) {
         z = player1.scene.position.z - directionX;
         x = player1.scene.position.x + directionZ;
-        player1.scene.rotation.y = Math.atan2(directionX, directionZ)
+        rotation = Math.atan2(directionX, directionZ)
     }
     if (right) {
         z = player1.scene.position.z + directionX;
         x = player1.scene.position.x - directionZ;
-        player1.scene.rotation.y = Math.atan2(directionX, directionZ)+Math.PI
+        rotation = Math.atan2(directionX, directionZ)+Math.PI
     }
     if(!collisionDetected(x, z)){
         cameraTarget.z = z;
         cameraTarget.x = x;
-        movePlayer(player1, x, z);
+        movePlayer(player1, x, z, rotation);
         updateCamera(theta, phi);
         sendMessage(
             {
                 player: playerUuid,
                 x: player1.scene.position.x,
-                z: player1.scene.position.z
+                z: player1.scene.position.z,
+                rotation: rotation
             }
         )
     }
@@ -181,10 +184,10 @@ function collisionDetected(x, z){
     }
     return false;
 }
-function movePlayer(player, x, z) {
+function movePlayer(player, x, z, rotation) {
     player.scene.position.x = x;
     player.scene.position.z = z;
-    
+    player.scene.rotation.y = rotation    
 }
 function toggleKey(event, toggle) {
     switch(event.key) {
