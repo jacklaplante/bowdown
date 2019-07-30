@@ -1,5 +1,5 @@
 import {Scene, Clock, Vector3, AnimationMixer, WebGLRenderer, Raycaster, Line3, BoxGeometry,
-    DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial, TextureLoader, PlaneGeometry, MeshLambertMaterial} from 'three'
+    DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial, TextureLoader, PlaneGeometry, MeshLambertMaterial, Geometry, LineBasicMaterial, Line} from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
 import { uuid } from './utils'
@@ -22,15 +22,6 @@ var forward = false
 var backward = false
 var left = false
 var right = false
-// // vox
-// var parser = new vox.Parser();
-// parser.parse("models/castle.vox").then(function(voxelData) {
-//     var builder = new vox.MeshBuilder(voxelData);
-//     var mesh = builder.createMesh();
-//     scene.add(mesh);
-//     // Eventually you're going to need to make a more simplistic collidable mesh for each vox mesh because more complicated vox meshes will be inefficient to calculate collisions on
-//     collidableEnvironment.push(mesh);
-// });
 
 var player1;
 var loader = new GLTFLoader();
@@ -73,10 +64,11 @@ ws.onmessage = function onMessage(message) {
             addPlayer(player, message.x, message.y)
         } else if (message.status==='disconnected') {
             // player disconnected, remove
-            scene.remove(players[player])
+            scene.remove(players[player].scene)
             delete players[player]
         } else if (players[player].scene && message.x && message.z && message.rotation) {
             movePlayer(players[player], message.x, message.z, message.rotation)
+            players[player].state = 'moving'
         }
     }
 }
@@ -111,13 +103,20 @@ function animate() {
     if (forward || backward || left || right) {
         movePlayer1();
         if (player1.state!='walking') {
-            mixer.clipAction( player1.animations[ 0 ] ).reset().fadeIn(0.2).play();
+            var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
+            action.timeScale = 1.5
+            action.fadeIn(0.2).play();
             player1.state = 'walking'
         }
     } else if (player1.state=='walking') {
         mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
         player1.state = 'standing'
     }
+//     Object.keys(players).forEach((player) => {
+//         if (players[player].state == 'moving') {
+//             mixer.clipAction(players[player].animations[0]).play();
+//         }
+//     })
     render();
 }
 
@@ -169,18 +168,40 @@ function movePlayer1(){
         )
     }
 }
+
+var displayCollisionLines = true
 function collisionDetected(x, z){
-    for(var a=0; a<=1; a++){
+    if (displayCollisionLines){
+        player1.scene.children.forEach((child) => {
+           if (child.name === "collision line") {
+               player1.scene.remove(child)
+           }
+        })
+    }
+    for(var a=-1; a<=1; a++){
         for(var b=0; b<=1; b++){
-            for(var c=0; c<=1; c++){
+            for(var c=-1; c<=1; c++){
                 var vert = new Vector3(a, b, c);
-                var ray = new Raycaster(new Vector3(x, 0, z), vert.clone().normalize());
+                vert = vert.clone().normalize()
+                var ray = new Raycaster(new Vector3(x, 0, z), vert);
+                if (displayCollisionLines){
+                    var geometry = new Geometry();
+                    geometry.vertices.push(
+                        vert,
+                        new Vector3()
+                    );
+                    var material = new LineBasicMaterial({
+                        color: 0xff0000
+                    });
+                    var line = new Line( geometry, material )
+                    line.name = "collision line"
+                    player1.scene.add(line);
+                }
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
-//                 var collisionResults = ray.intersectObjects(Object.values(players).concat(collidableEnvironment), true);
-//                 new Line3(new Vector3(), vert).distance()
-//                 if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
-//                     return true
-//                 }
+                var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+                if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
+                    return true
+                }
             }
         }
     }
@@ -189,7 +210,7 @@ function collisionDetected(x, z){
 function movePlayer(player, x, z, rotation) {
     player.scene.position.x = x;
     player.scene.position.z = z;
-    player.scene.rotation.y = rotation    
+    player.scene.rotation.y = rotation;
 }
 function toggleKey(event, toggle) {
     switch(event.key) {
