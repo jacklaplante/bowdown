@@ -96,9 +96,7 @@ function addPlayer(uuid, x, z) {
             movePlayer(player, x, z, 0)
         }
         scene.add( gltf.scene );
-        mixer = new AnimationMixer(gltf.scene);
         players[uuid] = player;
-        animate();
     });
 }
 function initScene() {
@@ -112,9 +110,13 @@ function animate() {
     mixer.update( delta );
     if (forward || backward || left || right) {
         movePlayer1();
-        mixer.clipAction( player1.animations[ 0 ] ).play();
-    } else {
-        mixer.clipAction( player1.animations[ 0 ] ).stop();
+        if (player1.state!='walking') {
+            mixer.clipAction( player1.animations[ 0 ] ).reset().fadeIn(0.2).play();
+            player1.state = 'walking'
+        }
+    } else if (player1.state=='walking') {
+        mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
+        player1.state = 'standing'
     }
     render();
 }
