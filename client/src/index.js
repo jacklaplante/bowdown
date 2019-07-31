@@ -41,7 +41,7 @@ animate();
 function falling() {
     var vert = new Vector3(0, -1, 0);
     vert = vert.clone().normalize()
-    var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y, player1.scene.position.z), vert);
+    var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y+1, player1.scene.position.z), vert);
     var collisionResults = ray.intersectObjects(collidableEnvironment, true);
     if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
         return false
@@ -56,10 +56,11 @@ function animate() {
         if (falling()) {
             player1.velocity.y -= delta*5
             player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
+            cameraTarget.y = player1.scene.position.y+1
+            updateCamera(theta, phi)
         } else {
             player1.velocity.y = 0
         }
-
         mixer.update( delta );
         if (forward || backward || left || right) {
             movePlayer1();
