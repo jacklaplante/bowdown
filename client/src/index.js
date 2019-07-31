@@ -1,17 +1,17 @@
-import {Scene, Clock, Vector3, AnimationMixer, WebGLRenderer, Raycaster, Line3, BoxGeometry,
+import { Clock, Vector3, AnimationMixer, WebGLRenderer, Raycaster, Line3, BoxGeometry,
     DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial, TextureLoader, PlaneGeometry, MeshLambertMaterial, Geometry, LineBasicMaterial, Line} from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
 
-import { uuid } from './utils'
+import { scene } from './scene'
 import { initRenderer } from './renderer'
+import { loader } from './loader'
 import { camera, cameraTarget, updateCamera } from './camera'
-import { ws, sendMessage } from './websocket'
+import { sendMessage } from './websocket'
+import { movePlayer } from './players'
+import { playerUuid } from './player1'
 
 import Adam from '../models/CesiumMan.glb'
 import Fort from '../models/fort.glb'
 
-
-var scene = initScene();
 var clock = new Clock();
 var renderer = initRenderer();
 var collidableEnvironment = []
@@ -24,11 +24,12 @@ var left = false
 var right = false
 
 var player1;
-var loader = new GLTFLoader();
 var mixer;
 loader.load( Adam, function ( gltf ) {
     // gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
     player1 = gltf;
+    player1.velocity = new Vector3()
+
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     
@@ -38,11 +39,11 @@ loader.load(Fort, function (gltf) {
     var mesh = gltf.scene;
     mesh.scale.addScalar(2.0)
     mesh.position.y -=15
+    mesh.position.x -= 15
+    mesh.position.z += 15
     scene.add(mesh);
     collidableEnvironment.push(mesh.children[0])
 });
-
-var players = { }
 
 scene.add(getHemisphereLight());
 scene.add(getDirectionalLight());
@@ -51,54 +52,30 @@ document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 document.addEventListener('click', onClick);
 window.addEventListener('resize', resize);
-var playerUuid = uuid();
 
-ws.onmessage = function onMessage(message) {
-    var message = JSON.parse(message.data)
-    if (message.players) {
-        initPlayers(message.players);
-    }
-    if (message.player) {
-        var player = message.player;
-        if (!players[player] && player != playerUuid) {
-            addPlayer(player, message.x, message.y)
-        } else if (message.status==='disconnected') {
-            // player disconnected, remove
-            scene.remove(players[player].scene)
-            delete players[player]
-        } else if (players[player].scene && message.x && message.z && message.rotation) {
-            movePlayer(players[player], message.x, message.z, message.rotation)
-            players[player].state = 'moving'
-        }
-    }
-}
-function initPlayers(newPlayers) {
-    Object.keys(newPlayers).forEach(
-        (playerUuid) => {
-            addPlayer(playerUuid, newPlayers[playerUuid].x, newPlayers[playerUuid].z);
-        })
-}
-function addPlayer(uuid, x, z) {
-    // this is a hacky way to make sure the player model isn't loaded multiple times
-    players[uuid] = 'loading'
+function falling() {
 
-    loader.load( Adam, function ( gltf ) {
-        var player = gltf;
-        if (x&&z) {
-            movePlayer(player, x, z, 0)
-        }
-        scene.add( gltf.scene );
-        players[uuid] = player;
-    });
-}
-function initScene() {
-    var scene = new Scene();
-    return scene;
+    var vert = new Vector3(0, -1, 0);
+    vert = vert.clone().normalize()
+    var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y, player1.scene.position.z), vert);
+    var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+    if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
+        return false
+    }
+
+    return true;
 }
 
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
+    if (falling()) {
+        player1.velocity.y -= delta*5
+        player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
+    } else {
+        player1.velocity.y = 0
+    }
+
     mixer.update( delta );
     if (forward || backward || left || right) {
         movePlayer1();
@@ -169,6 +146,7 @@ function movePlayer1(){
     }
 }
 
+// these might not be completely accurate
 var displayCollisionLines = true
 function collisionDetected(x, z){
     if (displayCollisionLines){
@@ -207,11 +185,7 @@ function collisionDetected(x, z){
     }
     return false;
 }
-function movePlayer(player, x, z, rotation) {
-    player.scene.position.x = x;
-    player.scene.position.z = z;
-    player.scene.rotation.y = rotation;
-}
+
 function toggleKey(event, toggle) {
     switch(event.key) {
         case 'w':
