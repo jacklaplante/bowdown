@@ -22,15 +22,12 @@ var right = false
 
 var player1;
 var mixer;
-loader.load( Adam, function ( gltf ) {
+loader.load( Adam, ( gltf ) => {
     // gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
     player1 = gltf;
     player1.velocity = new Vector3()
-
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
-    
-    animate();
 });
 
 document.addEventListener('mousemove', onMouseMove);
@@ -38,6 +35,8 @@ document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 document.addEventListener('click', onClick);
 window.addEventListener('resize', resize);
+
+animate();
 
 function falling() {
     var vert = new Vector3(0, -1, 0);
@@ -53,25 +52,27 @@ function falling() {
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
-    if (falling()) {
-        player1.velocity.y -= delta*5
-        player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
-    } else {
-        player1.velocity.y = 0
-    }
-
-    mixer.update( delta );
-    if (forward || backward || left || right) {
-        movePlayer1();
-        if (player1.state!='walking') {
-            var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
-            action.timeScale = 1.5
-            action.fadeIn(0.2).play();
-            player1.state = 'walking'
+    if (player1) {
+        if (falling()) {
+            player1.velocity.y -= delta*5
+            player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
+        } else {
+            player1.velocity.y = 0
         }
-    } else if (player1.state=='walking') {
-        mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
-        player1.state = 'standing'
+
+        mixer.update( delta );
+        if (forward || backward || left || right) {
+            movePlayer1();
+            if (player1.state!='walking') {
+                var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
+                action.timeScale = 1.5
+                action.fadeIn(0.2).play();
+                player1.state = 'walking'
+            }
+        } else if (player1.state=='walking') {
+            mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
+            player1.state = 'standing'
+        }
     }
 //     Object.keys(players).forEach((player) => {
 //         if (players[player].state == 'moving') {
