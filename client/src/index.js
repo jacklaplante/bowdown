@@ -1,8 +1,8 @@
-import { Clock, Vector3, AnimationMixer, WebGLRenderer, Raycaster, Line3, BoxGeometry,
-    DirectionalLight, HemisphereLight, Mesh, MeshBasicMaterial, TextureLoader, PlaneGeometry, MeshLambertMaterial, Geometry, LineBasicMaterial, Line} from 'three'
+import { Clock, Vector3, AnimationMixer, Raycaster, Line3,
+    Geometry, LineBasicMaterial, Line} from 'three'
 
-import { scene } from './scene'
-import { initRenderer } from './renderer'
+import { scene, collidableEnvironment } from './scene'
+import { renderer } from './renderer'
 import { loader } from './loader'
 import { camera, cameraTarget, updateCamera } from './camera'
 import { sendMessage } from './websocket'
@@ -10,12 +10,9 @@ import { movePlayer } from './players'
 import { playerUuid } from './player1'
 
 import Adam from '../models/CesiumMan.glb'
-import Fort from '../models/fort.glb'
 
-var clock = new Clock();
-var renderer = initRenderer();
-var collidableEnvironment = []
-document.body.appendChild( renderer.domElement );
+var clock = new Clock()
+document.body.appendChild( renderer.domElement )
 var theta = 0
 var phi = 0
 var forward = false
@@ -35,26 +32,14 @@ loader.load( Adam, function ( gltf ) {
     
     animate();
 });
-loader.load(Fort, function (gltf) {
-    var mesh = gltf.scene;
-    mesh.scale.addScalar(2.0)
-    mesh.position.y -=15
-    mesh.position.x -= 15
-    mesh.position.z += 15
-    scene.add(mesh);
-    collidableEnvironment.push(mesh.children[0])
-});
 
-scene.add(getHemisphereLight());
-scene.add(getDirectionalLight());
-document.addEventListener( 'mousemove', onMouseMove);
+document.addEventListener('mousemove', onMouseMove);
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 document.addEventListener('click', onClick);
 window.addEventListener('resize', resize);
 
 function falling() {
-
     var vert = new Vector3(0, -1, 0);
     vert = vert.clone().normalize()
     var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y, player1.scene.position.z), vert);
@@ -62,7 +47,6 @@ function falling() {
     if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
         return false
     }
-
     return true;
 }
 
@@ -94,12 +78,9 @@ function animate() {
 //             mixer.clipAction(players[player].animations[0]).play();
 //         }
 //     })
-    render();
-}
-
-function render() {
     renderer.render( scene, camera );
 }
+
 function movePlayer1(){
     var movementSpeed = 0.3;
     var direction = new Vector3();
@@ -223,34 +204,6 @@ function resize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
-}
-
-function getHemisphereLight() {
-    var hemiLight = new HemisphereLight( 0xffffff, 0xffffff, 0.6 );
-    hemiLight.color.setHSL( 0.6, 1, 0.6 );
-    hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-    hemiLight.position.set( 0, 50, 0 );
-    hemiLight.visible = true;
-    return hemiLight;
-}
-
-function getDirectionalLight() {
-    var dirLight = new DirectionalLight( 0xffffff, 1 );
-    dirLight.color.setHSL( 0.1, 1, 0.95 );
-    dirLight.position.set( - 1, 1.75, 1 );
-    dirLight.position.multiplyScalar( 30 );
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
-    var d = 50;
-    dirLight.shadow.camera.left = - d;
-    dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d;
-    dirLight.shadow.camera.bottom = - d;
-    dirLight.shadow.camera.far = 3500;
-    dirLight.shadow.bias = - 0.0001;
-    dirLight.visible = true;
-    return dirLight;
 }
 
 function abs(num) {
