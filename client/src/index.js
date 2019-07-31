@@ -19,6 +19,7 @@ var forward = false
 var backward = false
 var left = false
 var right = false
+var space = false
 
 var player1;
 var mixer;
@@ -41,7 +42,7 @@ animate();
 function falling() {
     var vert = new Vector3(0, -1, 0);
     vert = vert.clone().normalize()
-    var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y+1, player1.scene.position.z), vert);
+    var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y+0.9, player1.scene.position.z), vert);
     var collisionResults = ray.intersectObjects(collidableEnvironment, true);
     if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
         return false
@@ -54,26 +55,29 @@ function animate() {
     var delta = clock.getDelta();
     if (player1) {
         if (falling()) {
-            player1.velocity.y -= delta*5
-            player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
-            cameraTarget.y = player1.scene.position.y+1
-            updateCamera(theta, phi)
+            player1.velocity.y -= delta*10
         } else {
             player1.velocity.y = 0
-        }
-        mixer.update( delta );
-        if (forward || backward || left || right) {
-            movePlayer1();
-            if (player1.state!='walking') {
-                var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
-                action.timeScale = 1.5
-                action.fadeIn(0.2).play();
-                player1.state = 'walking'
+            if (space) {
+                player1.velocity.y = 5
             }
-        } else if (player1.state=='walking') {
-            mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
-            player1.state = 'standing'
+            if (forward || backward || left || right) {
+                movePlayer1();
+                if (player1.state!='walking') {
+                    var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
+                    action.timeScale = 1.5
+                    action.fadeIn(0.2).play();
+                    player1.state = 'walking'
+                }
+            } else if (player1.state=='walking') {
+                mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
+                player1.state = 'standing'
+            }
         }
+        player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
+        cameraTarget.y = player1.scene.position.y+1
+        updateCamera(theta, phi)
+        mixer.update( delta );
     }
 //     Object.keys(players).forEach((player) => {
 //         if (players[player].state == 'moving') {
@@ -130,7 +134,7 @@ function movePlayer1(){
 }
 
 // these might not be completely accurate
-var displayCollisionLines = true
+var displayCollisionLines = false
 function collisionDetected(x, z){
     if (displayCollisionLines){
         player1.scene.children.forEach((child) => {
@@ -182,6 +186,9 @@ function toggleKey(event, toggle) {
             break;
         case 'd':
             right = toggle;
+            break;
+        case ' ':
+            space = toggle;
             break;
     }
 }
