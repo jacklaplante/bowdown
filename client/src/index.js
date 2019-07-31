@@ -57,12 +57,53 @@ function animate() {
         if (falling()) {
             player1.velocity.y -= delta*10
         } else {
-            player1.velocity.y = 0
+            player1.velocity.set(0,0,0)
             if (space) {
                 player1.velocity.y = 5
             }
             if (forward || backward || left || right) {
-                movePlayer1();
+                var movementSpeed = 0.085;
+                var direction = new Vector3();
+                camera.getWorldDirection(direction)
+                // make direction 2d (x,z) and normalize
+                // then multiply by movement speed
+                var b = 1/(abs(direction.x)+abs(direction.z));
+                var directionX = movementSpeed*b*direction.x;
+                var directionZ = movementSpeed*b*direction.z;
+                var z, x, rotation;
+                if (forward) {
+                    z = player1.scene.position.z + directionZ;
+                    x = player1.scene.position.x + directionX;
+                    rotation = Math.atan2(directionX, directionZ)-Math.PI/2
+                }
+                if (backward) {
+                    z = player1.scene.position.z - directionZ;
+                    x = player1.scene.position.x - directionX;
+                    rotation = Math.atan2(directionX, directionZ)+Math.PI/2
+                }
+                if (left) {
+                    z = player1.scene.position.z - directionX;
+                    x = player1.scene.position.x + directionZ;
+                    rotation = Math.atan2(directionX, directionZ)
+                }
+                if (right) {
+                    z = player1.scene.position.z + directionX;
+                    x = player1.scene.position.x - directionZ;
+                    rotation = Math.atan2(directionX, directionZ)+Math.PI
+                }
+                if(!collisionDetected(x, z)){
+                    player1.velocity.x = (x-player1.scene.position.x)/delta
+                    player1.velocity.z = (z-player1.scene.position.z)/delta
+                    movePlayer(player1, x, z, rotation);
+                    sendMessage(
+                        {
+                            player: playerUuid,
+                            x: player1.scene.position.x,
+                            z: player1.scene.position.z,
+                            rotation: rotation
+                        }
+                    )
+                }
                 if (player1.state!='walking') {
                     var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
                     action.timeScale = 1.5
@@ -75,7 +116,8 @@ function animate() {
             }
         }
         player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
-        cameraTarget.y = player1.scene.position.y+1
+        // it might be inefficient to create this vector on every frame
+        cameraTarget.copy(player1.scene.position.clone().add(new Vector3(0,1,0)))
         updateCamera(theta, phi)
         mixer.update( delta );
     }
@@ -85,52 +127,6 @@ function animate() {
 //         }
 //     })
     renderer.render( scene, camera );
-}
-
-function movePlayer1(){
-    var movementSpeed = 0.085;
-    var direction = new Vector3();
-    camera.getWorldDirection(direction)
-    // make direction 2d (x,z) and normalize
-    // then multiply by movement speed
-    var b = 1/(abs(direction.x)+abs(direction.z));
-    var directionX = movementSpeed*b*direction.x;
-    var directionZ = movementSpeed*b*direction.z;
-    var z, x, rotation;
-    if (forward) {
-        z = player1.scene.position.z + directionZ;
-        x = player1.scene.position.x + directionX;
-        rotation = Math.atan2(directionX, directionZ)-Math.PI/2
-    }
-    if (backward) {
-        z = player1.scene.position.z - directionZ;
-        x = player1.scene.position.x - directionX;
-        rotation = Math.atan2(directionX, directionZ)+Math.PI/2
-    }
-    if (left) {
-        z = player1.scene.position.z - directionX;
-        x = player1.scene.position.x + directionZ;
-        rotation = Math.atan2(directionX, directionZ)
-    }
-    if (right) {
-        z = player1.scene.position.z + directionX;
-        x = player1.scene.position.x - directionZ;
-        rotation = Math.atan2(directionX, directionZ)+Math.PI
-    }
-    if(!collisionDetected(x, z)){
-        cameraTarget.z = z;
-        cameraTarget.x = x;
-        movePlayer(player1, x, z, rotation);
-        updateCamera(theta, phi);
-        sendMessage(
-            {
-                player: playerUuid,
-                x: player1.scene.position.x,
-                z: player1.scene.position.z,
-                rotation: rotation
-            }
-        )
-    }
 }
 
 // these might not be completely accurate
