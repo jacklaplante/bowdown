@@ -84,7 +84,7 @@ function animate() {
 }
 
 function movePlayer1(){
-    var movementSpeed = 0.3;
+    var movementSpeed = 0.085;
     var direction = new Vector3();
     camera.getWorldDirection(direction)
     // make direction 2d (x,z) and normalize
