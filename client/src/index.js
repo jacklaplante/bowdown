@@ -54,8 +54,14 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1) {
+        var nextPos = new Vector3();
+        var rotation;
         if (falling()) {
+            mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.2);
+            player1.state = 'falling'
             player1.velocity.y -= delta*10
+            nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
+            movePlayer1(nextPos, rotation)
         } else {
             player1.velocity.set(0,0,0)
             if (space) {
@@ -70,40 +76,30 @@ function animate() {
                 var b = 1/(abs(direction.x)+abs(direction.z));
                 var directionX = movementSpeed*b*direction.x;
                 var directionZ = movementSpeed*b*direction.z;
-                var z, x, rotation;
                 if (forward) {
-                    z = player1.scene.position.z + directionZ;
-                    x = player1.scene.position.x + directionX;
-                    rotation = Math.atan2(directionX, directionZ)-Math.PI/2
+                    nextPos.z = player1.scene.position.z + directionZ;
+                    nextPos.x = player1.scene.position.x + directionX;
+                    rotation = Math.atan2(directionX, directionZ) - Math.PI/2
                 }
                 if (backward) {
-                    z = player1.scene.position.z - directionZ;
-                    x = player1.scene.position.x - directionX;
-                    rotation = Math.atan2(directionX, directionZ)+Math.PI/2
+                    nextPos.z = player1.scene.position.z - directionZ;
+                    nextPos.x = player1.scene.position.x - directionX;
+                    rotation = Math.atan2(directionX, directionZ) + Math.PI/2
                 }
                 if (left) {
-                    z = player1.scene.position.z - directionX;
-                    x = player1.scene.position.x + directionZ;
+                    nextPos.z = player1.scene.position.z - directionX;
+                    nextPos.x = player1.scene.position.x + directionZ;
                     rotation = Math.atan2(directionX, directionZ)
                 }
                 if (right) {
-                    z = player1.scene.position.z + directionX;
-                    x = player1.scene.position.x - directionZ;
-                    rotation = Math.atan2(directionX, directionZ)+Math.PI
+                    nextPos.z = player1.scene.position.z + directionX;
+                    nextPos.x = player1.scene.position.x - directionZ;
+                    rotation = Math.atan2(directionX, directionZ) + Math.PI
                 }
-                if(!collisionDetected(x, z)){
-                    player1.velocity.x = (x-player1.scene.position.x)/delta
-                    player1.velocity.z = (z-player1.scene.position.z)/delta
-                    movePlayer(player1, x, z, rotation);
-                    sendMessage(
-                        {
-                            player: playerUuid,
-                            x: player1.scene.position.x,
-                            z: player1.scene.position.z,
-                            rotation: rotation
-                        }
-                    )
-                }
+                player1.velocity.x = (nextPos.x-player1.scene.position.x)/delta
+                player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
+                nextPos.y = player1.scene.position.y // this is going to need to change for walking up/down hill
+                movePlayer1(nextPos, rotation)
                 if (player1.state!='walking') {
                     var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
                     action.timeScale = 1.5
@@ -114,24 +110,39 @@ function animate() {
                 mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
                 player1.state = 'standing'
             }
+            if (space) {
+                nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
+                movePlayer1(nextPos, rotation)
+            }
         }
-        player1.scene.position.add(player1.velocity.clone().multiplyScalar(delta))
         // it might be inefficient to create this vector on every frame
         cameraTarget.copy(player1.scene.position.clone().add(new Vector3(0,1,0)))
         updateCamera(theta, phi)
         mixer.update( delta );
     }
-//     Object.keys(players).forEach((player) => {
-//         if (players[player].state == 'moving') {
-//             mixer.clipAction(players[player].animations[0]).play();
-//         }
-//     })
     renderer.render( scene, camera );
 }
 
+function movePlayer1(nextPos, rotation) {
+    if(!collisionDetected(nextPos)){
+        movePlayer(player1, nextPos, rotation);
+        sendMessage(
+            {
+                player: playerUuid,
+                x: player1.scene.position.x,
+                y: player1.scene.position.y,
+                z: player1.scene.position.z,
+                rotation: rotation
+            }
+        )
+    } else {
+        player1.velocity.set(0,0,0)
+    }
+}
+
 // these might not be completely accurate
-var displayCollisionLines = false
-function collisionDetected(x, z){
+var displayCollisionLines = true
+function collisionDetected(nextPos){
     if (displayCollisionLines){
         player1.scene.children.forEach((child) => {
            if (child.name === "collision line") {
@@ -144,7 +155,7 @@ function collisionDetected(x, z){
             for(var c=-1; c<=1; c++){
                 var vert = new Vector3(a, b, c);
                 vert = vert.clone().normalize()
-                var ray = new Raycaster(new Vector3(x, 0, z), vert);
+                var ray = new Raycaster(new Vector3(nextPos.x, 0, nextPos.z), vert);
                 if (displayCollisionLines){
                     var geometry = new Geometry();
                     geometry.vertices.push(

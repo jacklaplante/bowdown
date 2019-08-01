@@ -25,10 +25,11 @@ function addPlayer(uuid, x, z) {
     });
 }
 
-function movePlayer(player, x, z, rotation) {
-    player.scene.position.x = x;
-    player.scene.position.z = z;
-    player.scene.rotation.y = rotation;
+function movePlayer(player, nextPos, rotation) {
+    player.scene.position.copy(nextPos)
+    if (rotation!=null) {
+        player.scene.rotation.y = rotation;
+    }
 }
 
 export { players, addPlayer, movePlayer, initPlayers }

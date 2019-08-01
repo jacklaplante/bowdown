@@ -1,3 +1,5 @@
+import { Vector3 } from 'three'
+
 import { players, addPlayer, movePlayer, initPlayers } from './players'
 import { playerUuid } from './player1'
 import { scene } from './scene'
@@ -21,8 +23,8 @@ ws.onmessage = function onMessage(message) {
             // player disconnected, remove
             scene.remove(players[player].scene)
             delete players[player]
-        } else if (players[player].scene && message.x && message.z && message.rotation) {
-            movePlayer(players[player], message.x, message.z, message.rotation)
+        } else if (players[player].scene && message.x && message.y && message.z && message.rotation) {
+            movePlayer(players[player], new Vector3(message.x, message.y, message.z), message.rotation)
             players[player].state = 'moving'
         }
     }
