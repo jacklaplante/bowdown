@@ -29,6 +29,9 @@ loader.load( Adam, ( gltf ) => {
     player1.velocity = new Vector3()
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
+    var action = mixer.clipAction(player1.animations[2]).reset();
+    action.fadeIn(0.2).play();
+    player1.state = 'standing'
 });
 
 document.addEventListener('mousemove', onMouseMove);
@@ -68,7 +71,7 @@ function animate() {
                 player1.velocity.y = 5
             }
             if (forward || backward || left || right) {
-                var movementSpeed = 0.085;
+                var movementSpeed = 0.12;
                 var direction = new Vector3();
                 camera.getWorldDirection(direction)
                 // make direction 2d (x,z) and normalize
@@ -101,13 +104,15 @@ function animate() {
                 nextPos.y = player1.scene.position.y // this is going to need to change for running up/down hill
                 movePlayer1(nextPos, rotation)
                 if (player1.state!='running') {
+                    mixer.clipAction(player1.animations[2]).fadeOut(0.5);
                     var action = mixer.clipAction(player1.animations[1]).reset();
-                    action.timeScale = 1.5
                     action.fadeIn(0.2).play();
                     player1.state = 'running'
                 }
             } else if (player1.state=='running') {
                 mixer.clipAction(player1.animations[1]).fadeOut(0.5);
+                var action = mixer.clipAction(player1.animations[2]).reset();
+                action.fadeIn(0.2).play();
                 player1.state = 'standing'
             }
             if (space) {
