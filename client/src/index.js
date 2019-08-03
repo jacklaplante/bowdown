@@ -9,7 +9,7 @@ import { sendMessage } from './websocket'
 import { movePlayer } from './players'
 import { playerUuid } from './player1'
 
-import Adam from '../models/CesiumMan.glb'
+import Adam from '../models/benji.glb'
 
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
@@ -57,7 +57,7 @@ function animate() {
         var nextPos = new Vector3();
         var rotation;
         if (falling()) {
-            mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.2);
+            mixer.clipAction( player1.animations[1] ).fadeOut(0.2);
             player1.state = 'falling'
             player1.velocity.y -= delta*10
             nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
@@ -79,35 +79,35 @@ function animate() {
                 if (forward) {
                     nextPos.z = player1.scene.position.z + directionZ;
                     nextPos.x = player1.scene.position.x + directionX;
-                    rotation = Math.atan2(directionX, directionZ) - Math.PI/2
+                    rotation = Math.atan2(directionX, directionZ)
                 }
                 if (backward) {
                     nextPos.z = player1.scene.position.z - directionZ;
                     nextPos.x = player1.scene.position.x - directionX;
-                    rotation = Math.atan2(directionX, directionZ) + Math.PI/2
+                    rotation = Math.atan2(directionX, directionZ) + Math.PI
                 }
                 if (left) {
                     nextPos.z = player1.scene.position.z - directionX;
                     nextPos.x = player1.scene.position.x + directionZ;
-                    rotation = Math.atan2(directionX, directionZ)
+                    rotation = Math.atan2(directionX, directionZ) + Math.PI/2
                 }
                 if (right) {
                     nextPos.z = player1.scene.position.z + directionX;
                     nextPos.x = player1.scene.position.x - directionZ;
-                    rotation = Math.atan2(directionX, directionZ) + Math.PI
+                    rotation = Math.atan2(directionX, directionZ) - Math.PI/2
                 }
                 player1.velocity.x = (nextPos.x-player1.scene.position.x)/delta
                 player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
-                nextPos.y = player1.scene.position.y // this is going to need to change for walking up/down hill
+                nextPos.y = player1.scene.position.y // this is going to need to change for running up/down hill
                 movePlayer1(nextPos, rotation)
-                if (player1.state!='walking') {
-                    var action = mixer.clipAction( player1.animations[ 0 ] ).reset();
+                if (player1.state!='running') {
+                    var action = mixer.clipAction(player1.animations[1]).reset();
                     action.timeScale = 1.5
                     action.fadeIn(0.2).play();
-                    player1.state = 'walking'
+                    player1.state = 'running'
                 }
-            } else if (player1.state=='walking') {
-                mixer.clipAction( player1.animations[ 0 ] ).fadeOut(0.5);
+            } else if (player1.state=='running') {
+                mixer.clipAction(player1.animations[1]).fadeOut(0.5);
                 player1.state = 'standing'
             }
             if (space) {
