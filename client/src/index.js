@@ -1,15 +1,11 @@
-import { Clock, Vector3, AnimationMixer, Raycaster, Line3,
-    Geometry, LineBasicMaterial, Line} from 'three'
+import { Clock, Vector3, Raycaster, Line3, Geometry, LineBasicMaterial, Line} from 'three'
 
 import { scene, collidableEnvironment } from './scene'
 import { renderer } from './renderer'
-import { loader } from './loader'
 import { camera, cameraTarget, updateCamera } from './camera'
 import { sendMessage } from './websocket'
 import { movePlayer } from './players'
-import { playerUuid } from './player1'
-
-import Adam from '../models/benji.glb'
+import { player1, playerUuid, mixer } from './player1'
 
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
@@ -20,19 +16,6 @@ var backward = false
 var left = false
 var right = false
 var space = false
-
-var player1;
-var mixer;
-loader.load( Adam, ( gltf ) => {
-    // gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
-    player1 = gltf;
-    player1.velocity = new Vector3()
-    scene.add( gltf.scene );
-    mixer = new AnimationMixer(gltf.scene);
-    var action = mixer.clipAction(player1.animations[2]).reset();
-    action.fadeIn(0.2).play();
-    player1.state = 'standing'
-});
 
 document.addEventListener('mousemove', onMouseMove);
 document.addEventListener('keydown', onKeyDown);
@@ -56,7 +39,7 @@ function falling() {
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
-    if (player1) {
+    if (player1 && mixer) {
         var nextPos = new Vector3();
         var rotation;
         if (falling()) {
@@ -145,7 +128,6 @@ function movePlayer1(nextPos, rotation) {
     }
 }
 
-// these might not be completely accurate
 var displayCollisionLines = true
 function collisionDetected(nextPos){
     if (displayCollisionLines){
