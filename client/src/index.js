@@ -25,24 +25,13 @@ window.addEventListener('resize', resize);
 
 animate();
 
-function falling() {
-    var vert = new Vector3(0, -1, 0);
-    vert = vert.clone().normalize()
-    var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y+0.9, player1.scene.position.z), vert);
-    var collisionResults = ray.intersectObjects(collidableEnvironment, true);
-    if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
-        return false
-    }
-    return true;
-}
-
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && mixer) {
         var nextPos = new Vector3();
         var rotation;
-        if (falling()) {
+        if (player1.falling()) {
             mixer.clipAction( player1.animations[1] ).fadeOut(0.2);
             player1.state = 'falling'
             player1.velocity.y -= delta*10
