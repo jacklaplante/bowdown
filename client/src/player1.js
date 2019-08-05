@@ -27,6 +27,15 @@ loader.load( Adam, ( gltf ) => {
         jumping: mixer.clipAction(player1.animations[0])
     }
 
+    player1.transitionTo = function(action) {
+        if (player1.activeAction) {
+            player1.actions[player1.activeAction].fadeOut(0.5);
+        }
+        var anim = player1.actions[action].reset();
+        anim.fadeIn(0.2).play();
+        player1.activeAction = action;
+    }
+
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
         vert = vert.clone().normalize()
@@ -140,17 +149,11 @@ loader.load( Adam, ( gltf ) => {
                 player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
                 nextPos.y = player1.scene.position.y // this is going to need to change for running up/down hill
                 player1.move(nextPos, rotation)
-                if (player1.state!='running') {
-                    player1.actions.idle.fadeOut(0.5);
-                    var action = player1.actions.running.reset();
-                    action.fadeIn(0.2).play();
-                    player1.state = 'running'
+                if (player1.activeAction!='running') {
+                    player1.transitionTo('running')
                 }
-            } else if (player1.state=='running') {
-                player1.actions.running.fadeOut(0.5);
-                var action = player1.actions.idle.reset();
-                action.fadeIn(0.2).play();
-                player1.state = 'standing'
+            } else if (player1.activeAction=='running') {
+                player1.transitionTo('idle')
             }
             if (input.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
@@ -159,9 +162,7 @@ loader.load( Adam, ( gltf ) => {
         }
     }
 
-    var action = mixer.clipAction(player1.animations[2]).reset();
-    action.fadeIn(0.2).play();
-    player1.state = 'standing'
+    player1.transitionTo('idle')
 });
 
 export { player1, playerUuid, mixer }
