@@ -16,9 +16,7 @@ loader.load( Adam, ( gltf ) => {
     player1.velocity = new Vector3()
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
-    var action = mixer.clipAction(player1.animations[2]).reset();
-    action.fadeIn(0.2).play();
-    player1.state = 'standing'
+
 
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
@@ -30,6 +28,20 @@ loader.load( Adam, ( gltf ) => {
         }
         return true;
     }
+
+    player1.getAnimation = function(animationName){
+        var ret
+        player1.animations.forEach((anim) => {
+            if(anim.name === animationName){
+                ret = anim;
+            }
+        })
+        return ret;
+    }
+
+    var action = mixer.clipAction(player1.getAnimation("Idle")).reset();
+    action.fadeIn(0.2).play();
+    player1.state = 'standing'
 });
 
 export { player1, playerUuid, mixer }
