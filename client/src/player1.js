@@ -19,7 +19,13 @@ loader.load( Adam, ( gltf ) => {
     player1.velocity = new Vector3()
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
-
+    
+    player1.actions = {
+        idle: mixer.clipAction(player1.animations[2]),
+        walking: mixer.clipAction(player1.animations[3]),
+        running: mixer.clipAction(player1.animations[1]),
+        jumping: mixer.clipAction(player1.animations[0])
+    }
 
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
@@ -30,16 +36,6 @@ loader.load( Adam, ( gltf ) => {
             return false
         }
         return true;
-    }
-
-    player1.getAnimation = function(animationName){
-        var ret
-        player1.animations.forEach((anim) => {
-            if(anim.name === animationName){
-                ret = anim;
-            }
-        })
-        return ret;
     }
 
     var displayCollisionLines = true
@@ -102,7 +98,6 @@ loader.load( Adam, ( gltf ) => {
         var nextPos = new Vector3();
         var rotation;
         if (player1.falling()) {
-            mixer.clipAction( player1.animations[1] ).fadeOut(0.2);
             player1.state = 'falling'
             player1.velocity.y -= delta*10
             nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
@@ -146,14 +141,14 @@ loader.load( Adam, ( gltf ) => {
                 nextPos.y = player1.scene.position.y // this is going to need to change for running up/down hill
                 player1.move(nextPos, rotation)
                 if (player1.state!='running') {
-                    mixer.clipAction(player1.animations[2]).fadeOut(0.5);
-                    var action = mixer.clipAction(player1.animations[1]).reset();
+                    player1.actions.idle.fadeOut(0.5);
+                    var action = player1.actions.running.reset();
                     action.fadeIn(0.2).play();
                     player1.state = 'running'
                 }
             } else if (player1.state=='running') {
-                mixer.clipAction(player1.animations[1]).fadeOut(0.5);
-                var action = mixer.clipAction(player1.animations[2]).reset();
+                player1.actions.running.fadeOut(0.5);
+                var action = player1.actions.idle.reset();
                 action.fadeIn(0.2).play();
                 player1.state = 'standing'
             }
