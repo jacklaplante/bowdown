@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line} from 'three'
+import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line, LoopOnce} from 'three'
 
 import {loader} from './loader'
 import {uuid} from './utils'
@@ -27,13 +27,22 @@ loader.load( Adam, ( gltf ) => {
         jumping: mixer.clipAction(player1.animations[0])
     }
 
+    player1.actions.jumping.clampWhenFinished = true
+    player1.actions.jumping.loop= LoopOnce
+
     player1.transitionTo = function(action) {
         if (player1.activeAction) {
-            player1.actions[player1.activeAction].fadeOut(0.5);
+            player1.actions[player1.activeAction].stop();
         }
         var anim = player1.actions[action].reset();
         anim.fadeIn(0.2).play();
         player1.activeAction = action;
+    }
+
+    player1.restoreState = function() {
+        mixer.removeEventListener( 'finished', player1.restoreState );
+        player1.actions.jumping.stop();
+        player1.transitionTo(player1.activeAction)
     }
 
     player1.falling = function(){
@@ -86,6 +95,13 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
+    player1.jump = function() {
+        player1.velocity.y = 5
+        player1.actions[player1.activeAction].stop()
+        player1.actions.jumping.reset().play()
+        mixer.addEventListener( 'finished', player1.restoreState );
+    }
+
     player1.move = function(nextPos, rotation){
         if(!player1.collisionDetected(nextPos)){
             movePlayer(player1, nextPos, rotation);
@@ -114,7 +130,7 @@ loader.load( Adam, ( gltf ) => {
         } else {
             player1.velocity.set(0,0,0)
             if (input.space) {
-                player1.velocity.y = 5
+                player1.jump();
             }
             if (input.forward || input.backward || input.left || input.right) {
                 var movementSpeed = 0.12;
