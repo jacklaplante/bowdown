@@ -1,11 +1,9 @@
-import { Clock, Vector3, Raycaster, Line3, Geometry, LineBasicMaterial, Line} from 'three'
+import { Clock, Vector3 } from 'three'
 
-import { scene, collidableEnvironment } from './scene'
+import { scene } from './scene'
 import { renderer } from './renderer'
 import { camera, cameraTarget, updateCamera } from './camera'
-import { sendMessage } from './websocket'
-import { movePlayer } from './players'
-import { player1, playerUuid, mixer } from './player1'
+import { player1, mixer } from './player1'
 
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
@@ -65,7 +63,7 @@ function onKeyDown(event) {
 function onKeyUp(event) {
     toggleKey(event, false);
 }
-function onClick(event) {
+function onClick() {
     document.body.requestPointerLock();
 }
 
