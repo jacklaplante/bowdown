@@ -67,7 +67,7 @@ loader.load( Adam, ( gltf ) => {
                 for(var c=-1; c<=1; c++){
                     var vert = new Vector3(a, b, c);
                     vert = vert.clone().normalize()
-                    var ray = new Raycaster(new Vector3(nextPos.x, 0, nextPos.z), vert);
+                    var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert);
                     if (displayCollisionLines){
                         var geometry = new Geometry();
                         geometry.vertices.push(
