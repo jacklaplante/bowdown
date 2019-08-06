@@ -63,29 +63,31 @@ loader.load( Adam, ( gltf ) => {
             })
         }
         for(var a=-1; a<=1; a++){
-            for(var b=0; b<=1; b++){
-                for(var c=-1; c<=1; c++){
-                    var vert = new Vector3(a, b, c);
-                    vert = vert.clone().normalize()
-                    var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert);
-                    if (displayCollisionLines){
-                        var geometry = new Geometry();
-                        geometry.vertices.push(
-                            vert,
-                            new Vector3()
-                        );
-                        var material = new LineBasicMaterial({
-                            color: 0xff0000
-                        });
-                        var line = new Line( geometry, material )
-                        line.name = "collision line"
-                        player1.scene.add(line);
+            for(var c=-1; c<=1; c++){
+                var vert = new Vector3(a, 1, c);
+                vert = vert.clone().normalize()
+                var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert);
+                if (displayCollisionLines){
+                    var geometry = new Geometry();
+                    geometry.vertices.push(
+                        vert,
+                        new Vector3()
+                    );
+                    var material = new LineBasicMaterial({
+                        color: 0xff0000
+                    });
+                    var line = new Line( geometry, material )
+                    line.name = "collision line"
+                    player1.scene.add(line);
+                }
+                // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
+                var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+                if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
+                    if (displayCollisionLines && line) {
+                        line.material.color.b=1
+                        line.name = "collision"
                     }
-                    // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
-                    var collisionResults = ray.intersectObjects(collidableEnvironment, true);
-                    if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
-                        return true
-                    }
+                    return true
                 }
             }
         }
@@ -160,7 +162,17 @@ loader.load( Adam, ( gltf ) => {
                 }
                 player1.velocity.x = (nextPos.x-player1.scene.position.x)/delta
                 player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
-                nextPos.y = player1.scene.position.y // this is going to need to change for running up/down hill
+
+                // for moving up/down slopes
+                nextPos.y = player1.scene.position.y
+                var origin = new Vector3(nextPos.x, nextPos.y+1, nextPos.z)
+                var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0))
+                var top = slopeRay.intersectObjects(collidableEnvironment, true);
+                if (top.length>0){
+                    // the 0.01 is kinda hacky tbh
+                    nextPos.y = top[0].point.y+0.01
+                }
+                
                 player1.move(nextPos, rotation)
                 if (player1.activeAction!='running') {
                     player1.transitionTo('running')

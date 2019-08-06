@@ -52,7 +52,17 @@ var geometry = new PlaneGeometry( 5, 20 );
 var material = new MeshBasicMaterial( {color: 0x32a852, side: DoubleSide} );
 var plane = new Mesh( geometry, material );
 plane.position.z = 20
-plane.rotateX(1)
+plane.position.y = -2
+plane.rotateX(1.4)
+scene.add( plane );
+collidableEnvironment.push(plane)
+geometry = new PlaneGeometry( 5, 20 );
+material = new MeshBasicMaterial( {color: 0x32a852, side: DoubleSide} );
+plane = new Mesh( geometry, material );
+plane.position.z = 20
+plane.position.y = -5
+plane.position.x = 10
+plane.rotateX(1.8)
 scene.add( plane );
 collidableEnvironment.push(plane)
 
