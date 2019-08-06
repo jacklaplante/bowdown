@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, PlaneGeometry, MeshBasicMaterial, Mesh, DoubleSide } from 'three'
 
 import { loader } from './loader'
 import Fort from '../models/fort.glb'
@@ -46,5 +46,14 @@ function getDirectionalLight() {
     dirLight.visible = true;
     return dirLight;
 }
+
+// temporary slope for testing walking on incline
+var geometry = new PlaneGeometry( 5, 20 );
+var material = new MeshBasicMaterial( {color: 0x32a852, side: DoubleSide} );
+var plane = new Mesh( geometry, material );
+plane.position.z = 20
+plane.rotateX(1)
+scene.add( plane );
+collidableEnvironment.push(plane)
 
 export { scene, collidableEnvironment }
