@@ -71,7 +71,12 @@ function onMouseMove( event ) {
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
     theta -= movementX * 0.2
-    phi += movementY * 0.2
+    var x = phi + movementY * 0.2
+    // this simply ensures the camera cannot go over the top/bottom
+    if (180 >= x && x >= -180) {
+        phi = x
+    }
+    console.log("theta: "+theta+" phi: "+phi)
     updateCamera(theta, phi);
 }
 function resize() {
