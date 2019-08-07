@@ -8,9 +8,7 @@ var collidableEnvironment = []
 
 loader.load(env, function (gltf) {
     var mesh = gltf.scene;
-    mesh.position.y -=30
-    mesh.position.x -= 15
-    mesh.position.z += 15
+    mesh.position.y -=10
     scene.add(mesh);
     collidableEnvironment.push(mesh)
 });
