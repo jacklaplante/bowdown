@@ -52,7 +52,7 @@ loader.load( Adam, ( gltf ) => {
         return true;
     }
 
-    var displayCollisionLines = true
+    var displayCollisionLines = false
     player1.collisionDetected = function(nextPos){
         if (displayCollisionLines){
             player1.scene.children.forEach((child) => {
