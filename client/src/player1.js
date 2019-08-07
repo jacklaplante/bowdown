@@ -14,7 +14,6 @@ var playerUuid = uuid();
 var player1;
 var mixer;
 loader.load( Adam, ( gltf ) => {
-    // gltf.scene.children[0].children[1].material = new MeshBasicMaterial({color: 0xffffff});
     player1 = gltf;
     player1.velocity = new Vector3()
     scene.add( gltf.scene );

@@ -1,19 +1,18 @@
 import { Scene, HemisphereLight, DirectionalLight, PlaneGeometry, MeshBasicMaterial, Mesh, DoubleSide } from 'three'
 
 import { loader } from './loader'
-import Fort from '../models/fort.glb'
+import env from '../models/env.glb'
 
 var scene = new Scene();
 var collidableEnvironment = []
 
-loader.load(Fort, function (gltf) {
+loader.load(env, function (gltf) {
     var mesh = gltf.scene;
-    mesh.scale.addScalar(2.0)
-    mesh.position.y -=15
+    mesh.position.y -=30
     mesh.position.x -= 15
     mesh.position.z += 15
     scene.add(mesh);
-    collidableEnvironment.push(mesh.children[0])
+    collidableEnvironment.push(mesh)
 });
 
 scene.add(getHemisphereLight());
@@ -46,24 +45,5 @@ function getDirectionalLight() {
     dirLight.visible = true;
     return dirLight;
 }
-
-// temporary slope for testing walking on incline
-var geometry = new PlaneGeometry( 5, 20 );
-var material = new MeshBasicMaterial( {color: 0x32a852, side: DoubleSide} );
-var plane = new Mesh( geometry, material );
-plane.position.z = 20
-plane.position.y = -2
-plane.rotateX(1.4)
-scene.add( plane );
-collidableEnvironment.push(plane)
-geometry = new PlaneGeometry( 5, 20 );
-material = new MeshBasicMaterial( {color: 0x32a852, side: DoubleSide} );
-plane = new Mesh( geometry, material );
-plane.position.z = 20
-plane.position.y = -5
-plane.position.x = 10
-plane.rotateX(1.8)
-scene.add( plane );
-collidableEnvironment.push(plane)
 
 export { scene, collidableEnvironment }
