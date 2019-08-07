@@ -163,6 +163,7 @@ loader.load( Adam, ( gltf ) => {
                 player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
 
                 // for moving up/down slopes
+                // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                 nextPos.y = player1.scene.position.y
                 var origin = new Vector3(nextPos.x, nextPos.y+1, nextPos.z)
                 var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0))
