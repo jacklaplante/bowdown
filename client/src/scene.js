@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, PlaneGeometry, MeshBasicMaterial, Mesh, DoubleSide } from 'three'
+import { Scene, HemisphereLight, DirectionalLight } from 'three'
 
 import { loader } from './loader'
 import env from '../models/env.glb'
