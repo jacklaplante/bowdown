@@ -2,13 +2,11 @@ import { Clock, Vector3 } from 'three'
 
 import { scene } from './scene'
 import { renderer } from './renderer'
-import { camera, cameraTarget, updateCamera } from './camera'
+import { camera, cameraTarget } from './camera'
 import { player1, mixer } from './player1'
 
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
-var theta = 0
-var phi = 0
 var input = {
     forward: false,
     backward: false,
@@ -32,7 +30,7 @@ function animate() {
         player1.animate(delta, input);
         // it might be inefficient to create this vector on every frame
         cameraTarget.copy(player1.scene.position.clone().add(new Vector3(0,1,0)))
-        updateCamera(theta, phi)
+        camera.updateCamera()
         mixer.update( delta );
     }
     renderer.render( scene, camera );
@@ -70,14 +68,7 @@ function onClick() {
 function onMouseMove( event ) {
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-    theta -= movementX * 0.2
-    var x = phi + movementY * 0.2
-    // this simply ensures the camera cannot go over the top/bottom
-    if (180 >= x && x >= -180) {
-        phi = x
-    }
-    console.log("theta: "+theta+" phi: "+phi)
-    updateCamera(theta, phi);
+    camera.moveCamera(movementX, movementY);
 }
 function resize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
