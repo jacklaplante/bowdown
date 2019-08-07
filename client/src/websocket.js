@@ -4,7 +4,7 @@ import { players, addPlayer, movePlayer, initPlayers } from './players'
 import { playerUuid } from './player1'
 import { scene } from './scene'
 
-const ws = new WebSocket('ws://24.218.216.219:18181');
+const ws = new WebSocket('ws://localhost:18181');
 
 ws.onopen = function open() {
     sendMessage({message: "sup fucker"})
