@@ -103,7 +103,6 @@ loader.load( Adam, ( gltf ) => {
     player1.move = function(nextPos, rotation){
         if(!player1.collisionDetected(nextPos)){
             movePlayer(player1, nextPos, rotation);
-            cameraTarget.copy(player1.scene.position.clone().add(new Vector3(0,1,0)))
             camera.updateCamera()
             sendMessage(
                 {

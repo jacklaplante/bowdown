@@ -7,31 +7,42 @@ var distance = 5;
 var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 5;
 var cameraTarget = new Vector3( 0, 1, 0 );
+var cameraAnchor = camera.position.clone()
 var theta = 0
 var phi = 0
 
-camera.updatePosition = function(dist) {
-    if (player1.scene!=null) {
-        var target = player1.scene.position.clone()
-        camera.position.x = target.x + dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-        camera.position.y = target.y + dist * Math.sin(phi * Math.PI / 360);
-        camera.position.z = target.z + dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+camera.nextPosition = function(dist) {
+    if (player1!=null) {
+        var nextPos = new Vector3();
+        nextPos.x = cameraTarget.x + dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+        nextPos.y = cameraTarget.y + dist * Math.sin(phi * Math.PI / 360);
+        nextPos.z = cameraTarget.z + dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+        return nextPos
     }
 }
 
+camera.setPosition = function(nextPos) {
+    camera.position.copy(nextPos)
+}
+
 camera.updateCamera = function() {
-    var target = cameraTarget.clone()
-    camera.updatePosition(distance);
-    camera.lookAt(cameraTarget);
+    if (player1!=null) {
+        var v = player1.scene.position.clone().sub(camera.position.clone())
+        var v2 = new Vector3(-v.z, 0, v.x).normalize()
+        console.log(v)
+        cameraTarget.copy(player1.scene.position.clone().add(v2))
+        
+        var nextPos = camera.nextPosition(distance)
 
-    // this ensures the camera doesn't go behind any meshes
-    var ray = new Raycaster(target, camera.position.clone().sub(target).normalize(), 0, 5);
-    var collisions = ray.intersectObjects(collidableEnvironment, true);
-    if(collisions.length>0){
-        // 0.15 is a bit hacky, may need to change
-        camera.updatePosition(collisions[0].distance-0.15)
+        // this ensures the camera doesn't go behind any meshes
+        var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0, 5);
+        var collisions = ray.intersectObjects(collidableEnvironment, true);
+        if(collisions.length>0){
+            nextPos = collisions[0].point
+        }
+        camera.setPosition(nextPos)
     }
-
+    camera.lookAt(cameraTarget);
     camera.updateMatrix();
 }
 
