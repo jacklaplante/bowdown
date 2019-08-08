@@ -3,7 +3,7 @@ import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, 
 import {loader} from './loader'
 import {uuid} from './utils'
 import {scene, collidableEnvironment} from './scene'
-import {camera} from './camera'
+import {camera, cameraTarget} from './camera'
 import {movePlayer} from './players'
 import {sendMessage} from './websocket'
 
@@ -103,6 +103,8 @@ loader.load( Adam, ( gltf ) => {
     player1.move = function(nextPos, rotation){
         if(!player1.collisionDetected(nextPos)){
             movePlayer(player1, nextPos, rotation);
+            cameraTarget.copy(player1.scene.position.clone().add(new Vector3(0,1,0)))
+            camera.updateCamera()
             sendMessage(
                 {
                     player: playerUuid,

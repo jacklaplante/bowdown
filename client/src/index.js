@@ -28,9 +28,6 @@ function animate() {
     var delta = clock.getDelta();
     if (player1 && mixer) {
         player1.animate(delta, input);
-        // it might be inefficient to create this vector on every frame
-        cameraTarget.copy(player1.scene.position.clone().add(new Vector3(0,1,0)))
-        camera.updateCamera()
         mixer.update( delta );
     }
     renderer.render( scene, camera );
