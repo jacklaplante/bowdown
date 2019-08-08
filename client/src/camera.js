@@ -2,7 +2,7 @@ import {PerspectiveCamera, Vector3, Raycaster} from 'three'
 import {collidableEnvironment} from './scene'
 import {player1} from './player1'
 
-var distance = 5;
+var distance = 3.5;
 
 var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 camera.position.z = 5;
@@ -51,7 +51,8 @@ camera.moveCamera = function(movementX, movementY) {
     theta -= movementX * 0.2
     var x = phi + movementY * 0.2
     // this simply ensures the camera cannot go over the top/bottom
-    if (180 >= x && x >= -180) {
+    // I have it set 10 135 and 80 because otherwise the camera gets all fucky but it's not the best solution
+    if (135 >= x && x >= -80) {
         phi = x
     }
     camera.updateCamera();
