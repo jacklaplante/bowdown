@@ -21,9 +21,8 @@ loader.load( Adam, ( gltf ) => {
     
     player1.actions = {
         idle: mixer.clipAction(player1.animations[2]),
-        walking: mixer.clipAction(player1.animations[3]),
-        running: mixer.clipAction(player1.animations[1]),
-        jumping: mixer.clipAction(player1.animations[0]).setLoop(LoopOnce)
+        running: mixer.clipAction(player1.animations[0]),
+        jumping: mixer.clipAction(player1.animations[1]).setLoop(LoopOnce)
     }
 
     player1.transitionTo = function(action) {
