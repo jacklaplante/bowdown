@@ -20,9 +20,11 @@ loader.load( Adam, ( gltf ) => {
     mixer = new AnimationMixer(gltf.scene);
     
     player1.actions = {
-        idle: mixer.clipAction(player1.animations[2]),
+        idle: mixer.clipAction(player1.animations[4]),
         running: mixer.clipAction(player1.animations[0]),
-        jumping: mixer.clipAction(player1.animations[1]).setLoop(LoopOnce)
+        jumping: mixer.clipAction(player1.animations[2]).setLoop(LoopOnce),
+        runWithBow: mixer.clipAction(player1.animations[1]),
+        equipBow: mixer.clipAction(player1.animations[3]).setLoop(LoopOnce)
     }
 
     player1.transitionTo = function(action) {
@@ -92,11 +94,19 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
+    function playAction(action) {
+        player1.actions[player1.activeAction].stop()
+        player1.actions[action].reset().play()
+        mixer.addEventListener( 'finished', player1.restoreState );
+    }
+
     player1.jump = function() {
         player1.velocity.y = 5
-        player1.actions[player1.activeAction].stop()
-        player1.actions.jumping.reset().play()
-        mixer.addEventListener( 'finished', player1.restoreState );
+        playAction("jumping")
+    }
+
+    player1.onClick = function() {
+        playAction("equipBow")
     }
 
     player1.move = function(nextPos, rotation){

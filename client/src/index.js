@@ -15,10 +15,13 @@ var input = {
     space: false
 }
 
+var state = "ready"
+
 document.addEventListener('mousemove', onMouseMove);
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
 document.addEventListener('click', onClick);
+document.addEventListener('pointerlockchange', onPointerLockChange)
 window.addEventListener('resize', resize);
 
 animate();
@@ -59,7 +62,18 @@ function onKeyUp(event) {
     toggleKey(event, false);
 }
 function onClick() {
-    document.body.requestPointerLock();
+    if (state === "playing") {
+        player1.onClick()
+    } else {
+        document.body.requestPointerLock();
+        state = "playing"
+    }
+}
+
+function onPointerLockChange() {
+    if (!document.pointerLockElement) {
+        state = "ready"
+    }
 }
 
 function onMouseMove( event ) {
