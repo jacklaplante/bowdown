@@ -16,6 +16,8 @@ var mixer;
 loader.load( Adam, ( gltf ) => {
     player1 = gltf;
     player1.velocity = new Vector3()
+    player1.bowEquipped = false;
+
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     
@@ -106,7 +108,12 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.onClick = function() {
-        playAction("equipBow")
+        if (!player1.bowEquipped) {
+            player1.bowEquipped = true
+            playAction("equipBow")
+        } else {
+            console.log("fire bow")
+        }
     }
 
     player1.move = function(nextPos, rotation){
