@@ -4,6 +4,7 @@ import { scene } from './scene'
 import { renderer } from './renderer'
 import { camera, cameraTarget } from './camera'
 import { player1, mixer } from './player1'
+import { animateArrows } from './arrow'
 
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
@@ -29,6 +30,7 @@ animate();
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
+    animateArrows();
     if (player1 && mixer) {
         player1.animate(delta, input);
         mixer.update( delta );

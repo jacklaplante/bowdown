@@ -5,6 +5,7 @@ import {uuid} from './utils'
 import {scene, collidableEnvironment} from './scene'
 import {camera, cameraTarget} from './camera'
 import {movePlayer} from './players'
+import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
 
 import Adam from '../models/benji.glb'
@@ -112,7 +113,7 @@ loader.load( Adam, ( gltf ) => {
             player1.bowEquipped = true
             playAction("equipBow")
         } else {
-            console.log("fire bow")
+            shootArrow();
         }
     }
 
