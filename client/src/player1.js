@@ -13,6 +13,18 @@ var playerUuid = uuid();
 
 var player1;
 var mixer;
+
+function getAnimation(animations, name){
+    var result;
+    animations.forEach((animation) => {
+        if (animation.name===name) {
+            result = animation
+            return
+        }
+    })
+    return result
+}
+
 loader.load( Adam, ( gltf ) => {
     player1 = gltf;
     player1.velocity = new Vector3()
@@ -22,11 +34,11 @@ loader.load( Adam, ( gltf ) => {
     mixer = new AnimationMixer(gltf.scene);
     
     player1.actions = {
-        idle: mixer.clipAction(player1.animations[4]),
-        running: mixer.clipAction(player1.animations[0]),
-        jumping: mixer.clipAction(player1.animations[2]).setLoop(LoopOnce),
-        runWithBow: mixer.clipAction(player1.animations[1]),
-        equipBow: mixer.clipAction(player1.animations[3]).setLoop(LoopOnce)
+        idle: mixer.clipAction(getAnimation(player1.animations, "Idle")),
+        running: mixer.clipAction(getAnimation(player1.animations, "Running")),
+        jumping: mixer.clipAction(getAnimation(player1.animations, "Jumping")).setLoop(LoopOnce),
+        runWithBow: mixer.clipAction(getAnimation(player1.animations, "Run with bow")),
+        equipBow: mixer.clipAction(getAnimation(player1.animations, "Equip Bow")).setLoop(LoopOnce)
     }
 
     player1.transitionTo = function(action) {
