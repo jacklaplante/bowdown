@@ -29,22 +29,6 @@ loader.load( Adam, ( gltf ) => {
     player1 = gltf;
     player1.velocity = new Vector3()
 
-    player1.equipBow = function() {
-        player1.bowEquipped = true
-        playAction("equipBow")
-        // this is a hack because I'm too lazy to figure out how to animate this in blender
-        player1.scene.children[0].children[1].visible = false
-        player1.scene.children[0].children[2].visible = true
-    }
-
-    player1.unequipBow = function() {
-        player1.scene.children[0].children[2].visible = false
-        player1.scene.children[0].children[1].visible = true
-        player1.bowEquipped = false;
-    }
-
-    player1.unequipBow()
-
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     
@@ -243,6 +227,22 @@ loader.load( Adam, ( gltf ) => {
         }
     }
 
+    player1.equipBow = function() {
+        player1.bowEquipped = true
+        playAction("equipBow")
+        // this is a hack because I'm too lazy to figure out how to animate this in blender
+        player1.scene.children[0].children[1].visible = false
+        player1.scene.children[0].children[2].visible = true
+    }
+
+    player1.unequipBow = function() {
+        player1.scene.children[0].children[2].visible = false
+        player1.scene.children[0].children[1].visible = true
+        player1.bowEquipped = false;
+    }
+
+    player1.unequipBow()
+    
     player1.transitionTo('idle')
 });
 
