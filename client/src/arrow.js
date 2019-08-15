@@ -11,8 +11,9 @@ function createArrow(){
     var arrow = new Mesh( geometry, material );
     arrow.position.copy(player1.scene.position).add(new Vector3(0,1,0))
     arrow.rotation.copy(player1.scene.rotation)
-    // need to figure out how to properly calculate velocity hear and then apply velocity on the position in animateArrows
-    arrow.velocity = new Vector3()
+    var direction = new Vector3()
+    player1.scene.getWorldDirection(direction)
+    arrow.velocity = direction.normalize()
     scene.add( arrow );
     arrows.push(arrow)
 }
@@ -23,7 +24,7 @@ function shootArrow(){
 
 function animateArrows(delta) {
     arrows.forEach((arrow) => {
-        console.log(arrow)
+        arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
     })
 }
 

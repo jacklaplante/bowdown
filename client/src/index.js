@@ -30,7 +30,7 @@ animate();
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
-    animateArrows();
+    animateArrows(delta);
     if (player1 && mixer) {
         player1.animate(delta, input);
         mixer.update( delta );
