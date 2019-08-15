@@ -2,7 +2,7 @@ import { Clock, Vector3 } from 'three'
 
 import { scene } from './scene'
 import { renderer } from './renderer'
-import { camera, cameraTarget } from './camera'
+import { camera } from './camera'
 import { player1, mixer } from './player1'
 import { animateArrows } from './arrow'
 

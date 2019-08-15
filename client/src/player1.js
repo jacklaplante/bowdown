@@ -14,20 +14,32 @@ var playerUuid = uuid();
 
 var player1;
 var mixer;
+
+function getAnimation(animations, name){
+    var result;
+    animations.forEach((animation) => {
+        if (animation.name===name) {
+            result = animation
+            return
+        }
+    })
+    return result
+}
+
 loader.load( Adam, ( gltf ) => {
     player1 = gltf;
     player1.velocity = new Vector3()
-    player1.bowEquipped = false;
 
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     
     player1.actions = {
-        idle: mixer.clipAction(player1.animations[4]),
-        running: mixer.clipAction(player1.animations[0]),
-        jumping: mixer.clipAction(player1.animations[2]).setLoop(LoopOnce),
-        runWithBow: mixer.clipAction(player1.animations[1]),
-        equipBow: mixer.clipAction(player1.animations[3]).setLoop(LoopOnce)
+        idle: mixer.clipAction(getAnimation(player1.animations, "Idle")),
+        running: mixer.clipAction(getAnimation(player1.animations, "Running2")),
+        jumping: mixer.clipAction(getAnimation(player1.animations, "Jumping")).setLoop(LoopOnce),
+        runWithBow: mixer.clipAction(getAnimation(player1.animations, "Run with bow")),
+        equipBow: mixer.clipAction(getAnimation(player1.animations, "Equip Bow")).setLoop(LoopOnce),
+        tPose: mixer.clipAction(getAnimation(player1.animations, "TPose"))
     }
 
     player1.transitionTo = function(action) {
@@ -67,6 +79,10 @@ loader.load( Adam, ( gltf ) => {
         }
         for(var a=-1; a<=1; a++){
             for(var c=-1; c<=1; c++){
+                // this dictates how long the collision rays are (how big the collision detection area is)
+                var collisionModifier = 0.5
+                a*=collisionModifier
+                c*=collisionModifier
                 var vert = new Vector3(a, 1, c);
                 vert = vert.clone().normalize()
                 var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert);
@@ -110,8 +126,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.onClick = function() {
         if (!player1.bowEquipped) {
-            player1.bowEquipped = true
-            playAction("equipBow")
+            player1.equipBow()
         } else {
             shootArrow();
         }
@@ -133,6 +148,10 @@ loader.load( Adam, ( gltf ) => {
         } else {
             player1.velocity.set(0,0,0)
         }
+    }
+
+    player1.isRunning = function(){
+        return player1.activeAction.toLowerCase().includes("run")
     }
 
     player1.animate = function(delta, input){
@@ -192,10 +211,14 @@ loader.load( Adam, ( gltf ) => {
                 }
                 
                 player1.move(nextPos, rotation)
-                if (player1.activeAction!='running') {
-                    player1.transitionTo('running')
+                if (!player1.isRunning()) {
+                    if (player1.bowEquipped) {
+                        player1.transitionTo('runWithBow')
+                    } else {
+                        player1.transitionTo('running')
+                    }
                 }
-            } else if (player1.activeAction=='running') {
+            } else if (player1.isRunning()) {
                 player1.transitionTo('idle')
             }
             if (input.space) {
@@ -205,6 +228,22 @@ loader.load( Adam, ( gltf ) => {
         }
     }
 
+    player1.equipBow = function() {
+        player1.bowEquipped = true
+        playAction("equipBow")
+        // this is a hack because I'm too lazy to figure out how to animate this in blender
+        player1.scene.children[0].children[1].visible = false
+        player1.scene.children[0].children[2].visible = true
+    }
+
+    player1.unequipBow = function() {
+        player1.scene.children[0].children[2].visible = false
+        player1.scene.children[0].children[1].visible = true
+        player1.bowEquipped = false;
+    }
+
+    player1.unequipBow()
+    
     player1.transitionTo('idle')
 });
 
