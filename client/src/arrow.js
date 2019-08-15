@@ -13,7 +13,7 @@ function createArrow(){
     arrow.rotation.copy(player1.scene.rotation)
     var direction = new Vector3()
     player1.scene.getWorldDirection(direction)
-    arrow.velocity = direction.normalize()
+    arrow.velocity = direction.normalize().multiplyScalar(10)
     scene.add( arrow );
     arrows.push(arrow)
 }
