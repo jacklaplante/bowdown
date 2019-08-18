@@ -17,11 +17,11 @@ function createArrow(){
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
-    raycaster.setFromCamera({x: 0, y: 0}, camera)
+    raycaster.setFromCamera({x: 0, y: 0}, camera) // the {x: 0, y: 0} means the center of the screen
     var collisions = raycaster.intersectObjects(collidableEnvironment, true)
     var direction;
     if (collisions.length > 0) {
-        direction = collisions[0].point.sub(player1.scene.position)
+        direction = collisions[0].point.sub(origin)
     } else {
         direction = new Vector3()
         camera.getWorldDirection(direction)
