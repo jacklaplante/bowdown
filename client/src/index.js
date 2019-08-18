@@ -88,3 +88,8 @@ function resize() {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 }
+
+// create crosshair
+var crosshairHtmlElement = document.createElement("div")
+crosshairHtmlElement.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-image: url(crosshair.svg);")
+document.getElementsByTagName("BODY")[0].appendChild(crosshairHtmlElement)
