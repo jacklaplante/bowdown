@@ -28,7 +28,7 @@ function createArrow(){
     }
 
     arrow.velocity = direction.normalize().multiplyScalar(30)
-    scene.add( arrow );
+    scene.add(arrow);
     arrows.push(arrow)
 }
 
