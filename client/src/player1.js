@@ -52,12 +52,6 @@ loader.load( Adam, ( gltf ) => {
         player1.activeAction = action;
     }
 
-    player1.restoreState = function() {
-        mixer.removeEventListener( 'finished', player1.restoreState );
-        player1.actions.jumping.stop();
-        player1.transitionTo(player1.activeAction)
-    }
-
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
         vert = vert.clone().normalize()
@@ -114,10 +108,18 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
-    function playAction(action) {
+    // This restore=true is ES6 and may not work in some browsers
+    function playAction(action, restore=true) {
         player1.actions[player1.activeAction].stop()
         player1.actions[action].reset().play()
-        mixer.addEventListener( 'finished', player1.restoreState );
+        if (restore) {
+            mixer.addEventListener( 'finished', player1.restoreState );
+        }
+    }
+
+    player1.restoreState = function() {
+        mixer.removeEventListener( 'finished', player1.restoreState );
+        player1.transitionTo(player1.activeAction)
     }
 
     player1.jump = function() {
@@ -125,10 +127,17 @@ loader.load( Adam, ( gltf ) => {
         playAction("jumping")
     }
 
-    player1.onClick = function() {
+    player1.onMouseDown = function() {
         if (!player1.bowEquipped) {
             player1.equipBow()
         } else {
+            playAction("drawBow", false)
+        }
+    }
+
+    player1.onMouseUp = function() {
+        if (player1.bowEquipped) {
+            playAction("fireBow")
             shootArrow();
         }
     }
