@@ -3,7 +3,7 @@ import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, 
 import {loader} from './loader'
 import {uuid} from './utils'
 import {scene, collidableEnvironment} from './scene'
-import {camera, cameraTarget} from './camera'
+import {camera} from './camera'
 import {movePlayer} from './players'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
@@ -39,7 +39,8 @@ loader.load( Adam, ( gltf ) => {
         jumping: mixer.clipAction(getAnimation(player1.animations, "Jumping")).setLoop(LoopOnce),
         runWithBow: mixer.clipAction(getAnimation(player1.animations, "Run with bow")),
         equipBow: mixer.clipAction(getAnimation(player1.animations, "Equip Bow")).setLoop(LoopOnce),
-        tPose: mixer.clipAction(getAnimation(player1.animations, "TPose"))
+        drawBow: mixer.clipAction(getAnimation(player1.animations, "Draw bow")).setLoop(LoopOnce),
+        fireBow: mixer.clipAction(getAnimation(player1.animations, "Fire bow")).setLoop(LoopOnce)
     }
 
     player1.transitionTo = function(action) {
