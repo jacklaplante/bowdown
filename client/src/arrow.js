@@ -13,11 +13,11 @@ function createArrow(){
 
     var origin = player1.scene.position.clone().add(new Vector3(0,1,0)) // you will want to change this to be more accurate to the bow
     arrow.position.copy(origin)
-    arrow.rotation.copy(camera.rotation)
+    arrow.rotation.copy(camera.rotation) // this needs to be changed
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
-    raycaster.setFromCamera({x: 0, y: 0}, camera) // the {x: 0, y: 0} means the center of the screen
+    raycaster.setFromCamera({x: 0, y: 0}, camera) // the {x: 0, y: 0} means the center of the screen; there may eventually be issues with this not actually lining up with the html reticle
     var collisions = raycaster.intersectObjects(collidableEnvironment, true)
     var direction;
     if (collisions.length > 0) {
