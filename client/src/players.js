@@ -1,6 +1,9 @@
-import { loader } from './loader'
-import { scene } from './scene'
-import Adam from '../models/CesiumMan.glb'
+import {AnimationMixer} from 'three'
+
+import {loader} from './loader'
+import {scene} from './scene'
+import {init} from './archer'
+import playerX from '../models/benji.glb'
 
 var players = { }
 
@@ -15,12 +18,13 @@ function addPlayer(uuid, x, z) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     players[uuid] = 'loading'
 
-    loader.load( Adam, function ( gltf ) {
-        var player = gltf;
+    loader.load(playerX, function(player) {
+        var mixer = new AnimationMixer(player.scene);
+        init(mixer, player);
         if (x&&z) {
             movePlayer(player, x, z, 0)
         }
-        scene.add( gltf.scene );
+        scene.add( player.scene );
         players[uuid] = player;
     });
 }
