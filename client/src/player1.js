@@ -22,6 +22,12 @@ loader.load( Adam, ( gltf ) => {
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     initActions(mixer, player1);
+    mixer.addEventListener('finished', (event) => {
+        if (event.action.getClip().name !== "Draw bow") {
+            // this is hacky and should be changed
+            player1.playAction("idle")
+        }
+    })
 
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
@@ -88,6 +94,7 @@ loader.load( Adam, ( gltf ) => {
         }
         player1.activeAction = action
         player1.actions[action].reset().play();
+        player1.state = action
         sendMessage(
             {
                 player: playerUuid,
@@ -117,7 +124,7 @@ loader.load( Adam, ( gltf ) => {
         }
     }
 
-    player1.move = function(nextPos, rotation){
+    player1.move = function(nextPos, rotation=player1.scene.rotation.y){
         if(!player1.collisionDetected(nextPos)){
             player1.scene.position.copy(nextPos)
             player1.scene.rotation.y = rotation
@@ -146,12 +153,12 @@ loader.load( Adam, ( gltf ) => {
 
     player1.animate = function(delta, input){
         var nextPos = new Vector3();
-        var rotation = 0;
+        var rotation;
         if (player1.falling()) {
             player1.state = 'falling'
             player1.velocity.y -= delta*10
             nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
-            player1.move(nextPos, rotation)
+            player1.move(nextPos)
         } else {
             player1.velocity.set(0,0,0)
             if (input.space) {
@@ -213,7 +220,7 @@ loader.load( Adam, ( gltf ) => {
             }
             if (input.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
-                player1.move(nextPos, rotation)
+                player1.move(nextPos)
             }
         }
     }
