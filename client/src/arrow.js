@@ -41,8 +41,19 @@ function shootArrow(){
 
 function animateArrows(delta) {
     arrows.forEach((arrow) => {
-        arrow.velocity.y -= delta*9
-        arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
+        if(!arrow.stopped){
+            arrow.velocity.y -= delta*9
+            arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
+            // detect arrow collisions
+            var direction = new Vector3(0,0,-1) // this kinda works. I'm pretty sure it's a ray originating from the center of the arrow shaft and going towards the tip of the arrow. but as noted below this will miss collisions if it happens between frames (which is likely). A better solution would be to test for collision originating from the arrow tip and going backwards along the arrows path. Once a collision is detected move the arrow back to the point of collision
+            direction.applyEuler(arrow.rotation).normalize()
+            var ray = new Raycaster(arrow.position, direction)
+            // detect collisions with the environment (not other players)
+            var envCollisions = ray.intersectObjects(collidableEnvironment, true)
+            if (envCollisions.length > 0 && envCollisions[0].distance <= arrowLength) { // note: this will only work for detecting collisions with the front half of the arrow. Also this collision detection will fail if the collision happens in between frames
+                arrow.stopped = true
+            }
+        }
     })
 }
 
