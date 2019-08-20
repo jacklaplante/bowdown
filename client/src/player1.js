@@ -79,17 +79,17 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
-    // Play action once.
-    // make sure action has LoopOnce in init
-    function playAction(action, restore=true) {
+    player1.playAction = function(action, restore=true) {
         if (player1.activeAction) {
             player1.actions[player1.activeAction].stop()
+            player1.previousAction = player1.activeAction
         }
+        player1.activeAction = action
         player1.actions[action].reset().play();
         sendMessage(
             {
                 player: playerUuid,
-//                 rotation: rotation,
+                // rotation: rotation, you might want this later if multiplayer animation rotations are weird
                 action: action
             }
         )
@@ -98,15 +98,9 @@ loader.load( Adam, ( gltf ) => {
         }
     }
 
-    // transition to looping action (i.e. running)
-    player1.transitionTo = function(action) {
-        playAction(action, false)
-        player1.activeAction = action;
-    }
-
     player1.restoreState = function() {
         mixer.removeEventListener( 'finished', player1.restoreState );
-        player1.transitionTo(player1.activeAction)
+        player1.playAction(player1.previousAction)
     }
 
     player1.jump = function() {
@@ -215,13 +209,13 @@ loader.load( Adam, ( gltf ) => {
                 player1.move(nextPos, rotation)
                 if (!player1.isRunning()) {
                     if (player1.bowEquipped) {
-                        player1.transitionTo('runWithBow')
+                        player1.playAction('runWithBow')
                     } else {
-                        player1.transitionTo('running')
+                        player1.playAction('running')
                     }
                 }
             } else if (player1.isRunning()) {
-                player1.transitionTo('idle')
+                player1.playAction('idle')
             }
             if (input.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
@@ -246,7 +240,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.unequipBow()
     
-    player1.transitionTo('idle')
+    player1.playAction('idle')
 });
 
 export { player1, playerUuid, mixer }
