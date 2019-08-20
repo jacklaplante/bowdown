@@ -105,20 +105,20 @@ loader.load( Adam, ( gltf ) => {
 
     player1.jump = function() {
         player1.velocity.y = 5
-        playAction("jumping")
+        player1.playAction("jumping")
     }
 
     player1.onMouseDown = function() {
         if (!player1.bowEquipped) {
             player1.equipBow()
         } else {
-            playAction("drawBow", false)
+            player1.playAction("drawBow", false)
         }
     }
 
     player1.onMouseUp = function() {
         if (player1.bowEquipped) {
-            playAction("fireBow")
+            player1.playAction("fireBow")
             shootArrow();
         }
     }
@@ -226,7 +226,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.equipBow = function() {
         player1.bowEquipped = true
-        playAction("equipBow")
+        player1.playAction("equipBow")
         // this is a hack because I'm too lazy to figure out how to animate this in blender
         player1.scene.children[0].children[1].visible = false
         player1.scene.children[0].children[2].visible = true
