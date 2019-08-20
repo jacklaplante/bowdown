@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line, LoopOnce} from 'three'
+import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line } from 'three'
 
 import {loader} from './loader'
 import {uuid} from './utils'
@@ -22,15 +22,6 @@ loader.load( Adam, ( gltf ) => {
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
-
-    player1.transitionTo = function(action) {
-        if (player1.activeAction) {
-            player1.actions[player1.activeAction].stop();
-        }
-        var anim = player1.actions[action].reset();
-        anim.fadeIn(0.2).play();
-        player1.activeAction = action;
-    }
 
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
@@ -88,13 +79,29 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
-    // This restore=true is ES6 and may not work in some browsers
+    // Play action once.
+    // make sure action has LoopOnce in init
     function playAction(action, restore=true) {
-        player1.actions[player1.activeAction].stop()
-        player1.actions[action].reset().play()
+        if (player1.activeAction) {
+            player1.actions[player1.activeAction].stop()
+        }
+        player1.actions[action].reset().play();
+        sendMessage(
+            {
+                player: playerUuid,
+//                 rotation: rotation,
+                action: action
+            }
+        )
         if (restore) {
             mixer.addEventListener( 'finished', player1.restoreState );
         }
+    }
+
+    // transition to looping action (i.e. running)
+    player1.transitionTo = function(action) {
+        playAction(action, false)
+        player1.activeAction = action;
     }
 
     player1.restoreState = function() {
@@ -143,7 +150,10 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.isRunning = function(){
-        return player1.activeAction.toLowerCase().includes("run")
+        if (player1.activeAction) {
+            return player1.activeAction.toLowerCase().includes("run")
+        }
+        return false
     }
 
     player1.animate = function(delta, input){

@@ -24,14 +24,14 @@ function addPlayer(uuid, x, z) {
     players[uuid] = 'loading'
 
     loader.load(playerX, function(player) {
+        players[uuid] = player;
         var mixer = new AnimationMixer(player.scene);
         init(mixer, player);
         if (x&&z) {
-            movePlayer(player, x, z, 0)
+            movePlayer(uuid, x, z, 0)
         }
         scene.add( player.scene );
         playAction(player, "idle")
-        players[uuid] = player;
     });
 }
 
@@ -44,7 +44,8 @@ function animatePlayers(delta) {
         })
 }
 
-function movePlayer(player, nextPos, rotation, action) {
+function movePlayer(playerUuid, nextPos, rotation, action) {
+    var player = players[playerUuid]
     player.scene.position.copy(nextPos)
     player.scene.rotation.y = rotation
     if (player.activeAction && player.activeAction != action) {
@@ -53,4 +54,11 @@ function movePlayer(player, nextPos, rotation, action) {
     }
 }
 
-export { players, addPlayer, movePlayer, initPlayers, animatePlayers }
+function playerAction(playerUuid, action, rotation=0) {
+    var player = players[playerUuid]
+    if (player && player.actions && player.actions[action]) {
+        playAction(player, action)
+    }
+}
+
+export { players, addPlayer, movePlayer, initPlayers, animatePlayers, playerAction }
