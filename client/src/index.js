@@ -1,10 +1,11 @@
-import { Clock, Vector3 } from 'three'
+import { Clock } from 'three'
 
 import { scene } from './scene'
 import { renderer } from './renderer'
 import { camera } from './camera'
 import { player1, mixer } from './player1'
 import { animateArrows } from './arrow'
+import { players, animatePlayers } from './players';
 
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
@@ -36,6 +37,9 @@ function animate() {
     if (player1 && mixer) {
         player1.animate(delta, input);
         mixer.update( delta );
+    }
+    if (Object.keys(players).length) {
+        animatePlayers(delta)
     }
     renderer.render( scene, camera );
 }

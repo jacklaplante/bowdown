@@ -12,6 +12,7 @@ function getAnimation(animations, name){
 }
 
 export function init(mixer, archer) {
+    archer.mixer = mixer
     archer.actions = {
         idle: mixer.clipAction(getAnimation(archer.animations, "Idle")),
         running: mixer.clipAction(getAnimation(archer.animations, "Running2")),

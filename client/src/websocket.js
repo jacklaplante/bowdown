@@ -23,14 +23,14 @@ ws.onmessage = function onMessage(message) {
             // player disconnected, remove
             scene.remove(players[player].scene)
             delete players[player]
-        } else if (players[player].scene && message.x && message.y && message.z && message.rotation) {
-            movePlayer(players[player], new Vector3(message.x, message.y, message.z), message.rotation)
+        } else if (players[player].scene && message.x && message.y && message.z && message.rotation && message.action) {
+            movePlayer(players[player], new Vector3(message.x, message.y, message.z), message.rotation, message.action)
             players[player].state = 'moving'
         }
     }
 }
 
-function sendMessage (message) {
+function sendMessage(message) {
     ws.send(JSON.stringify(message))
 }
 

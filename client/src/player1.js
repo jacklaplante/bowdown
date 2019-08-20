@@ -4,7 +4,6 @@ import {loader} from './loader'
 import {uuid} from './utils'
 import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
-import {movePlayer} from './players'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
@@ -125,7 +124,8 @@ loader.load( Adam, ( gltf ) => {
 
     player1.move = function(nextPos, rotation){
         if(!player1.collisionDetected(nextPos)){
-            movePlayer(player1, nextPos, rotation);
+            player1.scene.position.copy(nextPos)
+            player1.scene.rotation.y = rotation
             camera.updateCamera()
             sendMessage(
                 {
@@ -133,7 +133,8 @@ loader.load( Adam, ( gltf ) => {
                     x: player1.scene.position.x,
                     y: player1.scene.position.y,
                     z: player1.scene.position.z,
-                    rotation: rotation
+                    rotation: rotation,
+                    action: player1.activeAction
                 }
             )
         } else {
@@ -147,7 +148,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.animate = function(delta, input){
         var nextPos = new Vector3();
-        var rotation;
+        var rotation = 0;
         if (player1.falling()) {
             player1.state = 'falling'
             player1.velocity.y -= delta*10
