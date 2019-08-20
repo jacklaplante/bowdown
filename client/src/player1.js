@@ -6,7 +6,7 @@ import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
-import {init} from './archer'
+import {initActions} from './archer'
 
 import Adam from '../models/benji.glb'
 
@@ -21,7 +21,7 @@ loader.load( Adam, ( gltf ) => {
 
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
-    init(mixer, player1);
+    initActions(mixer, player1);
 
     player1.falling = function(){
         var vert = new Vector3(0, -1, 0);
@@ -79,7 +79,7 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
-    player1.playAction = function(action, restore=true) {
+    player1.playAction = function(action) {
         if (player1.activeAction) {
             player1.actions[player1.activeAction].stop()
             if(player1.previousAction!=action&&player1.activeAction!=action){
@@ -95,14 +95,6 @@ loader.load( Adam, ( gltf ) => {
                 action: action
             }
         )
-        if (restore) {
-            mixer.addEventListener( 'finished', player1.restoreState );
-        }
-    }
-
-    player1.restoreState = function() {
-        mixer.removeEventListener( 'finished', player1.restoreState );
-        player1.playAction(player1.previousAction, false)
     }
 
     player1.jump = function() {
@@ -114,7 +106,7 @@ loader.load( Adam, ( gltf ) => {
         if (!player1.bowEquipped) {
             player1.equipBow()
         } else {
-            player1.playAction("drawBow", false)
+            player1.playAction("drawBow")
         }
     }
 

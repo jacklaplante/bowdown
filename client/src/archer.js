@@ -11,7 +11,7 @@ function getAnimation(animations, name){
     return result
 }
 
-export function init(mixer, archer) {
+export function initActions(mixer, archer) {
     archer.mixer = mixer
     archer.actions = {
         idle: mixer.clipAction(getAnimation(archer.animations, "Idle")),

@@ -15,9 +15,10 @@ wss.on('connection', function connection(ws, req) {
             if (!ws.player) {
                 ws.player = player
             }
-            if (message.x && message.z) {
+            if (message.x && message.y && message.z) {
                 players[player] = {
                     x: message.x,
+                    y: message.y,
                     z: message.z
                 }
             }

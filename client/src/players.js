@@ -1,8 +1,8 @@
-import {AnimationMixer} from 'three'
+import {AnimationMixer, Vector3} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
-import {init} from './archer'
+import {initActions} from './archer'
 import playerX from '../models/benji.glb'
 
 var players = { }
@@ -15,25 +15,28 @@ function initPlayers(newPlayers) {
 }
 
 function playAction(player, action) {
-    if (player.activeAction && player.activeAction != action) {
-        player.actions[player.activeAction].stop()
-    } else if (player.activeAction && player.activeAction == action) {
-        return
+    if (player.actions && player.actions[action]) {
+        if (player.activeAction) {
+            if (player.activeAction != action) {
+                player.actions[player.activeAction].stop()
+            } else  {
+                return
+            }
+        }
+        player.actions[action].reset().play()
+        player.activeAction = action
     }
-    player.actions[action].reset().play()
-    player.activeAction = action
 }
 
-function addPlayer(uuid, x, z) {
+function addPlayer(uuid, x, y, z) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     players[uuid] = 'loading'
 
     loader.load(playerX, function(player) {
         players[uuid] = player;
-        var mixer = new AnimationMixer(player.scene);
-        init(mixer, player);
-        if (x&&z) {
-            movePlayer(uuid, x, z, 0)
+        initActions(new AnimationMixer(player.scene), player);
+        if (x&&y&&z) {
+            movePlayer(uuid, new Vector3(x, y, z), 0)
         }
         scene.add( player.scene );
         playAction(player, "idle")
@@ -58,7 +61,7 @@ function movePlayer(playerUuid, nextPos, rotation, action) {
 
 function playerAction(playerUuid, action, rotation=0) {
     var player = players[playerUuid]
-    if (player && player.actions && player.actions[action]) {
+    if (player) {
         playAction(player, action)
     }
 }
