@@ -1,13 +1,16 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster} from 'three'
 
 import {scene, collidableEnvironment} from './scene'
+import {players} from './players'
 import {player1} from './player1'
 import {camera} from './camera'
 
 var arrows = []
+var arrowWidth = 0.06
+var arrowLength = 0.75
 
 function createArrow(){
-    var geometry = new BoxGeometry(0.06, 0.06, 0.75);
+    var geometry = new BoxGeometry(arrowWidth, arrowWidth, arrowLength);
     var material = new MeshBasicMaterial( {color: 0x00ff00} );
     var arrow = new Mesh( geometry, material );
 

@@ -1,4 +1,4 @@
-import {AnimationMixer, Vector3} from 'three'
+import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
@@ -33,13 +33,18 @@ function addPlayer(uuid, x, y, z) {
     players[uuid] = 'loading'
 
     loader.load(playerX, function(player) {
-        players[uuid] = player;
+        players[uuid] = player; // this needs to happen first, pretty sure
         initActions(new AnimationMixer(player.scene), player);
         if (x&&y&&z) {
             movePlayer(uuid, new Vector3(x, y, z), 0)
         }
         scene.add( player.scene );
         playAction(player, "idle")
+
+        var collisionBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
+        collisionBox.position.y+=1
+        player.scene.add(collisionBox)
+        player.hitBox = collisionBox
     });
 }
 
