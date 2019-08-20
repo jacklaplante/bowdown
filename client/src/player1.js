@@ -82,7 +82,9 @@ loader.load( Adam, ( gltf ) => {
     player1.playAction = function(action, restore=true) {
         if (player1.activeAction) {
             player1.actions[player1.activeAction].stop()
-            player1.previousAction = player1.activeAction
+            if(player1.previousAction!=action&&player1.activeAction!=action){
+                player1.previousAction = player1.activeAction
+            }
         }
         player1.activeAction = action
         player1.actions[action].reset().play();
@@ -100,7 +102,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.restoreState = function() {
         mixer.removeEventListener( 'finished', player1.restoreState );
-        player1.playAction(player1.previousAction)
+        player1.playAction(player1.previousAction, false)
     }
 
     player1.jump = function() {

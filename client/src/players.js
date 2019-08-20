@@ -15,6 +15,11 @@ function initPlayers(newPlayers) {
 }
 
 function playAction(player, action) {
+    if (player.activeAction && player.activeAction != action) {
+        player.actions[player.activeAction].stop()
+    } else if (player.activeAction && player.activeAction == action) {
+        return
+    }
     player.actions[action].reset().play()
     player.activeAction = action
 }
@@ -48,10 +53,7 @@ function movePlayer(playerUuid, nextPos, rotation, action) {
     var player = players[playerUuid]
     player.scene.position.copy(nextPos)
     player.scene.rotation.y = rotation
-    if (player.activeAction && player.activeAction != action) {
-        player.actions[player.activeAction].stop()
-        playAction(player, action)
-    }
+    playAction(player, action)
 }
 
 function playerAction(playerUuid, action, rotation=0) {
