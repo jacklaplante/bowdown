@@ -26,6 +26,8 @@ loader.load( Adam, ( gltf ) => {
         if (event.action.getClip().name !== "Draw bow") {
             // this is hacky and should be changed
             player1.playAction("idle")
+        } else {
+            player1.state = "bow drawn"
         }
     })
 
@@ -118,9 +120,12 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.onMouseUp = function() {
-        if (player1.bowEquipped) {
+        if (player1.state === "bow drawn") {
             player1.playAction("fireBow")
             shootArrow();
+        } else if (player1.state === "drawBow") {
+            player1.actions.drawBow.stop();
+            player1.playAction("idle")
         }
     }
 

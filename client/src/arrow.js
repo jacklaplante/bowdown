@@ -7,11 +7,11 @@ import {camera} from './camera'
 var arrows = []
 
 function createArrow(){
-    var geometry = new BoxGeometry(0.02, 0.02, 0.75);
+    var geometry = new BoxGeometry(0.06, 0.06, 0.75);
     var material = new MeshBasicMaterial( {color: 0x00ff00} );
     var arrow = new Mesh( geometry, material );
 
-    var origin = player1.scene.position.clone().add(new Vector3(0,1,0)) // you will want to change this to be more accurate to the bow
+    var origin = player1.scene.position.clone().add(new Vector3(0, 1.5, 0)) // you will want to change this to be more accurate to the bow
     arrow.position.copy(origin)
     arrow.rotation.copy(camera.rotation) // this needs to be changed
 
@@ -27,7 +27,7 @@ function createArrow(){
         camera.getWorldDirection(direction)
     }
 
-    arrow.velocity = direction.normalize().multiplyScalar(30)
+    arrow.velocity = direction.normalize().multiplyScalar(60)
     scene.add(arrow);
     arrows.push(arrow)
 }
