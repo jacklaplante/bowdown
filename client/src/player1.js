@@ -244,8 +244,11 @@ loader.load( Adam, ( gltf ) => {
         player1.bowEquipped = false;
     }
 
+    player1.takeDamage = function() {
+        player1.scene.position.y -=20
+    }
+
     player1.unequipBow()
-    
     player1.playAction('idle')
 });
 

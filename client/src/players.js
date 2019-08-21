@@ -4,8 +4,10 @@ import {loader} from './loader'
 import {scene} from './scene'
 import {initActions} from './archer'
 import playerX from '../models/benji.glb'
+import {sendMessage} from './websocket';
 
 var players = { }
+var playerHitBoxes = []
 
 function initPlayers(newPlayers) {
     Object.keys(newPlayers).forEach(
@@ -41,10 +43,12 @@ function addPlayer(uuid, x, y, z) {
         scene.add( player.scene );
         playAction(player, "idle")
 
-        var collisionBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
-        collisionBox.position.y+=1
-        player.scene.add(collisionBox)
-        player.hitBox = collisionBox
+        var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
+        hitBox.material.visible = false
+        hitBox.position.y+=1
+        player.scene.add(hitBox)
+        hitBox.playerUuid = uuid
+        playerHitBoxes.push(hitBox)
     });
 }
 
@@ -64,11 +68,18 @@ function movePlayer(playerUuid, nextPos, rotation, action) {
     playAction(player, action)
 }
 
-function playerAction(playerUuid, action, rotation=0) {
+function playerAction(playerUuid, action) {
     var player = players[playerUuid]
     if (player) {
         playAction(player, action)
     }
 }
 
-export { players, addPlayer, movePlayer, initPlayers, animatePlayers, playerAction }
+function killPlayer(playerUuid) {
+    sendMessage({
+        player: playerUuid,
+        damage: 100
+    })
+}
+
+export { players, addPlayer, movePlayer, initPlayers, animatePlayers, playerAction, playerHitBoxes, killPlayer }
