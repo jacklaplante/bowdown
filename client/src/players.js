@@ -6,14 +6,53 @@ import {initActions} from './archer'
 import playerX from '../models/benji.glb'
 import {sendMessage} from './websocket';
 
-var players = { }
+var players = {};
+var roster = {}
 var playerHitBoxes = []
 
-function initPlayers(newPlayers) {
+players.all = function() {
+    return roster;
+}
+
+players.get = (uuid) => {
+    return roster[uuid]
+}
+
+players.add = function(uuid, position) {
+    // this is a hacky way to make sure the player model isn't loaded multiple times
+    roster[uuid] = 'loading'
+    loader.load(playerX, function(player) {
+        roster[uuid] = player; // this needs to happen first, pretty sure
+        initActions(new AnimationMixer(player.scene), player);
+        if (position) {
+            players.move(uuid, position, 0)
+        }
+        scene.add( player.scene );
+        playAction(player, "idle")
+
+        var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
+        hitBox.material.visible = false
+        player.scene.add(hitBox)
+        hitBox.playerUuid = uuid
+        playerHitBoxes.push(hitBox)
+    });
+}
+
+players.init = function(newPlayers) {
     Object.keys(newPlayers).forEach(
         (playerUuid) => {
-            addPlayer(playerUuid, newPlayers[playerUuid].x, newPlayers[playerUuid].z);
+            players.add(playerUuid, new Vector3(
+                newPlayers[playerUuid].x,
+                newPlayers[playerUuid].y,
+                newPlayers[playerUuid].z));
         })
+}
+
+players.move = function(playerUuid, pos, rotation, action) {
+    var player = roster[playerUuid]
+    player.scene.position.copy(pos)
+    player.scene.rotation.y = rotation
+    playAction(player, action)
 }
 
 function playAction(player, action) {
@@ -30,46 +69,17 @@ function playAction(player, action) {
     }
 }
 
-function addPlayer(uuid, x, y, z) {
-    // this is a hacky way to make sure the player model isn't loaded multiple times
-    players[uuid] = 'loading'
-
-    loader.load(playerX, function(player) {
-        players[uuid] = player; // this needs to happen first, pretty sure
-        initActions(new AnimationMixer(player.scene), player);
-        if (x&&y&&z) {
-            movePlayer(uuid, new Vector3(x, y, z), 0)
-        }
-        scene.add( player.scene );
-        playAction(player, "idle")
-
-        var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
-        hitBox.material.visible = false
-        hitBox.position.y+=1
-        player.scene.add(hitBox)
-        hitBox.playerUuid = uuid
-        playerHitBoxes.push(hitBox)
-    });
-}
-
 function animatePlayers(delta) {
-    Object.keys(players).forEach(
+    Object.keys(roster).forEach(
         (playerUuid) => {
-            if (players[playerUuid].mixer) {
-                players[playerUuid].mixer.update(delta)
+            if (roster[playerUuid].mixer) {
+                roster[playerUuid].mixer.update(delta)
             }
         })
 }
 
-function movePlayer(playerUuid, nextPos, rotation, action) {
-    var player = players[playerUuid]
-    player.scene.position.copy(nextPos)
-    player.scene.rotation.y = rotation
-    playAction(player, action)
-}
-
 function playerAction(playerUuid, action) {
-    var player = players[playerUuid]
+    var player = roster[playerUuid]
     if (player) {
         playAction(player, action)
     }
@@ -82,4 +92,4 @@ function killPlayer(playerUuid) {
     })
 }
 
-export { players, addPlayer, movePlayer, initPlayers, animatePlayers, playerAction, playerHitBoxes, killPlayer }
+export { players, animatePlayers, playerAction, playerHitBoxes, killPlayer }

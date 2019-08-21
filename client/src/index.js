@@ -38,7 +38,7 @@ function animate() {
         player1.animate(delta, input);
         mixer.update( delta );
     }
-    if (Object.keys(players).length) {
+    if (Object.keys(players.all()).length) {
         animatePlayers(delta)
     }
     renderer.render( scene, camera );

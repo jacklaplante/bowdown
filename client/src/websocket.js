@@ -1,6 +1,6 @@
 import { Vector3 } from 'three'
 
-import { players, addPlayer, movePlayer, initPlayers, playerAction } from './players'
+import { players, playerAction } from './players'
 import { player1, playerUuid } from './player1'
 import { scene } from './scene'
 
@@ -13,7 +13,7 @@ ws.onopen = function open() {
 ws.onmessage = function onMessage(message) {
     var message = JSON.parse(message.data)
     if (message.players) {
-        initPlayers(message.players);
+        players.init(message.players);
     }
     if (message.player) {
         var player = message.player;
@@ -22,15 +22,15 @@ ws.onmessage = function onMessage(message) {
                 player1.takeDamage(message.damage)
             }
         } else {
-            if (!players[player]) {
-                addPlayer(player, message.x, message.y)
+            if (!players.get(player)) {
+                players.add(player, new Vector3(message.x, message.y, message.z))
             } else if (message.status==='disconnected') {
                 // player disconnected, remove
-                scene.remove(players[player].scene)
-                delete players[player]
-            } else if (players[player].scene && message.x && message.y && message.z && message.rotation && message.action) {
-                movePlayer(player, new Vector3(message.x, message.y, message.z), message.rotation, message.action)
-                players[player].state = 'moving'
+                scene.remove(players.get(player).scene)
+                delete players.get(player)
+            } else if (players.get(player).scene && message.x && message.y && message.z && message.rotation && message.action) {
+                players.move(player, new Vector3(message.x, message.y, message.z), message.rotation, message.action)
+                players.get(player).state = 'moving'
             } else if (message.action) {
                 playerAction(player, message.action)
             }
