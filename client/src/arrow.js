@@ -14,7 +14,8 @@ function createArrow(){
     var material = new MeshBasicMaterial( {color: 0x00ff00} );
     var arrow = new Mesh( geometry, material );
 
-    var origin = player1.scene.position.clone().add(new Vector3(0, 1.5, 0)) // you will want to change this to be more accurate to the bow
+    var origin = player1.scene.position.clone().add(new Vector3(0, 1.5, 0))
+    arrow.origin = origin
     arrow.position.copy(origin)
     arrow.rotation.copy(camera.rotation) // this needs to be changed
 
@@ -45,19 +46,22 @@ function animateArrows(delta) {
             arrow.velocity.y -= delta*9
             arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
             // detect arrow collisions
-            var direction = new Vector3(0,0,-1) // this kinda works. I'm pretty sure it's a ray originating from the center of the arrow shaft and going towards the tip of the arrow. but as noted below this will miss collisions if it happens between frames (which is likely). A better solution would be to test for collision originating from the arrow tip and going backwards along the arrows path. Once a collision is detected move the arrow back to the point of collision
+            var direction = new Vector3(0,0,1)
             direction.applyEuler(arrow.rotation).normalize()
-            var ray = new Raycaster(arrow.position, direction)
-            // detect collisions with the environment
-            var collisions = ray.intersectObjects(collidableEnvironment, true)
-            if (collisions.length > 0 && collisions[0].distance <= arrowLength) { // note: this will only work for detecting collisions with the front half of the arrow. Also this collision detection will fail if the collision happens in between frames
-                arrow.stopped = true
-            }
+            var ray = new Raycaster(arrow.position, direction, 0, arrow.position.clone().sub(arrow.origin).length())
             // detect collisions with other players
-            collisions = ray.intersectObjects(playerHitBoxes)
-            if (collisions.length > 0 && collisions[0].distance <= arrowLength) {
+            var collisions = ray.intersectObjects(playerHitBoxes)
+            if (collisions.length > 0) {
+                var collision = collisions.pop()
+                arrow.position.copy(collision.point)
                 arrow.stopped = true
-                killPlayer(collisions[0].object.playerUuid)
+                killPlayer(collision.object.playerUuid)
+            }
+            // detect collisions with the environment
+            collisions = ray.intersectObjects(collidableEnvironment, true)
+            if (collisions.length > 0) {
+                arrow.position.copy(collisions.pop().point)
+                arrow.stopped = true
             }
         }
     })
