@@ -3,6 +3,7 @@ import { Vector3 } from 'three'
 import { players, playerAction } from './players'
 import { player1, playerUuid } from './player1'
 import { scene } from './scene'
+import { addOtherPlayerArrow } from './arrow'
 
 const ws = new WebSocket('ws://localhost:18181');
 
@@ -35,6 +36,8 @@ ws.onmessage = function onMessage(message) {
                 playerAction(player, message.action)
             }
         }
+    } else if (message.arrow) {
+        addOtherPlayerArrow(message.arrow)
     }
 }
 
