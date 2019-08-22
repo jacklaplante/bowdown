@@ -5,7 +5,9 @@ import { player1, playerUuid } from './player1'
 import { scene } from './scene'
 import { addOtherPlayerArrow } from './arrow'
 
-const ws = new WebSocket('ws://localhost:18181');
+// var url = 'ws://localhost:18181'
+var url = 'ws://ec2-18-191-136-250.us-east-2.compute.amazonaws.com:18181'
+const ws = new WebSocket(url);
 
 ws.onopen = function open() {
     sendMessage({message: "sup fucker"})

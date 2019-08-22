@@ -31,6 +31,7 @@ players.add = function(uuid, position) {
         playAction(player, "idle")
 
         var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
+        hitBox.position.y += 1
         hitBox.material.visible = false
         player.scene.add(hitBox)
         hitBox.playerUuid = uuid
