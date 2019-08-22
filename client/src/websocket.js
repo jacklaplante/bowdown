@@ -3,6 +3,7 @@ import { Vector3 } from 'three'
 import { players, playerAction } from './players'
 import { player1, playerUuid } from './player1'
 import { scene } from './scene'
+import { addOtherPlayerArrow } from './arrow'
 
 // var url = 'ws://localhost:18181'
 var url = 'ws://ec2-18-191-136-250.us-east-2.compute.amazonaws.com:18181'
@@ -37,6 +38,8 @@ ws.onmessage = function onMessage(message) {
                 playerAction(player, message.action)
             }
         }
+    } else if (message.arrow) {
+        addOtherPlayerArrow(message.arrow)
     }
 }
 

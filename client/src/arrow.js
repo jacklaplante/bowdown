@@ -4,20 +4,30 @@ import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
 import {player1} from './player1'
 import {camera} from './camera'
+import {sendMessage} from './websocket';
 
-var arrows = []
+var player1Arrows = [] // these are arrows that were shot by player1
+var otherPlayerArrows = [] // these are arrows that were shot by other players
 var arrowWidth = 0.06
 var arrowLength = 0.75
 
-function createArrow(){
+function createArrow(origin, rotation){
     var geometry = new BoxGeometry(arrowWidth, arrowWidth, arrowLength);
     var material = new MeshBasicMaterial( {color: 0x00ff00} );
     var arrow = new Mesh( geometry, material );
-
-    var origin = player1.scene.position.clone().add(new Vector3(0, 1.5, 0))
+    
     arrow.origin = origin
     arrow.position.copy(origin)
-    arrow.rotation.copy(camera.rotation) // this needs to be changed
+    arrow.rotation.copy(rotation)
+    scene.add(arrow);
+
+    return arrow
+}
+
+function shootArrow(){
+    var origin = player1.scene.position.clone().add(new Vector3(0, 1.5, 0));
+    var rotation = camera.rotation // this needs to be changed
+    var arrow = createArrow(origin, rotation);
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
@@ -32,19 +42,34 @@ function createArrow(){
     }
 
     arrow.velocity = direction.normalize().multiplyScalar(60)
-    scene.add(arrow);
-    arrows.push(arrow)
+    player1Arrows.push(arrow)
+
+    sendMessage({
+        arrow: {
+            origin: arrow.position,
+            rotation: arrow.rotation,
+            velocity: arrow.velocity,
+            timeOfShoot: Date.now()
+        }
+    })
 }
 
-function shootArrow(){
-    createArrow();
+function addOtherPlayerArrow(newArrow) {
+    var arrow = createArrow(newArrow.origin, newArrow.rotation)
+    arrow.velocity = new Vector3(newArrow.velocity.x, newArrow.velocity.y, newArrow.velocity.z)
+    otherPlayerArrows.push(arrow)
+    moveArrow(arrow, (Date.now()-newArrow.timeOfShoot)/1000)
+}
+
+function moveArrow(arrow, delta) {
+    arrow.velocity.y -= delta*9
+    arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
 }
 
 function animateArrows(delta) {
-    arrows.forEach((arrow) => {
+    player1Arrows.forEach((arrow) => {
         if(!arrow.stopped){
-            arrow.velocity.y -= delta*9
-            arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
+            moveArrow(arrow, delta)
             // detect arrow collisions
             var direction = new Vector3(0,0,1)
             direction.applyEuler(arrow.rotation).normalize()
@@ -65,6 +90,9 @@ function animateArrows(delta) {
             }
         }
     })
+    otherPlayerArrows.forEach((arrow) => {
+        moveArrow(arrow, delta)
+    })
 }
 
-export {shootArrow, animateArrows}
+export {shootArrow, animateArrows, addOtherPlayerArrow}
