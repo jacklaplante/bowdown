@@ -19,6 +19,7 @@ var input = {
 
 var state = "ready"
 
+// mouse/keyboard events
 document.addEventListener('mousemove', onMouseMove);
 document.addEventListener('keydown', onKeyDown);
 document.addEventListener('keyup', onKeyUp);
@@ -26,6 +27,11 @@ document.addEventListener('click', onClick);
 document.addEventListener('mousedown', onMouseDown);
 document.addEventListener('mouseup', onMouseUp);
 document.addEventListener('pointerlockchange', onPointerLockChange)
+
+// touch events
+document.addEventListener('touchmove', onTouchMove);
+document.addEventListener('touchend', onTouchEnd);
+
 window.addEventListener('resize', resize);
 
 animate();
@@ -95,11 +101,33 @@ function onPointerLockChange() {
     }
 }
 
-function onMouseMove( event ) {
+var touchX
+var touchY
+var touch
+function onTouchMove(event) {
+    var x = event.targetTouches[0].screenX
+    var y = event.targetTouches[0].screenY
+    touch = event.targetTouches[0].identifier
+    if (touchX && touchY) {
+        camera.moveCamera(4*(x-touchX), 4*(y-touchY))
+    }
+    touchX = x
+    touchY = y
+}
+
+function onTouchEnd(event) {
+    if (touch == event.changedTouches[0].identifier) {
+        touchX = null // this is a lil hacky
+        touchY = null
+    }
+}
+
+function onMouseMove(event) {
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
     camera.moveCamera(movementX, movementY);
 }
+
 function resize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     camera.aspect = window.innerWidth / window.innerHeight;
