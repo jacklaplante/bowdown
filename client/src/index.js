@@ -107,6 +107,7 @@ function onPointerLockChange() {
     }
 }
 
+var usingTouchControls = false;
 function touchControls(bool) {
     if (bool!=usingTouchControls) {
         if (bool) {
@@ -118,9 +119,8 @@ function touchControls(bool) {
     }
 }
 
-var cameraTouch = {id: null, x: null, y: null}
+var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
-var usingTouchControls = false;
 function onTouchMove(event) {
     touchControls(true)
     var camTouch, moveTouch, newTouch
@@ -137,10 +137,16 @@ function onTouchMove(event) {
         camera.moveCamera(4*(camTouch.pageX-cameraTouch.x), 4*(camTouch.pageY-cameraTouch.y))
         cameraTouch.x = camTouch.pageX
         cameraTouch.y = camTouch.pageY
-    } else if (newTouch && newTouch.pageX > window.innerWidth/2) { // movement on right side of the screen is for camera
-        cameraTouch.id = newTouch.identifier
-        cameraTouch.x = newTouch.pageX
-        cameraTouch.y = newTouch.pageY
+    } else if (newTouch) {
+        if (newTouch.target.id === "shootButton") {
+            player1.onMouseDown()
+            cameraTouch.shoot = true
+        }
+        if (newTouch.pageX > window.innerWidth/2) {
+            cameraTouch.id = newTouch.identifier
+            cameraTouch.x = newTouch.pageX
+            cameraTouch.y = newTouch.pageY
+        }
     }
     if (moveTouch) {
         input.touch.x = moveTouch.pageX-movementTouch.x
@@ -154,7 +160,11 @@ function onTouchMove(event) {
 
 function onTouchEnd(event) {
     if (cameraTouch.id == event.changedTouches[0].identifier) {
+        if (cameraTouch.shoot) {
+            player1.onMouseUp();
+        }
         cameraTouch.id = null
+        cameraTouch.shoot = false
     } else if (movementTouch.id == event.changedTouches[0].identifier) {
         movementTouch.id = null
         input.touch = {x:0, y:0}
@@ -181,6 +191,7 @@ document.getElementsByTagName("BODY")[0].appendChild(crosshairHtmlElement)
 
 // shoot button for mobile controls
 var shootButton = document.createElement("div");
+shootButton.setAttribute("id", "shootButton");
 const shootButtonStyle = "position: fixed; top: 50%; left: 85%; width: 50px; height: 50px; background-image: url(dot-and-circle.svg);"
 shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
 document.getElementsByTagName("BODY")[0].appendChild(shootButton)
