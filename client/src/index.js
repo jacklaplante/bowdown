@@ -10,11 +10,17 @@ import { players, animatePlayers } from './players';
 var clock = new Clock()
 document.body.appendChild( renderer.domElement )
 var input = {
-    forward: false,
-    backward: false,
-    left: false,
-    right: false,
-    space: false
+    keyboard: {
+        forward: false,
+        backward: false,
+        left: false,
+        right: false,
+        space: false
+    },
+    touch: {
+        x: 0,
+        y: 0
+    }
 }
 
 var state = "ready"
@@ -53,19 +59,19 @@ function animate() {
 function toggleKey(event, toggle) {
     switch(event.key) {
         case 'w':
-            input.forward = toggle;
+            input.keyboard.forward = toggle;
             break;
         case 'a':
-            input.left = toggle;
+            input.keyboard.left = toggle;
             break;
         case 's':
-            input.backward = toggle;
+            input.keyboard.backward = toggle;
             break;
         case 'd':
-            input.right = toggle;
+            input.keyboard.right = toggle;
             break;
         case ' ':
-            input.space = toggle;
+            input.keyboard.space = toggle;
             break;
     }
 }
@@ -101,24 +107,36 @@ function onPointerLockChange() {
     }
 }
 
-var touchX
-var touchY
-var touch
+var cameraTouch = {id: null, x: null, y: null}
+var movementTouch = {id: null, x: null, y: null}
 function onTouchMove(event) {
-    var x = event.targetTouches[0].screenX
-    var y = event.targetTouches[0].screenY
-    touch = event.targetTouches[0].identifier
-    if (touchX && touchY) {
-        camera.moveCamera(4*(x-touchX), 4*(y-touchY))
+    var x = event.targetTouches[0].pageX
+    var y = event.targetTouches[0].pageY
+    if (event.targetTouches[0].pageX > window.innerWidth/2) { // movement on right side of the screen is for camera
+        if (cameraTouch.id!=null) {
+            camera.moveCamera(4*(x-cameraTouch.x), 4*(y-cameraTouch.y))
+        }
+        cameraTouch.id = event.targetTouches[0].identifier
+        cameraTouch.x = x
+        cameraTouch.y = y
+    } else {
+        if (movementTouch.id!=null) {
+            input.touch.x = -1*(x-movementTouch.x) // this needs to be negative for some reason
+            input.touch.y = y-movementTouch.y
+        } else {
+            movementTouch.id = event.targetTouches[0].identifier
+            movementTouch.x = x
+            movementTouch.y = y
+        }
     }
-    touchX = x
-    touchY = y
 }
 
 function onTouchEnd(event) {
-    if (touch == event.changedTouches[0].identifier) {
-        touchX = null // this is a lil hacky
-        touchY = null
+    if (cameraTouch.id == event.changedTouches[0].identifier) {
+        cameraTouch.id = null
+    } else if (movementTouch.id == event.changedTouches[0].identifier) {
+        movementTouch.id = null
+        input.touch = {x:0, y:0}
     }
 }
 

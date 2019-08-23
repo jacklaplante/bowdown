@@ -163,19 +163,24 @@ loader.load( Adam, ( gltf ) => {
         direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
         direction.normalize().multiplyScalar(movementSpeed);
         var x=0, y=0 // these are the inputDirections
-        if (input.forward) {
+        if (input.touch.x!=0 && input.touch.y!=0) {
+            var dir = new Vector2(input.touch.x, input.touch.y).normalize()
+            x = dir.x
+            y = dir.y
+        }
+        if (input.keyboard.forward) {
             x += 0
             y += 1
         }
-        if (input.backward) {
+        if (input.keyboard.backward) {
             x += 0
             y += -1
         }
-        if (input.left) {
+        if (input.keyboard.left) {
             x += -1
             y += 0
         }
-        if (input.right) {
+        if (input.keyboard.right) {
             x += 1
             y += 0
         }
@@ -192,10 +197,10 @@ loader.load( Adam, ( gltf ) => {
             player1.move(nextPos)
         } else {
             player1.velocity.set(0,0,0)
-            if (input.space) {
+            if (input.keyboard.space) {
                 player1.jump();
             }
-            if (input.forward || input.backward || input.left || input.right) {
+            if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 var direction = getDirection(input)
                 nextPos.z = player1.scene.position.z + direction.y;
                 nextPos.x = player1.scene.position.x + direction.x;
@@ -225,7 +230,7 @@ loader.load( Adam, ( gltf ) => {
             } else if (player1.isRunning()) {
                 player1.playAction('idle')
             }
-            if (input.space) {
+            if (input.keyboard.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
                 player1.move(nextPos)
             }
