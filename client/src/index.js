@@ -184,14 +184,32 @@ function resize() {
     camera.updateProjectionMatrix();
 }
 
+var bodyElement = document.getElementsByTagName("BODY")[0];
+
 // create crosshair
 var crosshairHtmlElement = document.createElement("div")
 crosshairHtmlElement.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-image: url(crosshair.svg);")
-document.getElementsByTagName("BODY")[0].appendChild(crosshairHtmlElement)
+bodyElement.appendChild(crosshairHtmlElement)
 
 // shoot button for mobile controls
 var shootButton = document.createElement("div");
 shootButton.setAttribute("id", "shootButton");
 const shootButtonStyle = "position: fixed; top: 50%; left: 85%; width: 50px; height: 50px; background-image: url(dot-and-circle.svg);"
 shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
-document.getElementsByTagName("BODY")[0].appendChild(shootButton)
+bodyElement.appendChild(shootButton)
+
+// full screen button
+var fullScreenButton = document.createElement("div");
+fullScreenButton.onclick = function() {
+    if (bodyElement.requestFullscreen) {
+        bodyElement.requestFullscreen();
+    } else if (bodyElement.mozRequestFullScreen) { /* Firefox */
+        bodyElement.mozRequestFullScreen();
+    } else if (bodyElement.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        bodyElement.webkitRequestFullscreen();
+    } else if (bodyElement.msRequestFullscreen) { /* IE/Edge */
+        bodyElement.msRequestFullscreen();
+    }
+}
+fullScreenButton.setAttribute("style", "position: fixed; top: 10%; left: 7%;; transform: translate(-50%, -50%); width: 15px; height: 15px; background-image: url(fullscreen.svg);")
+bodyElement.appendChild(fullScreenButton)
