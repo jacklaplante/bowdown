@@ -107,9 +107,22 @@ function onPointerLockChange() {
     }
 }
 
+function touchControls(bool) {
+    if (bool!=usingTouchControls) {
+        if (bool) {
+            shootButton.setAttribute("style", "display: block;"+shootButtonStyle)
+        } else {
+            shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
+        }
+        usingTouchControls = bool
+    }
+}
+
 var cameraTouch = {id: null, x: null, y: null}
 var movementTouch = {id: null, x: null, y: null}
+var usingTouchControls = false;
 function onTouchMove(event) {
+    touchControls(true)
     var x = event.targetTouches[0].pageX
     var y = event.targetTouches[0].pageY
     if (event.targetTouches[0].pageX > window.innerWidth/2) { // movement on right side of the screen is for camera
@@ -141,6 +154,7 @@ function onTouchEnd(event) {
 }
 
 function onMouseMove(event) {
+    touchControls(false)
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
     camera.moveCamera(movementX, movementY);
@@ -152,16 +166,13 @@ function resize() {
     camera.updateProjectionMatrix();
 }
 
-function isMobile() {
-    try {
-        if(/Android|webOS|iPhone|iPad|iPod|pocket|psp|kindle|avantgo|blazer|midori|Tablet|Palm|maemo|plucker|phone|BlackBerry|symbian|IEMobile|mobile|ZuneWP7|Windows Phone|Opera Mini/i.test(navigator.userAgent)) {
-            return true;
-        };
-        return false;
-    } catch(e){ console.log("Error in isMobile"); return false; }
-}
-
 // create crosshair
 var crosshairHtmlElement = document.createElement("div")
 crosshairHtmlElement.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-image: url(crosshair.svg);")
 document.getElementsByTagName("BODY")[0].appendChild(crosshairHtmlElement)
+
+// shoot button for mobile controls
+var shootButton = document.createElement("div");
+const shootButtonStyle = "position: fixed; top: 50%; left: 85%; width: 50px; height: 50px; background-image: url(dot-and-circle.svg);"
+shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
+document.getElementsByTagName("BODY")[0].appendChild(shootButton)
