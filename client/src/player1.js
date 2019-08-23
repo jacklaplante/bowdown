@@ -162,19 +162,24 @@ loader.load( Adam, ( gltf ) => {
         camera.getWorldDirection(direction)
         direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
         direction.normalize().multiplyScalar(movementSpeed);
+        var x, y // these are the inputDirections
         if (input.forward) {
-            // direction is already forward                    
+            x = 0
+            y = 1
         }
         if (input.backward) {
-            direction.rotateAround(new Vector2(), Math.PI)
+            x = 0
+            y = -1
         }
         if (input.left) {
-            direction.rotateAround(new Vector2(), Math.PI*1.5)
+            x = -1
+            y = 0
         }
         if (input.right) {
-            direction.rotateAround(new Vector2(), Math.PI/2)
+            x = 1
+            y = 0
         }
-        return direction
+        return direction.rotateAround(new Vector2(), Math.atan2(x, y))
     }
 
     player1.animate = function(delta, input){
