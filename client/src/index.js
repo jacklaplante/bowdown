@@ -121,8 +121,8 @@ function onTouchMove(event) {
         cameraTouch.y = y
     } else {
         if (movementTouch.id!=null) {
-            input.touch.x = -1*(x-movementTouch.x) // this needs to be negative for some reason
-            input.touch.y = y-movementTouch.y
+            input.touch.x = x-movementTouch.x
+            input.touch.y = -1*(y-movementTouch.y) // this needs to be negative for some reason
         } else {
             movementTouch.id = event.targetTouches[0].identifier
             movementTouch.x = x
