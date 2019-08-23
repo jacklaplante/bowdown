@@ -134,6 +134,15 @@ function resize() {
     camera.updateProjectionMatrix();
 }
 
+function isMobile() {
+    try {
+        if(/Android|webOS|iPhone|iPad|iPod|pocket|psp|kindle|avantgo|blazer|midori|Tablet|Palm|maemo|plucker|phone|BlackBerry|symbian|IEMobile|mobile|ZuneWP7|Windows Phone|Opera Mini/i.test(navigator.userAgent)) {
+            return true;
+        };
+        return false;
+    } catch(e){ console.log("Error in isMobile"); return false; }
+}
+
 // create crosshair
 var crosshairHtmlElement = document.createElement("div")
 crosshairHtmlElement.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-image: url(crosshair.svg);")

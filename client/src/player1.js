@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line } from 'three'
+import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line, Vector2 } from 'three'
 
 import {loader} from './loader'
 import {uuid} from './utils'
@@ -14,6 +14,7 @@ var playerUuid = uuid();
 
 var player1;
 var mixer;
+const movementSpeed = 0.12;
 
 loader.load( Adam, ( gltf ) => {
     player1 = gltf;
@@ -156,6 +157,26 @@ loader.load( Adam, ( gltf ) => {
         return false
     }
 
+    function getDirection(input) {
+        var direction = new Vector3();
+        camera.getWorldDirection(direction)
+        direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
+        direction.normalize().multiplyScalar(movementSpeed);
+        if (input.forward) {
+            // direction is already forward                    
+        }
+        if (input.backward) {
+            direction.rotateAround(new Vector2(), Math.PI)
+        }
+        if (input.left) {
+            direction.rotateAround(new Vector2(), Math.PI*1.5)
+        }
+        if (input.right) {
+            direction.rotateAround(new Vector2(), Math.PI/2)
+        }
+        return direction
+    }
+
     player1.animate = function(delta, input){
         var nextPos = new Vector3();
         var rotation;
@@ -170,34 +191,10 @@ loader.load( Adam, ( gltf ) => {
                 player1.jump();
             }
             if (input.forward || input.backward || input.left || input.right) {
-                var movementSpeed = 0.12;
-                var direction = new Vector3();
-                camera.getWorldDirection(direction)
-                // make direction 2d (x,z) and normalize
-                // then multiply by movement speed
-                var b = 1/(Math.abs(direction.x)+Math.abs(direction.z));
-                var directionX = movementSpeed*b*direction.x;
-                var directionZ = movementSpeed*b*direction.z;
-                if (input.forward) {
-                    nextPos.z = player1.scene.position.z + directionZ;
-                    nextPos.x = player1.scene.position.x + directionX;
-                    rotation = Math.atan2(directionX, directionZ)
-                }
-                if (input.backward) {
-                    nextPos.z = player1.scene.position.z - directionZ;
-                    nextPos.x = player1.scene.position.x - directionX;
-                    rotation = Math.atan2(directionX, directionZ) + Math.PI
-                }
-                if (input.left) {
-                    nextPos.z = player1.scene.position.z - directionX;
-                    nextPos.x = player1.scene.position.x + directionZ;
-                    rotation = Math.atan2(directionX, directionZ) + Math.PI/2
-                }
-                if (input.right) {
-                    nextPos.z = player1.scene.position.z + directionX;
-                    nextPos.x = player1.scene.position.x - directionZ;
-                    rotation = Math.atan2(directionX, directionZ) - Math.PI/2
-                }
+                var direction = getDirection(input)
+                nextPos.z = player1.scene.position.z + direction.y;
+                nextPos.x = player1.scene.position.x + direction.x;
+                rotation = Math.atan2(direction.x, direction.y)
                 player1.velocity.x = (nextPos.x-player1.scene.position.x)/delta
                 player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
 
