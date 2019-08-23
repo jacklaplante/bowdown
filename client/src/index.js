@@ -123,24 +123,32 @@ var movementTouch = {id: null, x: null, y: null}
 var usingTouchControls = false;
 function onTouchMove(event) {
     touchControls(true)
-    var x = event.targetTouches[0].pageX
-    var y = event.targetTouches[0].pageY
-    if (event.targetTouches[0].pageX > window.innerWidth/2) { // movement on right side of the screen is for camera
-        if (cameraTouch.id!=null) {
-            camera.moveCamera(4*(x-cameraTouch.x), 4*(y-cameraTouch.y))
+    var camTouch, moveTouch, newTouch
+    for (var i=0; i<event.targetTouches.length; i++) {
+        if (event.targetTouches.item(i).identifier == cameraTouch.id) {
+            camTouch = event.targetTouches.item(i)
+        } else if (event.targetTouches.item(i).identifier == movementTouch.id) {
+            moveTouch = event.targetTouches.item(i)
+        } else if (newTouch==null){
+            newTouch = event.targetTouches.item(i)
         }
-        cameraTouch.id = event.targetTouches[0].identifier
-        cameraTouch.x = x
-        cameraTouch.y = y
-    } else {
-        if (movementTouch.id!=null) {
-            input.touch.x = x-movementTouch.x
-            input.touch.y = -1*(y-movementTouch.y) // this needs to be negative for some reason
-        } else {
-            movementTouch.id = event.targetTouches[0].identifier
-            movementTouch.x = x
-            movementTouch.y = y
-        }
+    }
+    if (camTouch) {
+        camera.moveCamera(4*(camTouch.pageX-cameraTouch.x), 4*(camTouch.pageY-cameraTouch.y))
+        cameraTouch.x = camTouch.pageX
+        cameraTouch.y = camTouch.pageY
+    } else if (newTouch && newTouch.pageX > window.innerWidth/2) { // movement on right side of the screen is for camera
+        cameraTouch.id = newTouch.identifier
+        cameraTouch.x = newTouch.pageX
+        cameraTouch.y = newTouch.pageY
+    }
+    if (moveTouch) {
+        input.touch.x = moveTouch.pageX-movementTouch.x
+        input.touch.y = -1*(moveTouch.pageY-movementTouch.y) // this needs to be negative for some reason
+    } else if (newTouch && newTouch.pageX < window.innerWidth/2) {
+        movementTouch.id = newTouch.identifier
+        movementTouch.x = newTouch.pageX
+        movementTouch.y = newTouch.pageY
     }
 }
 
