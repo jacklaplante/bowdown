@@ -1,0 +1,21 @@
+body {
+    margin: 0px;
+    display: grid;
+    touch-action: none
+}
+
+#menu {
+    font-family: 'Rubik Mono One', sans-serif;
+    display: inline;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: aliceblue;
+}
+
+#title {
+    font-size: 30pt;
+}
+
+#start {margin: 10pt auto;width: 50pt;border-radius: 7pt;border: 2pt solid aliceblue;padding: 8px;}

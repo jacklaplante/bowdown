@@ -171,7 +171,7 @@ function resize() {
 }
 
 const shootButtonStyle = "position: fixed; top: 50%; left: 85%; width: 50px; height: 50px; background-image: url(dot-and-circle.svg);"
-export function start(body) {
+export function start() {
     // mouse/keyboard events
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('keydown', onKeyDown);
@@ -193,27 +193,27 @@ export function start(body) {
     // create crosshair
     var crosshairHtmlElement = document.createElement("div")
     crosshairHtmlElement.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-image: url(crosshair.svg);")
-    body.appendChild(crosshairHtmlElement)
+    document.body.appendChild(crosshairHtmlElement)
     // shoot button for mobile controls
     var shootButton = document.createElement("div");
     shootButton.setAttribute("id", "shootButton");
     
     shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
-    body.appendChild(shootButton)
+    document.body.appendChild(shootButton)
 
     // full screen button
     var fullScreenButton = document.createElement("div");
     fullScreenButton.onclick = function() {
-        if (body.requestFullscreen) {
-            body.requestFullscreen();
-        } else if (body.mozRequestFullScreen) { /* Firefox */
-            body.mozRequestFullScreen();
-        } else if (body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-            body.webkitRequestFullscreen();
-        } else if (body.msRequestFullscreen) { /* IE/Edge */
-            body.msRequestFullscreen();
+        if (document.body.requestFullscreen) {
+            document.body.requestFullscreen();
+        } else if (document.body.mozRequestFullScreen) { /* Firefox */
+            document.body.mozRequestFullScreen();
+        } else if (document.body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            document.body.webkitRequestFullscreen();
+        } else if (document.body.msRequestFullscreen) { /* IE/Edge */
+            document.body.msRequestFullscreen();
         }
     }
     fullScreenButton.setAttribute("style", "position: fixed; top: 10%; left: 7%;; transform: translate(-50%, -50%); width: 15px; height: 15px; background-image: url(fullscreen.svg);")
-    body.appendChild(fullScreenButton)
+    document.body.appendChild(fullScreenButton)
 }
