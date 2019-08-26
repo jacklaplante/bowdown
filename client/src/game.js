@@ -200,20 +200,4 @@ export function start() {
     
     shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
     document.body.appendChild(shootButton)
-
-    // full screen button
-    var fullScreenButton = document.createElement("div");
-    fullScreenButton.onclick = function() {
-        if (document.body.requestFullscreen) {
-            document.body.requestFullscreen();
-        } else if (document.body.mozRequestFullScreen) { /* Firefox */
-            document.body.mozRequestFullScreen();
-        } else if (document.body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-            document.body.webkitRequestFullscreen();
-        } else if (document.body.msRequestFullscreen) { /* IE/Edge */
-            document.body.msRequestFullscreen();
-        }
-    }
-    fullScreenButton.setAttribute("style", "position: fixed; top: 10%; left: 7%;; transform: translate(-50%, -50%); width: 15px; height: 15px; background-image: url(fullscreen.svg);")
-    document.body.appendChild(fullScreenButton)
 }

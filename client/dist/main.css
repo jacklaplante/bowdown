@@ -18,4 +18,20 @@ body {
     font-size: 30pt;
 }
 
-#start {margin: 10pt auto;width: 50pt;border-radius: 7pt;border: 2pt solid aliceblue;padding: 8px;}
+#start {
+    margin: 10pt auto;
+    width: 50pt;
+    border-radius: 7pt;
+    border: 2pt solid aliceblue;
+    padding: 8px;
+}
+
+#fullscreen {
+    position: fixed;
+    top: 10%;
+    left: 7%;
+    transform: translate(-50%, -50%);
+    width: 15px;
+    height: 15px;
+    background-image: url(fullscreen.svg);
+}
