@@ -73,7 +73,10 @@ function animateArrows(delta) {
             // detect arrow collisions
             var direction = new Vector3(0,0,1)
             direction.applyEuler(arrow.rotation).normalize()
-            var ray = new Raycaster(arrow.position, direction, 0, arrow.position.clone().sub(arrow.origin).length())
+            var collisionTrail = arrow.position.clone().sub(arrow.origin).length()/2 // this is the length of the ray that will be used to detect collisions
+            // right now it is the distance from the arrow to the point where the arrow was fired, divided by 2
+            // dividing it by 2 is really just a hack. if you don't divide it by 2, the ray would collide with the ground at the players feet when the arrow is shot into the air because the arrow was falling slightly due to gravity
+            var ray = new Raycaster(arrow.position, direction, 0, collisionTrail)
             // detect collisions with other players
             var collisions = ray.intersectObjects(playerHitBoxes)
             if (collisions.length > 0) {
