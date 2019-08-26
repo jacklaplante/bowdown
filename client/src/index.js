@@ -35,7 +35,8 @@ document.addEventListener('mouseup', onMouseUp);
 document.addEventListener('pointerlockchange', onPointerLockChange)
 
 // touch events
-document.addEventListener('touchmove', onTouchMove);
+document.addEventListener('touchstart', handleTouch);
+document.addEventListener('touchmove', handleTouch);
 document.addEventListener('touchend', onTouchEnd);
 
 window.addEventListener('resize', resize);
@@ -121,7 +122,8 @@ function touchControls(bool) {
 
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
-function onTouchMove(event) {
+function handleTouch(event) {
+    event.preventDefault();
     touchControls(true)
     var camTouch, moveTouch, newTouch
     for (var i=0; i<event.targetTouches.length; i++) {
@@ -172,7 +174,9 @@ function onTouchEnd(event) {
 }
 
 function onMouseMove(event) {
-    touchControls(false)
+    if (event.target.id != "shootButton") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
+        touchControls(false)        
+    }
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
     camera.moveCamera(movementX, movementY);
