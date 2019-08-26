@@ -19,6 +19,7 @@ const movementSpeed = 0.12;
 loader.load( Adam, ( gltf ) => {
     player1 = gltf;
     player1.velocity = new Vector3()
+    player1.bowState = "unequipped"
 
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
@@ -28,7 +29,7 @@ loader.load( Adam, ( gltf ) => {
             // this is hacky and should be changed
             player1.playAction("idle")
         } else {
-            player1.state = "bow drawn"
+            player1.bowState = "drawn"
         }
     })
 
@@ -113,7 +114,7 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.onMouseDown = function() {
-        if (!player1.bowEquipped) {
+        if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
             player1.playAction("drawBow")
@@ -121,9 +122,10 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.onMouseUp = function() {
-        if (player1.state === "bow drawn") {
+        if (player1.bowState == "drawn") {
             player1.playAction("fireBow")
             shootArrow();
+            player1.bowState = "equipped"
         } else if (player1.state === "drawBow") {
             player1.actions.drawBow.stop();
             player1.playAction("idle")
@@ -221,7 +223,7 @@ loader.load( Adam, ( gltf ) => {
                 
                 player1.move(nextPos, rotation)
                 if (!player1.isRunning()) {
-                    if (player1.bowEquipped) {
+                    if (player1.bowState == "equipped") {
                         player1.playAction('runWithBow')
                     } else {
                         player1.playAction('running')
@@ -238,7 +240,7 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.equipBow = function() {
-        player1.bowEquipped = true
+        player1.bowState = "equipped"
         player1.playAction("equipBow")
         // this is a hack because I'm too lazy to figure out how to animate this in blender
         player1.scene.children[0].children[1].visible = false
@@ -248,7 +250,7 @@ loader.load( Adam, ( gltf ) => {
     player1.unequipBow = function() {
         player1.scene.children[0].children[2].visible = false
         player1.scene.children[0].children[1].visible = true
-        player1.bowEquipped = false;
+        player1.bowState = "unequipped";
     }
 
     player1.takeDamage = function() {
