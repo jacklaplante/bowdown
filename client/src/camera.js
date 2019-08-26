@@ -26,7 +26,6 @@ camera.setPosition = function(nextPos) {
 
 camera.updateCamera = function() {
     if (player1!=null) {
-        var p1 = player1
         var v = player1.scene.position.clone().sub(camera.position.clone())
         var v2 = new Vector3(-v.z, 0, v.x).normalize()
         cameraTarget.copy(player1.scene.position.clone().add(v2)).setY(player1.scene.position.y+1)
@@ -37,7 +36,10 @@ camera.updateCamera = function() {
         var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0, 5);
         var collisions = ray.intersectObjects(collidableEnvironment, true);
         if(collisions.length>0){
-            nextPos = collisions[0].point
+            // this is just some voodoo
+            nextPos = collisions[0].point.clone().sub(nextPos.clone().sub(collisions[0].point).normalize().multiplyScalar(0.1))
+            // jk, I take the difference between the nextPos and the point of collision, normalize it, multiply it by 0.1, and add that to the collision point to get the new nextPos
+            // really all it does is make sure the camera is slightly above the surface that it's colliding with (instead of at the surface)
         }
         camera.setPosition(nextPos)
     }
