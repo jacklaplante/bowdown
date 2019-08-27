@@ -6,7 +6,7 @@ import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
-import {initActions} from './archer'
+import {initActions, archerAction} from './archer'
 
 import Adam from '../models/benji.glb'
 
@@ -90,14 +90,11 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.playAction = function(action) {
-        if (player1.activeAction) {
-            player1.actions[player1.activeAction].stop()
-            if(player1.previousAction!=action&&player1.activeAction!=action){
-                player1.previousAction = player1.activeAction
-            }
+        archerAction(player1, action)
+        if(player1.activeAction&&player1.previousAction!=action&&player1.activeAction!=action){
+            player1.previousAction = player1.activeAction
         }
         player1.activeAction = action
-        player1.actions[action].reset().play();
         player1.state = action
         player1.broadcast();
     }

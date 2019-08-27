@@ -2,7 +2,7 @@ import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
-import {initActions} from './archer'
+import {initActions, archerAction} from './archer'
 import playerX from '../models/benji.glb'
 import {sendMessage} from './websocket';
 
@@ -28,7 +28,6 @@ players.add = function(uuid, position) {
             players.move(uuid, position, 0)
         }
         scene.add( player.scene );
-        playAction(player)
 
         var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
         hitBox.position.y += 1
@@ -53,22 +52,7 @@ players.move = function(playerUuid, pos, rotation, action, bowState) {
     var player = roster[playerUuid]
     player.scene.position.copy(pos)
     player.scene.rotation.y = rotation
-    playAction(player, action, bowState)
-}
-
-function playAction(player, action="idle", bowState="unequipped") {
-    if (player.actions && player.actions[action]) {
-        if (player.activeAction) {
-            if (player.activeAction != action) {
-                player.actions[player.activeAction].stop()
-            } else  {
-                return
-            }
-        }
-        player.actions[action].reset().play()
-        player.activeAction = action
-        player.bowState = bowState
-    }
+    playerAction(player, action)
 }
 
 function animatePlayers(delta) {
@@ -80,11 +64,10 @@ function animatePlayers(delta) {
         })
 }
 
-function playerAction(playerUuid, action="idle", bowState="unequipped") {
-    var player = roster[playerUuid]
-    if (player) {
-        playAction(player, action, bowState)
-    }
+function playerAction(player, action="idle", bowState="unequipped") {
+    archerAction(player, action)
+    player.activeAction = action
+    player.bowState = bowState
 }
 
 function killPlayer(playerUuid) {
@@ -94,4 +77,4 @@ function killPlayer(playerUuid) {
     })
 }
 
-export { players, animatePlayers, playerAction, playerHitBoxes, killPlayer }
+export { players, animatePlayers, playerHitBoxes, killPlayer }

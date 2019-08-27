@@ -11,7 +11,7 @@ function getAnimation(animations, name){
     return result
 }
 
-export function initActions(mixer, archer) {
+function initActions(mixer, archer) {
     archer.mixer = mixer
     archer.actions = {
         idle: mixer.clipAction(getAnimation(archer.animations, "Idle")),
@@ -31,3 +31,20 @@ export function initActions(mixer, archer) {
         archer.scene.children[0].children[2].visible = bool
     }
 }
+
+function archerAction(player, action="idle") {
+    if (player.actions && player.actions[action]) {
+        if (player.activeAction) {
+            if (player.activeAction != action) {
+                player.actions[player.activeAction].stop()
+            } else  {
+                return
+            }
+        }
+        player.actions[action].reset().play();
+    } else {
+        console.error("action: " + action + " does not exist!");
+    }
+}
+
+export {initActions, archerAction}

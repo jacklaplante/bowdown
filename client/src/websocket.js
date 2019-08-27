@@ -1,6 +1,6 @@
 import { Vector3 } from 'three'
 
-import { players, playerAction } from './players'
+import { players } from './players'
 import { player1, playerUuid } from './player1'
 import { scene } from './scene'
 import { addOtherPlayerArrow } from './arrow'
@@ -33,8 +33,6 @@ ws.onmessage = function onMessage(message) {
                 delete players.get(player)
             } else if (players.get(player).scene && message.x!=null && message.y!=null && message.z!=null && message.rotation!=null && message.action) {
                 players.move(player, new Vector3(message.x, message.y, message.z), message.rotation, message.action, message.bowState)
-            } else if (message.action) {
-                playerAction(player, message.action, message.bowState)
             }
         }
     } else if (message.arrow) {
