@@ -20,24 +20,25 @@ canvas {
 }
 
 #title {
-    font-size: 80pt;
+    font-size: 15vw;
 }
 
 #start {
     margin: 10pt auto;
-    width: 128pt;
+    width: 40vw;
     border-radius: 13pt;
     border: 2pt solid aliceblue;
     padding: 8pt;
-    font-size: 30pt;
+    font-size: 8vw;
+    text-align: center;
 }
 
 #fullscreen {
     position: fixed;
-    top: 50pt;
-    left: 50pt;
+    top: 10vw;
+    left: 10vw;
     transform: translate(-50%, -50%);
-    width: 20pt;
-    height: 20pt;
+    width: 5vw;
+    height: 5vw;
     background-image: url(fullscreen.svg);
 }
