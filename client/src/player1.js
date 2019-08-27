@@ -118,6 +118,7 @@ loader.load( Adam, ( gltf ) => {
             player1.equipBow()
         } else {
             player1.playAction("drawBow")
+            player1.bowState = "drawing"
         }
     }
 
@@ -191,7 +192,6 @@ loader.load( Adam, ( gltf ) => {
 
     player1.animate = function(delta, input){
         var nextPos = new Vector3();
-        var rotation;
         if (player1.falling()) {
             player1.state = 'falling'
             player1.velocity.y -= delta*10
@@ -199,17 +199,16 @@ loader.load( Adam, ( gltf ) => {
             player1.move(nextPos)
         } else {
             player1.velocity.set(0,0,0)
+            var direction = getDirection(input)
+            var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
                 player1.jump();
             }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
-                var direction = getDirection(input)
                 nextPos.z = player1.scene.position.z + direction.y;
                 nextPos.x = player1.scene.position.x + direction.x;
-                rotation = Math.atan2(direction.x, direction.y)
                 player1.velocity.x = (nextPos.x-player1.scene.position.x)/delta
                 player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
-
                 // for moving up/down slopes
                 // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                 nextPos.y = player1.scene.position.y
@@ -231,6 +230,9 @@ loader.load( Adam, ( gltf ) => {
                 }
             } else if (player1.isRunning()) {
                 player1.playAction('idle')
+            }
+            if (player1.bowState == "drawn" || player1.bowState == "drawing") {
+                player1.scene.rotation.y = rotation
             }
             if (input.keyboard.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
