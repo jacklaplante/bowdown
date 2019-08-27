@@ -8,7 +8,8 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 
 var clock = new Clock()
-document.body.appendChild( renderer.domElement )
+document.body.appendChild(renderer.domElement)
+window.addEventListener('resize', resize);
 var input = {
     keyboard: {
         forward: false,
@@ -185,8 +186,6 @@ export function start() {
     document.addEventListener('touchstart', handleTouch);
     document.addEventListener('touchmove', handleTouch);
     document.addEventListener('touchend', onTouchEnd);
-
-    window.addEventListener('resize', resize);
 
     animate();
 
