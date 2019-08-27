@@ -4,6 +4,10 @@ body {
     touch-action: none
 }
 
+canvas {
+    background-color: #611313
+}
+
 #menu {
     font-family: 'Rubik Mono One', sans-serif;
     display: inline;
@@ -15,23 +19,24 @@ body {
 }
 
 #title {
-    font-size: 30pt;
+    font-size: 80pt;
 }
 
 #start {
     margin: 10pt auto;
-    width: 50pt;
-    border-radius: 7pt;
+    width: 128pt;
+    border-radius: 13pt;
     border: 2pt solid aliceblue;
-    padding: 8px;
+    padding: 8pt;
+    font-size: 30pt;
 }
 
 #fullscreen {
     position: fixed;
-    top: 10%;
-    left: 7%;
+    top: 50pt;
+    left: 50pt;
     transform: translate(-50%, -50%);
-    width: 15px;
-    height: 15px;
+    width: 20pt;
+    height: 20pt;
     background-image: url(fullscreen.svg);
 }

@@ -1,7 +1,7 @@
 import {WebGLRenderer} from 'three' 
 
 // make antialias a setting eventually
-var renderer = new WebGLRenderer({ antialias: true });
+var renderer = new WebGLRenderer({ antialias: true, alpha: true });
 renderer.setClearColor("#e5e5e5");
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight);
