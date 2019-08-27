@@ -133,24 +133,33 @@ loader.load( Adam, ( gltf ) => {
         }
     }
 
-    player1.move = function(nextPos, rotation=player1.scene.rotation.y){
+    player1.broadcast = async function() {
+        sendMessage(
+            {
+                player: playerUuid,
+                x: player1.scene.position.x,
+                y: player1.scene.position.y,
+                z: player1.scene.position.z,
+                rotation: player1.scene.rotation.y,
+                action: player1.activeAction
+            }
+        )
+    }
+
+    player1.move = function(nextPos, rotation=player1.scene.rotation.y) {
         if(!player1.collisionDetected(nextPos)){
             player1.scene.position.copy(nextPos)
             player1.scene.rotation.y = rotation
             camera.updateCamera()
-            sendMessage(
-                {
-                    player: playerUuid,
-                    x: player1.scene.position.x,
-                    y: player1.scene.position.y,
-                    z: player1.scene.position.z,
-                    rotation: rotation,
-                    action: player1.activeAction
-                }
-            )
+            player1.broadcast()
         } else {
             player1.velocity.set(0,0,0)
         }
+    }
+
+    player1.rotate = function(rotation) {
+        player1.scene.rotation.y = rotation
+        player1.broadcast()
     }
 
     player1.isRunning = function(){
@@ -230,9 +239,8 @@ loader.load( Adam, ( gltf ) => {
                 }
             } else if (player1.isRunning()) {
                 player1.playAction('idle')
-            }
-            if (player1.bowState == "drawn" || player1.bowState == "drawing") {
-                player1.scene.rotation.y = rotation
+            } else if (player1.bowState == "drawn" || player1.bowState == "drawing") {
+                player1.rotate(rotation)
             }
             if (input.keyboard.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
