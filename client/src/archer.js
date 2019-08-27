@@ -24,4 +24,10 @@ export function initActions(mixer, archer) {
         fireBow: mixer.clipAction(getAnimation(archer.animations, "Fire bow")).setLoop(LoopOnce)
     }
     archer.actions.drawBow.clampWhenFinished = true
+
+    archer.toggleBow = function(bool) { // bool == true means equipBow (bow in hand)
+        // this is a hack because I'm too lazy to figure out how to animate this in blender
+        archer.scene.children[0].children[1].visible = !bool
+        archer.scene.children[0].children[2].visible = bool
+    }
 }

@@ -136,7 +136,8 @@ loader.load( Adam, ( gltf ) => {
                 y: player1.scene.position.y,
                 z: player1.scene.position.z,
                 rotation: player1.scene.rotation.y,
-                action: player1.activeAction
+                action: player1.activeAction,
+                bowState: player1.bowState
             }
         )
     }
@@ -253,14 +254,11 @@ loader.load( Adam, ( gltf ) => {
     player1.equipBow = function() {
         player1.bowState = "equipped"
         player1.playAction("equipBow")
-        // this is a hack because I'm too lazy to figure out how to animate this in blender
-        player1.scene.children[0].children[1].visible = false
-        player1.scene.children[0].children[2].visible = true
+        player1.toggleBow(true)
     }
 
     player1.unequipBow = function() {
-        player1.scene.children[0].children[2].visible = false
-        player1.scene.children[0].children[1].visible = true
+        player1.toggleBow(false)
         player1.bowState = "unequipped";
     }
 

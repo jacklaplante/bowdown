@@ -28,7 +28,7 @@ players.add = function(uuid, position) {
             players.move(uuid, position, 0)
         }
         scene.add( player.scene );
-        playAction(player, "idle")
+        playAction(player)
 
         var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
         hitBox.position.y += 1
@@ -49,14 +49,14 @@ players.init = function(newPlayers) {
         })
 }
 
-players.move = function(playerUuid, pos, rotation, action) {
+players.move = function(playerUuid, pos, rotation, action, bowState) {
     var player = roster[playerUuid]
     player.scene.position.copy(pos)
     player.scene.rotation.y = rotation
-    playAction(player, action)
+    playAction(player, action, bowState)
 }
 
-function playAction(player, action) {
+function playAction(player, action="idle", bowState="unequipped") {
     if (player.actions && player.actions[action]) {
         if (player.activeAction) {
             if (player.activeAction != action) {
@@ -67,6 +67,7 @@ function playAction(player, action) {
         }
         player.actions[action].reset().play()
         player.activeAction = action
+        player.bowState = bowState
     }
 }
 
@@ -79,10 +80,10 @@ function animatePlayers(delta) {
         })
 }
 
-function playerAction(playerUuid, action) {
+function playerAction(playerUuid, action="idle", bowState="unequipped") {
     var player = roster[playerUuid]
     if (player) {
-        playAction(player, action)
+        playAction(player, action, bowState)
     }
 }
 
