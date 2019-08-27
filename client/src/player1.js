@@ -102,6 +102,8 @@ loader.load( Adam, ( gltf ) => {
     player1.playBowAction = function(bowAction) {
         if (player1.isRunning() && player1.activeAction!='runWithLegsOnly') {
             player1.playAction('runWithLegsOnly')
+        } else {
+            player1.actions[player1.activeAction].stop()
         }
         player1.bowAction = bowAction
         player1.actions[bowAction].reset().play();
@@ -240,8 +242,8 @@ loader.load( Adam, ( gltf ) => {
                 if (!player1.isRunning()) {
                     if (player1.bowState == "equipped") {
                         player1.playAction('runWithBow')
-                    // } else if (player1.isAiming()) { there's gotta be a better way to do this
-                    //     player1.playAction('runWithLegsOnly')
+                    } else if (player1.isAiming()) {
+                        player1.playAction('runWithLegsOnly')
                     } else {
                         player1.playAction('running')
                     }
