@@ -102,6 +102,15 @@ loader.load( Adam, ( gltf ) => {
         player1.broadcast();
     }
 
+    player1.playBowAction = function(bowAction) {
+        if (player1.isRunning() && player1.activeAction!='runWithLegsOnly') {
+            player1.playAction('runWithLegsOnly')
+        }
+        player1.bowAction = bowAction
+        player1.actions[bowAction].reset().play();
+        player1.broadcast();
+    }
+
     player1.jump = function() {
         player1.velocity.y = 5
         player1.playAction("jumping")
@@ -111,14 +120,15 @@ loader.load( Adam, ( gltf ) => {
         if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
-            player1.playAction("drawBow")
+            player1.playBowAction("drawBow")
             player1.bowState = "drawing"
         }
     }
 
     player1.onMouseUp = function() {
         if (player1.bowState == "drawn") {
-            player1.playAction("fireBow")
+            player1.playBowAction("fireBow")
+            player1.actions.drawBow.stop();
             shootArrow();
             player1.bowState = "equipped"
         } else if (player1.bowState === "drawing") {
@@ -253,7 +263,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.equipBow = function() {
         player1.bowState = "equipped"
-        player1.playAction("equipBow")
+        player1.playBowAction("equipBow")
         player1.toggleBow(true)
     }
 
