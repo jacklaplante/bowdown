@@ -99,13 +99,7 @@ loader.load( Adam, ( gltf ) => {
         player1.activeAction = action
         player1.actions[action].reset().play();
         player1.state = action
-        sendMessage(
-            {
-                player: playerUuid,
-                // rotation: rotation, you might want this later if multiplayer animation rotations are weird
-                action: action
-            }
-        )
+        player1.broadcast();
     }
 
     player1.jump = function() {
@@ -127,8 +121,9 @@ loader.load( Adam, ( gltf ) => {
             player1.playAction("fireBow")
             shootArrow();
             player1.bowState = "equipped"
-        } else if (player1.state === "drawBow") {
+        } else if (player1.bowState === "drawing") {
             player1.actions.drawBow.stop();
+            player1.bowState = "equipped"
             player1.playAction("idle")
         }
     }
@@ -162,11 +157,15 @@ loader.load( Adam, ( gltf ) => {
         player1.broadcast()
     }
 
-    player1.isRunning = function(){
+    player1.isRunning = function() {
         if (player1.activeAction) {
             return player1.activeAction.toLowerCase().includes("run")
         }
         return false
+    }
+
+    player1.isAiming = function() {
+        return (player1.bowState == "drawn" || player1.bowState == "drawing")
     }
 
     function getDirection(input) {
@@ -233,13 +232,15 @@ loader.load( Adam, ( gltf ) => {
                 if (!player1.isRunning()) {
                     if (player1.bowState == "equipped") {
                         player1.playAction('runWithBow')
+                    // } else if (player1.isAiming()) { there's gotta be a better way to do this
+                    //     player1.playAction('runWithLegsOnly')
                     } else {
                         player1.playAction('running')
                     }
                 }
             } else if (player1.isRunning()) {
                 player1.playAction('idle')
-            } else if (player1.bowState == "drawn" || player1.bowState == "drawing") {
+            } else if (player1.isAiming()) {
                 player1.rotate(rotation)
             }
             if (input.keyboard.space) {
