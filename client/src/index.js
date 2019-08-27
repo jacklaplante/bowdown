@@ -21,6 +21,7 @@ var startButton = document.getElementById("start");
 startButton.innerText = "LOADING"
 import(/* webpackChunkName: "game" */ './game').then(function(module) {
     startButton.innerText = "START"
+    startButton.setAttribute("style", "color: #611313; background: aliceblue; width: 35vw")
     startButton.onclick = function() {
         document.body.removeChild(document.getElementById("menu"))
         module.start();
