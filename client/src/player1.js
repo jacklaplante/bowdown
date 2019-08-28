@@ -102,8 +102,8 @@ loader.load( Adam, ( gltf ) => {
         } else {
             player1.actions[player1.activeMovement].stop()
         }
-        player1.bowAction = bowAction // this is only for broadcasting
         player1.actions[bowAction].reset().play();
+        player1.bowAction = bowAction // this is only for broadcasting
         player1.broadcast();
     }
 
@@ -169,17 +169,6 @@ loader.load( Adam, ( gltf ) => {
     player1.rotate = function(rotation) {
         player1.scene.rotation.y = rotation
         player1.broadcast()
-    }
-
-    player1.isRunning = function() {
-        if (player1.activeMovement) {
-            return player1.activeMovement.toLowerCase().includes("run")
-        }
-        return false
-    }
-
-    player1.isFiring = function() {
-        return (player1.bowState == "drawn" || player1.bowState == "drawing" || player1.bowState == "firing")
     }
 
     function getDirection(input) {

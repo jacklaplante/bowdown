@@ -46,6 +46,17 @@ function initActions(mixer, archer) {
             console.error("action: " + action + " does not exist!");
         }
     }
+
+    archer.isRunning = function() {
+        if (archer.activeMovement) {
+            return archer.activeMovement.toLowerCase().includes("run")
+        }
+        return false
+    }
+
+    archer.isFiring = function() {
+        return (archer.bowState && (archer.bowState == "drawn" || archer.bowState == "drawing" || archer.bowState == "firing"))
+    }
 }
 
 export {initActions}

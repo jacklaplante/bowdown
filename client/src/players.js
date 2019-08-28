@@ -56,7 +56,7 @@ players.move = function(playerUuid, pos, rotation, moveAction, bowAction) {
         player.movementAction(moveAction)
     }
     if (bowAction) {
-
+        player.actions[bowAction].reset().play();
     }
 }
 
