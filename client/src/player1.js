@@ -99,8 +99,9 @@ loader.load( Adam, ( gltf ) => {
     player1.playBowAction = function(bowAction) {
         if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
             player1.moveAction('runWithLegsOnly')
-        } else {
+        } else if (player1.activeMovement) {
             player1.actions[player1.activeMovement].stop()
+            player1.activeMovement = null
         }
         player1.actions[bowAction].reset().play();
         player1.bowAction = bowAction // this is only for broadcasting
