@@ -30,22 +30,22 @@ function initActions(mixer, archer) {
         archer.scene.children[0].children[1].visible = !bool
         archer.scene.children[0].children[2].visible = bool
     }
-}
 
-function movementAction(player, action="idle") {
-    if (player.actions && player.actions[action]) {
-        if (player.activeMovement) {
-            if (player.activeMovement != action) {
-                player.actions[player.activeMovement].stop()
-            } else  {
-                return
+    archer.movementAction = function(action="idle") {
+        if (archer.actions && archer.actions[action]) {
+            if (archer.activeMovement) {
+                if (archer.activeMovement != action) {
+                    archer.actions[archer.activeMovement].stop()
+                } else  {
+                    return
+                }
             }
+            archer.actions[action].reset().play();
+            archer.activeMovement = action
+        } else {
+            console.error("action: " + action + " does not exist!");
         }
-        player.actions[action].reset().play();
-        player.activeMovement = action
-    } else {
-        console.error("action: " + action + " does not exist!");
     }
 }
 
-export {initActions, movementAction}
+export {initActions}

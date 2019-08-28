@@ -6,7 +6,7 @@ import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
-import {initActions, movementAction} from './archer'
+import {initActions} from './archer'
 
 import Adam from '../models/benji.glb'
 
@@ -31,7 +31,7 @@ loader.load( Adam, ( gltf ) => {
             if (event.action.getClip().name == "Fire bow") {
                 player1.bowState = "equipped"
             }
-            player1.movementAction("idle")
+            player1.moveAction("idle")
         }
     })
 
@@ -91,18 +91,14 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
-    player1.movementAction = function(action) {
-        if(player1.activeMovement&&player1.previousAction!=action&&player1.activeMovement!=action){
-            player1.previousAction = player1.activeMovement
-        }
-        movementAction(player1, action)
-        player1.state = action
+    player1.moveAction = function(action) {
+        player1.movementAction(action)
         player1.broadcast();
     }
 
     player1.playBowAction = function(bowAction) {
         if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
-            player1.movementAction('runWithLegsOnly')
+            player1.moveAction('runWithLegsOnly')
         } else {
             player1.actions[player1.activeMovement].stop()
         }
@@ -113,7 +109,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.jump = function() {
         player1.velocity.y = 5
-        player1.movementAction("jumping")
+        player1.moveAction("jumping")
     }
 
     player1.onMouseDown = function() {
@@ -134,7 +130,7 @@ loader.load( Adam, ( gltf ) => {
         } else if (player1.bowState === "drawing") {
             player1.actions.drawBow.stop();
             player1.bowState = "equipped"
-            player1.movementAction("idle")
+            player1.moveAction("idle")
         }
     }
 
@@ -219,7 +215,6 @@ loader.load( Adam, ( gltf ) => {
     player1.animate = function(delta, input){
         var nextPos = new Vector3();
         if (player1.falling()) {
-            player1.state = 'falling'
             player1.velocity.y -= delta*10
             nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
             player1.move(nextPos)
@@ -249,15 +244,15 @@ loader.load( Adam, ( gltf ) => {
                 player1.move(nextPos, rotation)
                 if (!player1.isRunning()) {
                     if (player1.bowState == "equipped") {
-                        player1.movementAction('runWithBow')
+                        player1.moveAction('runWithBow')
                     } else if (player1.isFiring()) {
-                        player1.movementAction('runWithLegsOnly')
+                        player1.moveAction('runWithLegsOnly')
                     } else {
-                        player1.movementAction('running')
+                        player1.moveAction('running')
                     }
                 }
             } else if (player1.isRunning()) {
-                player1.movementAction('idle')
+                player1.moveAction('idle')
             }
             if (input.keyboard.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
@@ -282,7 +277,7 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.unequipBow()
-    player1.movementAction('idle')
+    player1.moveAction('idle')
 });
 
 export { player1, playerUuid, mixer }
