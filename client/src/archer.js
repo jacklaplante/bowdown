@@ -32,19 +32,20 @@ function initActions(mixer, archer) {
     }
 }
 
-function archerAction(player, action="idle") {
+function movementAction(player, action="idle") {
     if (player.actions && player.actions[action]) {
-        if (player.activeAction) {
-            if (player.activeAction != action) {
-                player.actions[player.activeAction].stop()
+        if (player.activeMovement) {
+            if (player.activeMovement != action) {
+                player.actions[player.activeMovement].stop()
             } else  {
                 return
             }
         }
         player.actions[action].reset().play();
+        player.activeMovement = action
     } else {
         console.error("action: " + action + " does not exist!");
     }
 }
 
-export {initActions, archerAction}
+export {initActions, movementAction}

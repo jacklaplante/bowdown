@@ -2,7 +2,7 @@ import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
-import {initActions, archerAction} from './archer'
+import {initActions, movementAction} from './archer'
 import playerX from '../models/benji.glb'
 import {sendMessage} from './websocket';
 
@@ -48,7 +48,7 @@ players.init = function(newPlayers) {
         })
 }
 
-players.move = function(playerUuid, pos, rotation, action, bowState) {
+players.move = function(playerUuid, pos, rotation, action, bowAction) {
     var player = roster[playerUuid]
     player.scene.position.copy(pos)
     player.scene.rotation.y = rotation
@@ -65,9 +65,7 @@ function animatePlayers(delta) {
 }
 
 function playerAction(player, action="idle", bowState="unequipped") {
-    archerAction(player, action)
-    player.activeAction = action
-    player.bowState = bowState
+    movementAction(player, action)
 }
 
 function killPlayer(playerUuid) {

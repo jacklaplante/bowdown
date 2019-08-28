@@ -6,7 +6,7 @@ import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
-import {initActions, archerAction} from './archer'
+import {initActions, movementAction} from './archer'
 
 import Adam from '../models/benji.glb'
 
@@ -25,11 +25,13 @@ loader.load( Adam, ( gltf ) => {
     mixer = new AnimationMixer(gltf.scene);
     initActions(mixer, player1);
     mixer.addEventListener('finished', (event) => {
-        if (event.action.getClip().name !== "Draw bow") {
-            // this is hacky and should be changed
-            player1.playAction("idle")
-        } else {
+        if (event.action.getClip().name == "Draw bow") {
             player1.bowState = "drawn"
+        } else {
+            if (event.action.getClip().name == "Fire bow") {
+                player1.bowState = "equipped"
+            }
+            player1.movementAction("idle")
         }
     })
 
@@ -89,30 +91,29 @@ loader.load( Adam, ( gltf ) => {
         return false;
     }
 
-    player1.playAction = function(action) {
-        archerAction(player1, action)
-        if(player1.activeAction&&player1.previousAction!=action&&player1.activeAction!=action){
-            player1.previousAction = player1.activeAction
+    player1.movementAction = function(action) {
+        if(player1.activeMovement&&player1.previousAction!=action&&player1.activeMovement!=action){
+            player1.previousAction = player1.activeMovement
         }
-        player1.activeAction = action
+        movementAction(player1, action)
         player1.state = action
         player1.broadcast();
     }
 
     player1.playBowAction = function(bowAction) {
-        if (player1.isRunning() && player1.activeAction!='runWithLegsOnly') {
-            player1.playAction('runWithLegsOnly')
+        if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
+            player1.movementAction('runWithLegsOnly')
         } else {
-            player1.actions[player1.activeAction].stop()
+            player1.actions[player1.activeMovement].stop()
         }
-        player1.bowAction = bowAction
+        player1.bowAction = bowAction // this is only for broadcasting
         player1.actions[bowAction].reset().play();
         player1.broadcast();
     }
 
     player1.jump = function() {
         player1.velocity.y = 5
-        player1.playAction("jumping")
+        player1.movementAction("jumping")
     }
 
     player1.onMouseDown = function() {
@@ -129,11 +130,11 @@ loader.load( Adam, ( gltf ) => {
             player1.playBowAction("fireBow")
             player1.actions.drawBow.stop();
             shootArrow();
-            player1.bowState = "equipped"
+            player1.bowState = "firing"
         } else if (player1.bowState === "drawing") {
             player1.actions.drawBow.stop();
             player1.bowState = "equipped"
-            player1.playAction("idle")
+            player1.movementAction("idle")
         }
     }
 
@@ -145,7 +146,8 @@ loader.load( Adam, ( gltf ) => {
                 y: player1.scene.position.y,
                 z: player1.scene.position.z,
                 rotation: player1.scene.rotation.y,
-                action: player1.activeAction,
+                movementAction: player1.activeMovement,
+                bowAction: player1.bowAction,
                 bowState: player1.bowState
             }
         )
@@ -154,6 +156,12 @@ loader.load( Adam, ( gltf ) => {
     player1.move = function(nextPos, rotation=player1.scene.rotation.y) {
         if(!player1.collisionDetected(nextPos)){
             player1.scene.position.copy(nextPos)
+            if (player1.isFiring()) {
+                var direction = new Vector3();
+                camera.getWorldDirection(direction)
+                rotation = Math.atan2(direction.x, direction.z)
+                player1.rotate(rotation)
+            }
             player1.scene.rotation.y = rotation
             camera.updateCamera()
             player1.broadcast()
@@ -168,14 +176,14 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.isRunning = function() {
-        if (player1.activeAction) {
-            return player1.activeAction.toLowerCase().includes("run")
+        if (player1.activeMovement) {
+            return player1.activeMovement.toLowerCase().includes("run")
         }
         return false
     }
 
-    player1.isAiming = function() {
-        return (player1.bowState == "drawn" || player1.bowState == "drawing")
+    player1.isFiring = function() {
+        return (player1.bowState == "drawn" || player1.bowState == "drawing" || player1.bowState == "firing")
     }
 
     function getDirection(input) {
@@ -241,17 +249,15 @@ loader.load( Adam, ( gltf ) => {
                 player1.move(nextPos, rotation)
                 if (!player1.isRunning()) {
                     if (player1.bowState == "equipped") {
-                        player1.playAction('runWithBow')
-                    } else if (player1.isAiming()) {
-                        player1.playAction('runWithLegsOnly')
+                        player1.movementAction('runWithBow')
+                    } else if (player1.isFiring()) {
+                        player1.movementAction('runWithLegsOnly')
                     } else {
-                        player1.playAction('running')
+                        player1.movementAction('running')
                     }
                 }
             } else if (player1.isRunning()) {
-                player1.playAction('idle')
-            } else if (player1.isAiming()) {
-                player1.rotate(rotation)
+                player1.movementAction('idle')
             }
             if (input.keyboard.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
@@ -276,7 +282,7 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.unequipBow()
-    player1.playAction('idle')
+    player1.movementAction('idle')
 });
 
 export { player1, playerUuid, mixer }
