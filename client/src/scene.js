@@ -2,6 +2,12 @@ import { Scene, HemisphereLight, DirectionalLight, TextureLoader, MeshBasicMater
 
 import { loader } from './loader'
 import env from '../models/env.glb'
+import heather_ft from '../skybox/heather_ft.jpg'
+import heather_bk from '../skybox/heather_bk.jpg'
+import heather_up from '../skybox/heather_up.jpg'
+import heather_dn from '../skybox/heather_dn.jpg'
+import heather_rt from '../skybox/heather_rt.jpg'
+import heather_lf from '../skybox/heather_lf.jpg'
 
 var scene = new Scene();
 var collidableEnvironment = []
@@ -14,12 +20,12 @@ loader.load(env, function (gltf) {
 });
 
 let materialArray = [];  
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_ft.jpg') }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_bk.jpg') }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_up.jpg') }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_dn.jpg') }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_rt.jpg') }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_lf.jpg') }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_ft) }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_bk) }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_up) }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_dn) }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_rt) }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_lf) }));
 for (let i = 0; i < 6; i++)
   materialArray[i].side = BackSide;
 let skyboxGeo = new BoxGeometry(1000, 1000, 1000);
