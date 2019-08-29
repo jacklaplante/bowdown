@@ -4,7 +4,7 @@ import {player1} from './player1'
 
 var distance = 3.5;
 
-var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 3000 );
 camera.position.z = 5;
 var cameraTarget = new Vector3( 0, 1, 0 );
 var theta = 0

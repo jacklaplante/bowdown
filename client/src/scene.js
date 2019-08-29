@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide } from 'three'
 
 import { loader } from './loader'
 import env from '../models/env.glb'
@@ -12,6 +12,19 @@ loader.load(env, function (gltf) {
     scene.add(mesh);
     collidableEnvironment.push(mesh)
 });
+
+let materialArray = [];  
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_ft.jpg') }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_bk.jpg') }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_up.jpg') }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_dn.jpg') }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_rt.jpg') }));
+materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load('../skybox/heather_lf.jpg') }));
+for (let i = 0; i < 6; i++)
+  materialArray[i].side = BackSide;
+let skyboxGeo = new BoxGeometry(1000, 1000, 1000);
+let skybox = new Mesh( skyboxGeo, materialArray );
+scene.add( skybox );
 
 scene.add(getHemisphereLight());
 scene.add(getDirectionalLight());
