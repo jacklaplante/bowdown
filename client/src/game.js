@@ -27,6 +27,7 @@ var state = "ready"
 var usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
+const shootButton = document.getElementById("shoot-button")
 
 function animate() {
     requestAnimationFrame( animate );
@@ -97,9 +98,9 @@ function onPointerLockChange() {
 function touchControls(bool) {
     if (bool!=usingTouchControls) {
         if (bool) {
-            shootButton.setAttribute("style", "display: block;"+shootButtonStyle)
+            shootButton.setAttribute("style", "display: block;")
         } else {
-            shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
+            shootButton.setAttribute("style", "display: none;")
         }
         usingTouchControls = bool
     }
@@ -123,7 +124,7 @@ function handleTouch(event) {
         cameraTouch.x = camTouch.pageX
         cameraTouch.y = camTouch.pageY
     } else if (newTouch) {
-        if (newTouch.target.id === "shootButton") {
+        if (newTouch.target.id === "shoot-button") {
             player1.onMouseDown()
             cameraTouch.shoot = true
         }
@@ -157,7 +158,7 @@ function onTouchEnd(event) {
 }
 
 function onMouseMove(event) {
-    if (event.target.id != "shootButton") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
+    if (event.target.id != "shoot-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
         touchControls(false)        
     }
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
@@ -171,7 +172,6 @@ function resize() {
     camera.updateProjectionMatrix();
 }
 
-const shootButtonStyle = "position: fixed; top: 50%; left: 85%; width: 50px; height: 50px; background-image: url(dot-and-circle.svg);"
 export function start() {
     // mouse/keyboard events
     document.addEventListener('mousemove', onMouseMove);
@@ -190,13 +190,6 @@ export function start() {
     animate();
 
     // create crosshair
-    var crosshairHtmlElement = document.createElement("div")
-    crosshairHtmlElement.setAttribute("style", "position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 30px; height: 30px; background-image: url(crosshair.svg);")
-    document.body.appendChild(crosshairHtmlElement)
-    // shoot button for mobile controls
-    var shootButton = document.createElement("div");
-    shootButton.setAttribute("id", "shootButton");
-    
-    shootButton.setAttribute("style", "display: none;"+shootButtonStyle)
-    document.body.appendChild(shootButton)
+    var crosshairHtmlElement = document.getElementById("crosshair")
+    crosshairHtmlElement.setAttribute("style", "display: block;")
 }
