@@ -41,7 +41,9 @@ ws.onmessage = function onMessage(message) {
 }
 
 function sendMessage(message) {
-    ws.send(JSON.stringify(message))
+    if (ws.readyState) {
+        ws.send(JSON.stringify(message))
+    }
 }
 
 export { ws, sendMessage }
