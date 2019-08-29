@@ -35,11 +35,11 @@ canvas {
 
 #fullscreen {
     position: fixed;
-    top: 10vw;
-    left: 10vw;
+    top: 20pt;
+    left: 20pt;
     transform: translate(-50%, -50%);
-    width: 5vw;
-    height: 5vw;
+    width: 20pt;
+    height: 20pt;
     background-image: url(fullscreen.svg);
 }
 
