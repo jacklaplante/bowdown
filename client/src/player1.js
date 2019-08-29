@@ -107,11 +107,6 @@ loader.load( Adam, ( gltf ) => {
         player1.broadcast();
     }
 
-    player1.jump = function() {
-        player1.velocity.y = 5
-        player1.moveAction("jumping")
-    }
-
     player1.onMouseDown = function() {
         if (player1.bowState == "unequipped") {
             player1.equipBow()
@@ -200,42 +195,42 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.animate = function(delta, input){
-        var nextPos = new Vector3();
+        var nextPos = player1.scene.position;
         if (player1.falling()) {
             player1.velocity.y -= delta*10
-            nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
-            player1.move(nextPos)
         } else {
-            player1.velocity.set(0,0,0)
             var direction = getDirection(input)
             var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
-                player1.jump();
+                player1.velocity.y = 5
+                player1.moveAction("jumping", rotation)
+            } else {
+                player1.velocity.set(0,0,0)
             }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
-                nextPos.z = player1.scene.position.z + direction.y;
-                nextPos.x = player1.scene.position.x + direction.x;
-                player1.velocity.x = (nextPos.x-player1.scene.position.x)/delta
-                player1.velocity.z = (nextPos.z-player1.scene.position.z)/delta
-                // for moving up/down slopes
-                // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
-                nextPos.y = player1.scene.position.y
-                var origin = new Vector3(nextPos.x, nextPos.y+1, nextPos.z)
-                var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0))
-                var top = slopeRay.intersectObjects(collidableEnvironment, true);
-                if (top.length>0){
-                    // the 0.01 is kinda hacky tbh
-                    nextPos.y = top[0].point.y+0.01
-                }
-                
-                player1.move(nextPos, rotation)
-                if (!player1.isRunning()) {
-                    if (player1.bowState == "equipped") {
-                        player1.moveAction('runWithBow')
-                    } else if (player1.isFiring()) {
-                        player1.moveAction('runWithLegsOnly')
-                    } else {
-                        player1.moveAction('running')
+                if (input.keyboard.space) {
+                    player1.velocity.x = (direction.x)/delta
+                    player1.velocity.z = (direction.y)/delta
+                } else {
+                    nextPos.z += direction.y;
+                    nextPos.x += direction.x;
+                    // for moving up/down slopes
+                    // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
+                    var origin = new Vector3(nextPos.x, nextPos.y+1, nextPos.z)
+                    var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0))
+                    var top = slopeRay.intersectObjects(collidableEnvironment, true);
+                    if (top.length>0){
+                        // the 0.01 is kinda hacky tbh
+                        nextPos.y = top[0].point.y+0.01
+                    }
+                    if (!player1.isRunning()) {
+                        if (player1.bowState == "equipped") {
+                            player1.moveAction('runWithBow')
+                        } else if (player1.isFiring()) {
+                            player1.moveAction('runWithLegsOnly')
+                        } else {
+                            player1.moveAction('running')
+                        }
                     }
                 }
             } else {
@@ -251,10 +246,10 @@ loader.load( Adam, ( gltf ) => {
                     player1.broadcast()
                 }
             }
-            if (input.keyboard.space) {
-                nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
-                player1.move(nextPos)
-            }
+        }
+        if (nextPos.x || nextPos.y || nextPos.z || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
+            nextPos.add(player1.velocity.clone().multiplyScalar(delta))
+            player1.move(nextPos, rotation)
         }
     }
 
