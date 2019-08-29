@@ -6,7 +6,7 @@ import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
-import {initActions} from './archer'
+import {init} from './archer'
 
 import Adam from '../models/benji.glb'
 
@@ -23,7 +23,7 @@ loader.load( Adam, ( gltf ) => {
 
     scene.add( gltf.scene );
     mixer = new AnimationMixer(gltf.scene);
-    initActions(mixer, player1);
+    init(mixer, player1);
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
             player1.bowState = "drawn"
@@ -100,10 +100,10 @@ loader.load( Adam, ( gltf ) => {
         if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
             player1.moveAction('runWithLegsOnly')
         } else if (player1.activeMovement) {
-            player1.actions[player1.activeMovement].stop()
+            player1.anim[player1.activeMovement].stop()
             player1.activeMovement = null
         }
-        player1.actions[bowAction].reset().play();
+        player1.anim[bowAction].reset().play();
         player1.bowAction = bowAction // this is only for broadcasting
         player1.broadcast();
     }
@@ -125,11 +125,11 @@ loader.load( Adam, ( gltf ) => {
     player1.onMouseUp = function() {
         if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
-            player1.actions.drawBow.stop();
+            player1.anim.drawBow.stop();
             shootArrow();
             player1.bowState = "firing"
         } else if (player1.bowState === "drawing") {
-            player1.actions.drawBow.stop();
+            player1.anim.drawBow.stop();
             player1.bowState = "equipped"
             player1.moveAction("idle")
         }

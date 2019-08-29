@@ -11,9 +11,9 @@ function getAnimation(animations, name){
     return result
 }
 
-function initActions(mixer, archer) {
+function init(mixer, archer) {
     archer.mixer = mixer
-    archer.actions = {
+    archer.anim = {
         idle: mixer.clipAction(getAnimation(archer.animations, "Idle")),
         running: mixer.clipAction(getAnimation(archer.animations, "Running2")),
         runWithBow: mixer.clipAction(getAnimation(archer.animations, "Run with bow")),
@@ -23,7 +23,20 @@ function initActions(mixer, archer) {
         drawBow: mixer.clipAction(getAnimation(archer.animations, "Draw bow")).setLoop(LoopOnce),
         fireBow: mixer.clipAction(getAnimation(archer.animations, "Fire bow")).setLoop(LoopOnce)
     }
-    archer.actions.drawBow.clampWhenFinished = true
+    archer.anim.drawBow.clampWhenFinished = true
+
+    // BOW STATES:
+    // unequipped
+    // equipped
+    // drawing
+    // drawn
+    // BOW ACTIONS   |  BOW STATE TRANSITION        |  ANIMATIONS
+    //  equip        |   unequipped -> equipped     |   equipBow
+    //  draw         |   equipped -> drawing        |   drawBow
+    //  completeDraw |   drawing -> drawn           |
+    //  cancelDraw   |   drawing/drawn -> equipped  |
+    //  fire         |   drawn -> equipped          |   fireBow
+
 
     archer.toggleBow = function(bool) { // bool == true means equipBow (bow in hand)
         // this is a hack because I'm too lazy to figure out how to animate this in blender
@@ -31,16 +44,23 @@ function initActions(mixer, archer) {
         archer.scene.children[0].children[2].visible = bool
     }
 
+    archer.bowAction = function(bowState) {
+        if (archer.bowState != bowState) {
+
+            // player.anim[bowAction].reset().play();
+        }
+    }
+
     archer.movementAction = function(action="idle") {
-        if (archer.actions && archer.actions[action]) {
+        if (archer.anim && archer.anim[action]) {
             if (archer.activeMovement) {
                 if (archer.activeMovement != action) {
-                    archer.actions[archer.activeMovement].stop()
+                    archer.anim[archer.activeMovement].stop()
                 } else  {
                     return
                 }
             }
-            archer.actions[action].reset().play();
+            archer.anim[action].reset().play();
             archer.activeMovement = action
         } else {
             console.error("action: " + action + " does not exist!");
@@ -59,4 +79,4 @@ function initActions(mixer, archer) {
     }
 }
 
-export {initActions}
+export {init}

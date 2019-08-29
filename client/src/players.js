@@ -2,7 +2,7 @@ import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
-import {initActions} from './archer'
+import {init} from './archer'
 import playerX from '../models/benji.glb'
 import {sendMessage} from './websocket';
 
@@ -23,7 +23,7 @@ players.add = function(uuid, position) {
     roster[uuid] = 'loading'
     loader.load(playerX, function(player) {
         roster[uuid] = player; // this needs to happen first, pretty sure
-        initActions(new AnimationMixer(player.scene), player);
+        init(new AnimationMixer(player.scene), player);
         if (position) {
             players.move(uuid, position, 0)
         }
@@ -48,15 +48,15 @@ players.init = function(newPlayers) {
         })
 }
 
-players.move = function(playerUuid, pos, rotation, moveAction, bowAction) {
+players.move = function(playerUuid, pos, rotation, moveAction, bowState) {
     var player = roster[playerUuid]
     player.scene.position.copy(pos)
     player.scene.rotation.y = rotation
     if (moveAction) {
         player.movementAction(moveAction)
     }
-    if (bowAction) {
-        player.actions[bowAction].reset().play();
+    if (bowState) {
+        player.bowState(bowState)
     }
 }
 
