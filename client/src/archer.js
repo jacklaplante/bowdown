@@ -33,8 +33,8 @@ function init(mixer, archer) {
     // BOW ACTIONS   |  BOW STATE TRANSITION        |  ANIMATIONS
     //  equip        |   unequipped -> equipped     |   equipBow
     //  draw         |   equipped -> drawing        |   drawBow
-    //  completeDraw |   drawing -> drawn           |
-    //  cancelDraw   |   drawing/drawn -> equipped  |
+    //  completeDraw |   drawing -> drawn           |   _default
+    //  cancelDraw   |   drawing/drawn -> equipped  |   _default
     //  fire         |   drawn -> equipped          |   fireBow
 
 
@@ -44,10 +44,12 @@ function init(mixer, archer) {
         archer.scene.children[0].children[2].visible = bool
     }
 
-    archer.bowAction = function(bowState) {
-        if (archer.bowState != bowState) {
-
-            // player.anim[bowAction].reset().play();
+    archer.bowAction = function(bowAction) {
+        if (archer.activeBowAction != bowAction) {
+            if (bowAction) {
+                archer.anim[bowAction].reset().play();
+            }
+            archer.activeBowAction = bowAction
         }
     }
 

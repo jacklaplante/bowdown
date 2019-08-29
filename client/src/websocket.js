@@ -31,8 +31,8 @@ ws.onmessage = function onMessage(message) {
                 // player disconnected, remove
                 scene.remove(players.get(player).scene)
                 delete players.get(player)
-            } else if (players.get(player).scene && message.x!=null && message.y!=null && message.z!=null && message.rotation!=null && message.movementAction) {
-                players.move(player, new Vector3(message.x, message.y, message.z), message.rotation, message.movementAction, message.bowState)
+            } else if (players.get(player).scene && message.x!=null && message.y!=null && message.z!=null && message.rotation!=null) {
+                players.move(player, new Vector3(message.x, message.y, message.z), message.rotation, message.movementAction, message.bowAction)
             }
         }
     } else if (message.arrow) {

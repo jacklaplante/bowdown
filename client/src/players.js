@@ -48,15 +48,15 @@ players.init = function(newPlayers) {
         })
 }
 
-players.move = function(playerUuid, pos, rotation, moveAction, bowState) {
+players.move = function(playerUuid, pos, rotation, moveAction, bowAction) {
     var player = roster[playerUuid]
     player.scene.position.copy(pos)
     player.scene.rotation.y = rotation
     if (moveAction) {
         player.movementAction(moveAction)
     }
-    if (bowState) {
-        player.bowState(bowState)
+    if (bowAction) {
+        player.bowAction(bowAction)
     }
 }
 

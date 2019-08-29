@@ -9,7 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "node-static": "^0.7.11",
     "ws": "^7.1.0"
   }
 }

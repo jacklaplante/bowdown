@@ -103,8 +103,7 @@ loader.load( Adam, ( gltf ) => {
             player1.anim[player1.activeMovement].stop()
             player1.activeMovement = null
         }
-        player1.anim[bowAction].reset().play();
-        player1.bowAction = bowAction // this is only for broadcasting
+        player1.bowAction(bowAction);
         player1.broadcast();
     }
 
@@ -130,6 +129,7 @@ loader.load( Adam, ( gltf ) => {
             player1.bowState = "firing"
         } else if (player1.bowState === "drawing") {
             player1.anim.drawBow.stop();
+            player1.bowAction() // this resets the bowAction
             player1.bowState = "equipped"
             player1.moveAction("idle")
         }
@@ -144,7 +144,7 @@ loader.load( Adam, ( gltf ) => {
                 z: player1.scene.position.z,
                 rotation: player1.scene.rotation.y,
                 movementAction: player1.activeMovement,
-                bowAction: player1.bowAction,
+                bowAction: player1.activeBowAction,
                 bowState: player1.bowState
             }
         )
@@ -157,7 +157,6 @@ loader.load( Adam, ( gltf ) => {
                 var direction = new Vector3();
                 camera.getWorldDirection(direction)
                 rotation = Math.atan2(direction.x, direction.z)
-                player1.rotate(rotation)
             }
             player1.scene.rotation.y = rotation
             camera.updateCamera()
@@ -165,11 +164,6 @@ loader.load( Adam, ( gltf ) => {
         } else {
             player1.velocity.set(0,0,0)
         }
-    }
-
-    player1.rotate = function(rotation) {
-        player1.scene.rotation.y = rotation
-        player1.broadcast()
     }
 
     function getDirection(input) {
@@ -241,8 +235,18 @@ loader.load( Adam, ( gltf ) => {
                         player1.moveAction('running')
                     }
                 }
-            } else if (player1.isRunning()) {
-                player1.moveAction('idle')
+            } else {
+                if (player1.isRunning()) {
+                    player1.moveAction('idle')
+                }
+                if (player1.isFiring()) {
+                    var direction = new Vector3();
+                    camera.getWorldDirection(direction)
+                    rotation = Math.atan2(direction.x, direction.z)
+                    player1.scene.rotation.y = rotation
+                    camera.updateCamera()
+                    player1.broadcast()
+                }
             }
             if (input.keyboard.space) {
                 nextPos = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))

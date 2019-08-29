@@ -45,15 +45,3 @@ function sendMessage(client, message) {
     client.send(JSON.stringify(message));
     console.log('sending: %s', JSON.stringify(message));
 }
-
-
-// static client server
-var static = require('node-static');
-var file = new static.Server('../client/dist');
-var port = 8081
-require('http').createServer(function (request, response) {
-    request.addListener('end', function () {
-        file.serve(request, response);
-    }).resume();
-}).listen(port);
-console.log("serving index.html at: http://localhost:"+port);
