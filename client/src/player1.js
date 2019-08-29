@@ -118,6 +118,7 @@ loader.load( Adam, ( gltf ) => {
         } else {
             player1.playBowAction("drawBow")
             player1.bowState = "drawing"
+            camera.zoomIn()
         }
     }
 
@@ -127,11 +128,13 @@ loader.load( Adam, ( gltf ) => {
             player1.anim.drawBow.stop();
             shootArrow();
             player1.bowState = "firing"
+            camera.zoomOut()
         } else if (player1.bowState === "drawing") {
             player1.anim.drawBow.stop();
             player1.bowAction() // this resets the bowAction
             player1.bowState = "equipped"
             player1.moveAction("idle")
+            camera.zoomOut()
         }
     }
 

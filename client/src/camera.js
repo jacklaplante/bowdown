@@ -5,6 +5,7 @@ import {player1} from './player1'
 var distance = 3.5;
 
 var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 3000 );
+camera.defaultZoom = camera.getFocalLength()
 camera.position.z = 5;
 var cameraTarget = new Vector3( 0, 1, 0 );
 var theta = 0
@@ -18,6 +19,14 @@ camera.nextPosition = function(dist) {
         nextPos.z = cameraTarget.z + dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
         return nextPos
     }
+}
+
+camera.zoomIn = function() {
+    camera.setFocalLength(camera.defaultZoom+4)
+}
+
+camera.zoomOut = function() {
+    camera.setFocalLength(camera.defaultZoom)
 }
 
 camera.setPosition = function(nextPos) {
