@@ -201,8 +201,9 @@ export function start() {
     var crosshairHtmlElement = document.getElementById("crosshair")
     crosshairHtmlElement.setAttribute("style", "display: block;")
 
-    if (renderer.domElement.width < renderer.domElement.height) {
-        renderer.domElement.setAttribute("style", "transform: rotate(90deg); transform-origin: bottom left; width: 100vh; height: 100vw; margin-top: -100vw;");
+    if (screen.width < screen.height) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
+        // first lets make sure if this works on iphones
+        document.body.classList.add('rotated')
         camera.updateProjectionMatrix();
     }
 }

@@ -63,4 +63,23 @@ canvas {
     width: 70pt;
     height: 70pt;
     background-image: url(dot-and-circle.svg);
+    z-index: 1;
+}
+
+.rotated #shoot-button {
+    top: 85%;
+    left: 50%;
+}
+
+canvas {
+    width: 100vw;
+    height: 100vh;
+}
+
+.rotated canvas {
+    transform: rotate(90deg);
+    transform-origin: bottom left;
+    width: 100vh;
+    height: 100vw;
+    margin-top: -100vw;
 }
