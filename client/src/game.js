@@ -27,6 +27,7 @@ var state = "ready"
 var usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
+const cameraTouchSensitivity = 4
 const shootButton = document.getElementById("shoot-button")
 var rotated
 
@@ -121,7 +122,11 @@ function handleTouch(event) {
         }
     }
     if (camTouch) {
-        camera.moveCamera(4*(camTouch.pageX-cameraTouch.x), 4*(camTouch.pageY-cameraTouch.y))
+        if (rotated) {
+            camera.moveCamera(cameraTouchSensitivity*(camTouch.pageY-cameraTouch.y), -1*cameraTouchSensitivity*(camTouch.pageX-cameraTouch.x))
+        } else {
+            camera.moveCamera(cameraTouchSensitivity*(camTouch.pageX-cameraTouch.x), cameraTouchSensitivity*(camTouch.pageY-cameraTouch.y))
+        }
         cameraTouch.x = camTouch.pageX
         cameraTouch.y = camTouch.pageY
     } else if (newTouch) {
@@ -136,8 +141,13 @@ function handleTouch(event) {
         }
     }
     if (moveTouch) {
-        input.touch.x = moveTouch.pageX-movementTouch.x
-        input.touch.y = -1*(moveTouch.pageY-movementTouch.y) // this needs to be negative for some reason
+        if (rotated) {
+            input.touch.y = moveTouch.pageX-movementTouch.x
+            input.touch.x = moveTouch.pageY-movementTouch.y
+        } else {
+            input.touch.x = moveTouch.pageX-movementTouch.x
+            input.touch.y = -1*(moveTouch.pageY-movementTouch.y) // this needs to be negative for some reason
+        }
     } else if (newTouch &&
         ((rotated && newTouch.pageY < window.innerHeight/2) || (!rotated && newTouch.pageX < window.innerWidth/2))) {
         movementTouch.id = newTouch.identifier
