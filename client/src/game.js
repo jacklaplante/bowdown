@@ -205,15 +205,16 @@ export function start() {
 
     if (screen.width < screen.height) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
         // first lets make sure if this works on iphones
-        if (document.body.requestFullscreen) {
-            document.body.requestFullscreen();
-        } else if (document.body.mozRequestFullScreen) { /* Firefox */
-            document.body.mozRequestFullScreen();
-        } else if (document.body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-            document.body.webkitRequestFullscreen();
-        } else if (document.body.msRequestFullscreen) { /* IE/Edge */
-            document.body.msRequestFullscreen();
-        }
+        
+        // if (document.body.requestFullscreen) {
+        //     document.body.requestFullscreen();
+        // } else if (document.body.mozRequestFullScreen) { /* Firefox */
+        //     document.body.mozRequestFullScreen();
+        // } else if (document.body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+        //     document.body.webkitRequestFullscreen();
+        // } else if (document.body.msRequestFullscreen) { /* IE/Edge */
+        //     document.body.msRequestFullscreen();
+        // }
         document.body.classList.add('rotated')
         rotated = true
     }
