@@ -203,6 +203,7 @@ function rotate() {
 }
 
 export function start() {
+    document.body.classList.add('playing')
     // mouse/keyboard events
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('keydown', onKeyDown);
@@ -217,8 +218,6 @@ export function start() {
     document.addEventListener('touchend', onTouchEnd);
     // renderer
     document.body.appendChild(renderer.domElement)
-    // show crosshair
-    document.getElementById("crosshair").setAttribute("style", "display: block;")
     // auto rotate
     if (window.innerWidth < window.innerHeight && screen.orientation.type.includes("portrait")) {
         if (document.body.requestFullscreen) {

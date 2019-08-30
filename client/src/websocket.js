@@ -4,6 +4,7 @@ import { players } from './players'
 import { player1, playerUuid } from './player1'
 import { scene } from './scene'
 import { addOtherPlayerArrow } from './arrow'
+import { newChatMessage } from './chat'
 
 var serverAddress
 if (process.env.NODE_ENV == 'production') {
@@ -29,7 +30,9 @@ ws.onmessage = function onMessage(message) {
             if (message.damage) {
                 player1.takeDamage(message.damage)
             }
-        } else {
+        } else if (message.chatMessage) {
+            newChatMessage(message.chatMessage)
+        }else {
             if (!players.get(player)) {
                 players.add(player, new Vector3(message.x, message.y, message.z))
             } else if (message.status==='disconnected') {
