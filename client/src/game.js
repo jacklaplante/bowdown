@@ -214,7 +214,7 @@ export function start() {
     var crosshairHtmlElement = document.getElementById("crosshair")
     crosshairHtmlElement.setAttribute("style", "display: block;")
 
-    if (screen.width < screen.height) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
+    if (screen.width < screen.height && screen.orientation.type.includes("portrait")) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
         // first lets make sure if this works on iphones
         
         if (document.body.requestFullscreen) {
@@ -226,6 +226,7 @@ export function start() {
         } else if (document.body.msRequestFullscreen) { /* IE/Edge */
             document.body.msRequestFullscreen();
         }
+        screen.orientation.lock();
         document.body.classList.add('rotated')
         rotated = true
     }
