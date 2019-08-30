@@ -195,7 +195,7 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.animate = function(delta, input){
-        var nextPos = player1.scene.position;
+        var nextPos;
         if (player1.falling()) {
             player1.velocity.y -= delta*10
         } else {
@@ -212,6 +212,7 @@ loader.load( Adam, ( gltf ) => {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
+                    nextPos = player1.scene.position
                     nextPos.z += direction.y;
                     nextPos.x += direction.x;
                     // for moving up/down slopes
@@ -247,7 +248,8 @@ loader.load( Adam, ( gltf ) => {
                 }
             }
         }
-        if (nextPos.x || nextPos.y || nextPos.z || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
+        if ( nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
+            if (!nextPos) nextPos = player1.scene.position
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             player1.move(nextPos, rotation)
         }
