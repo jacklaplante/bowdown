@@ -179,16 +179,27 @@ function onMouseMove(event) {
 
 function resize() {
     var width, height;
-    if (rotated) {
+    width = window.innerWidth
+    height = window.innerHeight
+    if (rotated && window.innerWidth > window.innerHeight) {
+        rotated = false
+        document.body.classList.remove("rotated")
+    } else if (rotated) {
         width = window.innerHeight
         height = window.innerWidth
-    } else {
-        width = window.innerWidth
-        height = window.innerHeight
+    } else if (window.innerWidth < window.innerHeight) {
+        rotate()
+        width = window.innerHeight
+        height = window.innerWidth
     }
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+}
+
+function rotate() {
+    document.body.classList.add('rotated')
+    rotated = true
 }
 
 export function start() {
@@ -214,7 +225,7 @@ export function start() {
     var crosshairHtmlElement = document.getElementById("crosshair")
     crosshairHtmlElement.setAttribute("style", "display: block;")
 
-    if (screen.width < screen.height && screen.orientation.type.includes("portrait")) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
+    if (window.innerWidth < window.innerHeight && screen.orientation.type.includes("portrait")) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
         // first lets make sure if this works on iphones
         
         if (document.body.requestFullscreen) {
@@ -226,8 +237,7 @@ export function start() {
         } else if (document.body.msRequestFullscreen) { /* IE/Edge */
             document.body.msRequestFullscreen();
         }
-        screen.orientation.lock();
-        document.body.classList.add('rotated')
-        rotated = true
+        
+        rotate()
     }
 }
