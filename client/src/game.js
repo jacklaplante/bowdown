@@ -28,6 +28,7 @@ var usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
 const shootButton = document.getElementById("shoot-button")
+var rotated
 
 function animate() {
     requestAnimationFrame( animate );
@@ -128,7 +129,7 @@ function handleTouch(event) {
             player1.onMouseDown()
             cameraTouch.shoot = true
         }
-        if (newTouch.pageX > window.innerWidth/2) {
+        if ((rotated && newTouch.pageY > window.innerHeight/2) || (!rotated && newTouch.pageX > window.innerWidth/2)) {
             cameraTouch.id = newTouch.identifier
             cameraTouch.x = newTouch.pageX
             cameraTouch.y = newTouch.pageY
@@ -137,7 +138,8 @@ function handleTouch(event) {
     if (moveTouch) {
         input.touch.x = moveTouch.pageX-movementTouch.x
         input.touch.y = -1*(moveTouch.pageY-movementTouch.y) // this needs to be negative for some reason
-    } else if (newTouch && newTouch.pageX < window.innerWidth/2) {
+    } else if (newTouch &&
+        ((rotated && newTouch.pageY < window.innerHeight/2) || (!rotated && newTouch.pageX < window.innerWidth/2))) {
         movementTouch.id = newTouch.identifier
         movementTouch.x = newTouch.pageX
         movementTouch.y = newTouch.pageY
@@ -203,7 +205,16 @@ export function start() {
 
     if (screen.width < screen.height) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
         // first lets make sure if this works on iphones
+        if (document.body.requestFullscreen) {
+            document.body.requestFullscreen();
+        } else if (document.body.mozRequestFullScreen) { /* Firefox */
+            document.body.mozRequestFullScreen();
+        } else if (document.body.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+            document.body.webkitRequestFullscreen();
+        } else if (document.body.msRequestFullscreen) { /* IE/Edge */
+            document.body.msRequestFullscreen();
+        }
         document.body.classList.add('rotated')
-        camera.updateProjectionMatrix();
+        rotated = true
     }
 }
