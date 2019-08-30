@@ -37,9 +37,10 @@ loader.load( Adam, ( gltf ) => {
 
     player1.falling = function(delta){
         if (delta) {
-            var vert = new Vector3(0, 1, 0);
-            vert = vert.clone().normalize()
-            var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y-0.1, player1.scene.position.z), vert, 0, -1*player1.velocity.y*delta);
+            var origin = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
+            origin.y-=0.1
+            var dir = new Vector3(0, 1, 0);
+            var ray = new Raycaster(origin, dir, 0, 0.2+Math.abs(player1.velocity.y*delta));
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
                 player1.scene.position.copy(collisionResults[collisionResults.length-1].point)
