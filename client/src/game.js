@@ -8,7 +8,6 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 
 var clock = new Clock()
-document.body.appendChild(renderer.domElement)
 window.addEventListener('resize', resize);
 var input = {
     keyboard: {
@@ -180,14 +179,14 @@ function onMouseMove(event) {
 
 function resize() {
     var width, height;
-    if (renderer.domElement.width < renderer.domElement.height) {
-        width = renderer.domElement.height
-        height = renderer.domElement.width
+    if (rotated) {
+        width = window.innerHeight
+        height = window.innerWidth
     } else {
-        width = renderer.domElement.width
-        height = renderer.domElement.height
+        width = window.innerWidth
+        height = window.innerHeight
     }
-    renderer.setSize(width, height);
+    renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 }
@@ -206,6 +205,8 @@ export function start() {
     document.addEventListener('touchstart', handleTouch);
     document.addEventListener('touchmove', handleTouch);
     document.addEventListener('touchend', onTouchEnd);
+
+    document.body.appendChild(renderer.domElement)
 
     animate();
 
