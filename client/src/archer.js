@@ -50,7 +50,7 @@ function init(mixer, archer) {
                 if (archer.activeBowAction) {
                     archer.anim[archer.activeBowAction].stop()
                 }
-                if (archer.activeMovement) {
+                if (archer.activeMovement && archer.activeMovement != "runWithLegsOnly") {
                     archer.anim[archer.activeMovement].stop()
                 }
                 if (bowAction) {

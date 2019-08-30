@@ -130,7 +130,8 @@ loader.load( Adam, ( gltf ) => {
             camera.zoomOut()
         } else if (player1.bowState === "drawing") {
             player1.anim.drawBow.stop();
-            player1.bowAction() // this resets the bowAction
+            player1.anim[player1.activeBowAction].stop()
+            player1.activeBowAction = null
             player1.bowState = "equipped"
             player1.moveAction("idle")
             camera.zoomOut()
