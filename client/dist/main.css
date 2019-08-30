@@ -52,6 +52,7 @@ canvas {
     width: 30px;
     height: 30px;
     background-image: url(crosshair.svg);
+    z-index: 1;
 }
 
 #shoot-button {

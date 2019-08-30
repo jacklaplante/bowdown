@@ -202,7 +202,7 @@ export function start() {
     crosshairHtmlElement.setAttribute("style", "display: block;")
 
     if (renderer.domElement.width < renderer.domElement.height) {
-        renderer.domElement.setAttribute("style", "transform: rotate(90deg)")
-        resize()
+        renderer.domElement.setAttribute("style", "transform: rotate(90deg); transform-origin: bottom left; width: 100vh; height: 100vw; margin-top: -100vw;");
+        camera.updateProjectionMatrix();
     }
 }
