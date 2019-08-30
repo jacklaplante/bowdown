@@ -7,7 +7,7 @@ var distance = 3.5;
 var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 3000 );
 camera.defaultZoom = camera.getFocalLength()
 camera.position.z = 5;
-var cameraTarget = new Vector3( 0, 1, 0 );
+var cameraTarget = new Vector3( 0, 1.5, 0 );
 var theta = 0
 var phi = 0
 
@@ -37,12 +37,12 @@ camera.updateCamera = function() {
     if (player1!=null) {
         var v = player1.scene.position.clone().sub(camera.position.clone())
         var v2 = new Vector3(-v.z, 0, v.x).normalize()
-        cameraTarget.copy(player1.scene.position.clone().add(v2)).setY(player1.scene.position.y+1)
+        cameraTarget.copy(player1.scene.position.clone().add(v2)).setY(player1.scene.position.y+1.5)
         
         var nextPos = camera.nextPosition(distance)
 
         // this ensures the camera doesn't go behind any meshes
-        var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0, 5);
+        var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0, distance);
         var collisions = ray.intersectObjects(collidableEnvironment, true);
         if(collisions.length>0){
             // this is just some voodoo
