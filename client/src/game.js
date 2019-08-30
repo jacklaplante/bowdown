@@ -211,23 +211,16 @@ export function start() {
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('mouseup', onMouseUp);
     document.addEventListener('pointerlockchange', onPointerLockChange)
-
     // touch events
     document.addEventListener('touchstart', handleTouch);
     document.addEventListener('touchmove', handleTouch);
     document.addEventListener('touchend', onTouchEnd);
-
+    // renderer
     document.body.appendChild(renderer.domElement)
-
-    animate();
-
-    // create crosshair
-    var crosshairHtmlElement = document.getElementById("crosshair")
-    crosshairHtmlElement.setAttribute("style", "display: block;")
-
-    if (window.innerWidth < window.innerHeight && screen.orientation.type.includes("portrait")) { // maybe add this clas as well: screen.orientation.type.includes("portrait")
-        // first lets make sure if this works on iphones
-        
+    // show crosshair
+    document.getElementById("crosshair").setAttribute("style", "display: block;")
+    // auto rotate
+    if (window.innerWidth < window.innerHeight && screen.orientation.type.includes("portrait")) {
         if (document.body.requestFullscreen) {
             document.body.requestFullscreen();
         } else if (document.body.mozRequestFullScreen) { /* Firefox */
@@ -237,7 +230,8 @@ export function start() {
         } else if (document.body.msRequestFullscreen) { /* IE/Edge */
             document.body.msRequestFullscreen();
         }
-        
         rotate()
     }
+
+    animate();
 }

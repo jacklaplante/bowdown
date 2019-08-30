@@ -45,14 +45,21 @@ function init(mixer, archer) {
     }
 
     archer.bowAction = function(bowAction) {
-        if (archer.activeBowAction != bowAction) {
-            if (archer.activeBowAction) {
-                archer.anim[archer.activeBowAction].stop()
+        if (archer.anim && archer.anim[bowAction]){
+            if (archer.activeBowAction != bowAction) {
+                if (archer.activeBowAction) {
+                    archer.anim[archer.activeBowAction].stop()
+                }
+                if (archer.activeMovement) {
+                    archer.anim[archer.activeMovement].stop()
+                }
+                if (bowAction) {
+                    archer.anim[bowAction].reset().play();
+                }
+                archer.activeBowAction = bowAction
             }
-            if (bowAction) {
-                archer.anim[bowAction].reset().play();
-            }
-            archer.activeBowAction = bowAction
+        } else {
+            console.error("action: " + bowAction + " does not exist!");
         }
     }
 

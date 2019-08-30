@@ -35,15 +35,18 @@ loader.load( Adam, ( gltf ) => {
         }
     })
 
-    player1.falling = function(){
-        var vert = new Vector3(0, -1, 0);
-        vert = vert.clone().normalize()
-        var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y+0.9, player1.scene.position.z), vert);
-        var collisionResults = ray.intersectObjects(collidableEnvironment, true);
-        if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
-            return false
+    player1.falling = function(delta){
+        if (delta) {
+            var vert = new Vector3(0, 1, 0);
+            vert = vert.clone().normalize()
+            var ray = new Raycaster(new Vector3(player1.scene.position.x, player1.scene.position.y-0.1, player1.scene.position.z), vert, 0, -1*player1.velocity.y*delta);
+            var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+            if ( collisionResults.length > 0) {
+                player1.scene.position.copy(collisionResults[collisionResults.length-1].point)
+                return false
+            }
+            return true;   
         }
-        return true;
     }
 
     var displayCollisionLines = false
@@ -196,7 +199,7 @@ loader.load( Adam, ( gltf ) => {
 
     player1.animate = function(delta, input){
         var nextPos;
-        if (player1.falling()) {
+        if (player1.falling(delta)) {
             player1.velocity.y -= delta*10
         } else {
             var direction = getDirection(input)
