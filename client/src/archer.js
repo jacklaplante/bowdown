@@ -46,6 +46,9 @@ function init(mixer, archer) {
 
     archer.bowAction = function(bowAction) {
         if (archer.activeBowAction != bowAction) {
+            if (archer.activeBowAction) {
+                archer.anim[archer.activeBowAction].stop()
+            }
             if (bowAction) {
                 archer.anim[bowAction].reset().play();
             }
