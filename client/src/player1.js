@@ -217,7 +217,7 @@ loader.load( Adam, ( gltf ) => {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
-                    nextPos = player1.scene.position
+                    nextPos = player1.scene.position.clone()
                     nextPos.z += direction.y;
                     nextPos.x += direction.x;
                     // for moving up/down slopes
