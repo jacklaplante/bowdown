@@ -167,8 +167,16 @@ function onMouseMove(event) {
 }
 
 function resize() {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    camera.aspect = window.innerWidth / window.innerHeight;
+    var width, height;
+    if (renderer.domElement.width < renderer.domElement.height) {
+        width = renderer.domElement.height
+        height = renderer.domElement.width
+    } else {
+        width = renderer.domElement.width
+        height = renderer.domElement.height
+    }
+    renderer.setSize(width, height);
+    camera.aspect = width / height;
     camera.updateProjectionMatrix();
 }
 
@@ -192,4 +200,9 @@ export function start() {
     // create crosshair
     var crosshairHtmlElement = document.getElementById("crosshair")
     crosshairHtmlElement.setAttribute("style", "display: block;")
+
+    if (renderer.domElement.width < renderer.domElement.height) {
+        renderer.domElement.setAttribute("style", "transform: rotate(90deg)")
+        resize()
+    }
 }

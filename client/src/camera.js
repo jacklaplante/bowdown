@@ -3,8 +3,15 @@ import {collidableEnvironment} from './scene'
 import {player1} from './player1'
 
 var distance = 3.5;
-
-var camera = new PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 3000 );
+var width, height;
+if (window.innerWidth < window.innerHeight) {
+    width = window.innerHeight
+    height = window.innerWidth
+} else {
+    width = window.innerWidth
+    height = window.innerHeight
+}
+var camera = new PerspectiveCamera( 75, width / height, 0.1, 3000 );
 camera.defaultZoom = camera.getFocalLength()
 camera.position.z = 5;
 var cameraTarget = new Vector3( 0, 1.5, 0 );
