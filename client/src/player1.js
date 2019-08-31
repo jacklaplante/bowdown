@@ -275,7 +275,7 @@ loader.load( Adam, ( gltf ) => {
         player1.scene.position.y -=20
     }
 
-    player1.unequipBow()
+    player1.equipBow()
     player1.moveAction('idle')
 });
 
