@@ -45,7 +45,7 @@ function getHemisphereLight() {
 }
 
 function getDirectionalLight() {
-    var dirLight = new DirectionalLight( 0xffffff, 1 );
+    var dirLight = new DirectionalLight();
     dirLight.color.setHSL( 0.1, 1, 0.95 );
     dirLight.position.set( - 1, 1.75, 1 );
     dirLight.position.multiplyScalar( 30 );

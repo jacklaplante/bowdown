@@ -67,7 +67,7 @@ loader.load( Adam, ( gltf ) => {
                 c*=collisionModifier
                 var vert = new Vector3(a, 1, c);
                 vert = vert.clone().normalize()
-                var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert);
+                var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert, 0, vert.length());
                 if (displayCollisionLines){
                     var geometry = new Geometry();
                     geometry.vertices.push(
@@ -223,7 +223,7 @@ loader.load( Adam, ( gltf ) => {
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                     var origin = new Vector3(nextPos.x, nextPos.y+1, nextPos.z)
-                    var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0))
+                    var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0), 0, 1)
                     var top = slopeRay.intersectObjects(collidableEnvironment, true);
                     if (top.length>0){
                         // the 0.01 is kinda hacky tbh
