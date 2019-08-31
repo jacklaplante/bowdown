@@ -69,6 +69,7 @@ function moveArrow(arrow, delta) {
 function animateArrows(delta) {
     player1Arrows.forEach((arrow) => {
         if(!arrow.stopped){
+            stopArrowIfOutOfBounds(arrow)
             moveArrow(arrow, delta)
             // detect arrow collisions
             var direction = new Vector3(0,0,1)
@@ -96,6 +97,12 @@ function animateArrows(delta) {
     otherPlayerArrows.forEach((arrow) => {
         moveArrow(arrow, delta)
     })
+}
+
+function stopArrowIfOutOfBounds(arrow) {
+    if (arrow.position.x > 500 ||  arrow.position.x < -500 || arrow.position.y > 500 ||  arrow.position.y < -500 || arrow.position.z > 500 ||  arrow.position.z < -500) {
+        arrow.stopped = true
+    }
 }
 
 export {shootArrow, animateArrows, addOtherPlayerArrow}
