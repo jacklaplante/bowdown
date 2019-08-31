@@ -12,7 +12,10 @@ if (window.innerWidth < window.innerHeight) {
     height = window.innerHeight
 }
 var camera = new PerspectiveCamera( 75, width / height, 0.1, 3000 );
-camera.defaultZoom = camera.getFocalLength()
+camera.zoomState = "out"
+const focalLengthOut = camera.getFocalLength()
+const focalLengthIn = camera.getFocalLength()+4
+const zoomSpeed = 60
 camera.position.z = 5;
 var cameraTarget = new Vector3( 0, 1.5, 0 );
 var theta = 0
@@ -29,11 +32,35 @@ camera.nextPosition = function(dist) {
 }
 
 camera.zoomIn = function() {
-    camera.setFocalLength(camera.defaultZoom+4)
+    camera.zoomState = "zooming in"
 }
 
 camera.zoomOut = function() {
-    camera.setFocalLength(camera.defaultZoom)
+    camera.zoomState = "zooming out"
+}
+
+camera.animate = function(delta) {
+    if (camera.zoomState == "zooming in") {
+        if (camera.getFocalLength() < focalLengthIn) {
+            var focalLength = camera.getFocalLength()+delta*zoomSpeed
+            if (focalLength < focalLengthIn) {
+                camera.setFocalLength(focalLength)
+            } else {
+                camera.setFocalLength(focalLengthIn)
+                camera.zoomState = "in"
+            }
+        }
+    } else if (camera.zoomState == "zooming out") {
+        if (camera.getFocalLength() > focalLengthOut) {
+            var focalLength = camera.getFocalLength()-delta*zoomSpeed
+            if (focalLength > focalLengthOut) {
+                camera.setFocalLength(focalLength)
+            } else {
+                camera.setFocalLength(focalLengthOut)
+                camera.zoomState = "out"
+            }
+        }
+    }
 }
 
 camera.setPosition = function(nextPos) {

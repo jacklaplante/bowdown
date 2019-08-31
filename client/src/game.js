@@ -41,6 +41,7 @@ function animate() {
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)
     }
+    camera.animate(delta);
     renderer.render( scene, camera );
 }
 
