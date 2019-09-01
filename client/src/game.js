@@ -22,7 +22,7 @@ var input = {
         y: 0
     }
 }
-var state = "ready"
+var state = "playing"
 var usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
@@ -42,6 +42,7 @@ function animate() {
         animatePlayers(delta)
     }
     camera.animate(delta);
+    document.getElementById("fps").innerHTML = Math.round(1/delta)
     renderer.render( scene, camera );
 }
 
@@ -74,6 +75,7 @@ function onKeyUp(event) {
 
 function onMouseDown() {
     if (state === "playing") {
+        document.body.requestPointerLock();
         player1.onMouseDown()
     }
 }
@@ -83,17 +85,23 @@ function onMouseUp() {
     }
 }
 
+function play() {
+    document.body.classList.remove("ready")
+    document.body.classList.add('playing')
+    state = "playing"
+}
 
-function onClick() {
-    if (state !== "playing") {
-        document.body.requestPointerLock();
-        state = "playing"
-    }
+function gameOver() {
+    state = "gameOver"
+    document.body.classList.remove("playing")
+    document.getElementById("title").innerHTML = "Game over"
+    document.body.classList.remove("playing")
+    document.body.classList.add("gameOver")
 }
 
 function onPointerLockChange() {
     if (!document.pointerLockElement) {
-        state = "ready"
+        state = "playing"
     }
 }
 
@@ -203,13 +211,11 @@ function rotate() {
     rotated = true
 }
 
-export function start() {
-    document.body.classList.add('playing')
+function start() {
     // mouse/keyboard events
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('keyup', onKeyUp);
-    document.addEventListener('click', onClick);
     document.addEventListener('mousedown', onMouseDown);
     document.addEventListener('mouseup', onMouseUp);
     document.addEventListener('pointerlockchange', onPointerLockChange)
@@ -233,5 +239,16 @@ export function start() {
         rotate()
     }
 
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    document.getElementById("respawn").onclick = function() {
+        player1.respawn()
+        play()   
+    }
+
+    play()
 }
+
+export {start, gameOver}

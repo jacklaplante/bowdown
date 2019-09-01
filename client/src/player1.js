@@ -7,6 +7,7 @@ import {camera} from './camera'
 import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
+import {gameOver} from './game'
 
 import Adam from '../models/benji.glb'
 
@@ -272,7 +273,12 @@ loader.load( Adam, ( gltf ) => {
     }
 
     player1.takeDamage = function() {
+        gameOver()
         player1.scene.position.y -=20
+    }
+
+    player1.respawn = function() {
+        player1.scene.position.copy(new Vector3())
     }
 
     player1.equipBow()

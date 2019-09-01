@@ -17,13 +17,11 @@ fullScreenButton.onclick = function() {
     }
 }
 
-var startButton = document.getElementById("start");
-startButton.innerText = "LOADING"
 import(/* webpackChunkName: "game" */ './game').then(function(module) {
-    startButton.innerText = "START"
-    startButton.setAttribute("style", "color: #134461; background: #ffdba5; width: 35vw")
-    startButton.onclick = function() {
-        document.body.removeChild(document.getElementById("menu"))
+    document.body.classList.remove("loading")
+    document.body.classList.add("ready")
+    document.getElementById("start").onclick = function() {
+        document.body.requestPointerLock();
         module.start();
     }
 })

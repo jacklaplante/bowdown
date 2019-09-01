@@ -22,11 +22,16 @@ canvas {
     color: #ffdba5;
 }
 
+.playing #menu {
+    display: none
+}
+
 #title {
     font-size: 15vw;
 }
 
-#start {
+.button {
+    display: none;
     margin: 10pt auto;
     width: 49vw;
     border-radius: 13pt;
@@ -34,6 +39,21 @@ canvas {
     padding: 8pt;
     font-size: 8vw;
     text-align: center;
+}
+
+.loading #loading {
+    display: block;
+}
+
+.ready #start {
+    display: block;
+    color: #134461;
+    background: #ffdba5;
+    width: 35vw
+}
+
+.gameOver #respawn {
+    display: block
 }
 
 #fullscreen {
@@ -94,4 +114,10 @@ canvas {
     width: 100vh;
     height: 100vw;
     margin-top: -100vw;
+}
+
+#fps {
+    right: 0;
+    position: absolute;
+    color: #3fff00;
 }
