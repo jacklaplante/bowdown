@@ -14,7 +14,7 @@ if (window.innerWidth < window.innerHeight) {
 var camera = new PerspectiveCamera( 75, width / height, 0.1, 3000 );
 camera.zoomState = "out"
 const focalLengthOut = camera.getFocalLength()
-const focalLengthIn = camera.getFocalLength()+4
+const focalLengthIn = camera.getFocalLength()+16
 const zoomSpeed = 60
 camera.position.z = 5;
 var cameraTarget = new Vector3( 0, 1.5, 0 );

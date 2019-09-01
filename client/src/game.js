@@ -74,9 +74,13 @@ function onKeyUp(event) {
 }
 
 function onMouseDown() {
-    if (state === "playing") {
-        document.body.requestPointerLock();
-        player1.onMouseDown()
+    if (event.button!=2) {
+        if (state == "paused") {
+            document.body.requestPointerLock();
+            play()
+        } else if (state == "playing") {
+            player1.onMouseDown()
+        }
     }
 }
 function onMouseUp() {
@@ -101,6 +105,8 @@ function gameOver() {
 
 function onPointerLockChange() {
     if (!document.pointerLockElement) {
+        state = "paused"
+    } else {
         state = "playing"
     }
 }
@@ -243,12 +249,15 @@ function start() {
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-    document.getElementById("respawn").onclick = function() {
-        player1.respawn()
-        play()   
-    }
-
     play()
+}
+
+document.getElementById("respawn").onclick = function() {
+    player1.respawn()
+    play()   
+}
+document.getElementById("chat").onclick = function() {
+    console.log(this)
 }
 
 export {start, gameOver}

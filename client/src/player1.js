@@ -242,7 +242,11 @@ loader.load( Adam, ( gltf ) => {
                 }
             } else {
                 if (player1.isRunning()) {
-                    player1.moveAction('idle')
+                    if (player1.isFiring()) {
+                        player1.anim[player1.activeMovement].stop()
+                    } else {
+                        player1.moveAction('idle')
+                    }
                 }
                 if (player1.isFiring()) {
                     var direction = new Vector3();
