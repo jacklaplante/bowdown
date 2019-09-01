@@ -2,11 +2,11 @@ body {
     margin: 0px;
     display: grid;
     touch-action: none;
-    background-color: #611313
+    background-color: #134461;
 }
 
 canvas {
-    background-color: #611313;
+    background-color: #134461;
     width: 100vw;
     height: 100vh;
     z-index: -1;
@@ -19,7 +19,7 @@ canvas {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: aliceblue;
+    color: #ffdba5;
 }
 
 #title {
@@ -30,7 +30,7 @@ canvas {
     margin: 10pt auto;
     width: 49vw;
     border-radius: 13pt;
-    border: 2pt solid aliceblue;
+    border: 2pt solid #ffdba5;
     padding: 8pt;
     font-size: 8vw;
     text-align: center;
