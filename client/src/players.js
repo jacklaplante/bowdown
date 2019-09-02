@@ -3,7 +3,6 @@ import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 import {loader} from './loader'
 import {scene} from './scene'
 import {init} from './archer'
-import playerX from '../models/benji.glb'
 import {sendMessage} from './websocket';
 
 var players = {};
@@ -18,21 +17,21 @@ players.get = (uuid) => {
     return roster[uuid]
 }
 
-players.add = function(uuid, position) {
+players.add = function(uuid, position, race) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
-    roster[uuid] = 'loading'
-    loader.load(playerX, function(player) {
-        roster[uuid] = player; // this needs to happen first, pretty sure
-        init(new AnimationMixer(player.scene), player);
+    roster[uuid] = {}
+    loader.load('./models/benji_'+race+'.gltf', function(gltf) {
+        roster[uuid].gltf = gltf;
+        init(new AnimationMixer(gltf.scene), roster[uuid]);
         if (position) {
             players.move(uuid, position, 0)
         }
-        scene.add( player.scene );
+        scene.add( gltf.scene );
 
         var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
         hitBox.position.y += 1
         hitBox.material.visible = false
-        player.scene.add(hitBox)
+        gltf.scene.add(hitBox)
         hitBox.playerUuid = uuid
         playerHitBoxes.push(hitBox)
     });
@@ -41,17 +40,16 @@ players.add = function(uuid, position) {
 players.init = function(newPlayers) {
     Object.keys(newPlayers).forEach(
         (playerUuid) => {
-            players.add(playerUuid, new Vector3(
-                newPlayers[playerUuid].x,
-                newPlayers[playerUuid].y,
-                newPlayers[playerUuid].z));
+            players.add(playerUuid,
+                new Vector3(newPlayers[playerUuid].x, newPlayers[playerUuid].y, newPlayers[playerUuid].z),
+                newPlayers[playerUuid].race);
         })
 }
 
 players.move = function(playerUuid, pos, rotation, moveAction, bowAction) {
     var player = roster[playerUuid]
-    player.scene.position.copy(pos)
-    player.scene.rotation.y = rotation
+    player.gltf.scene.position.copy(pos)
+    player.gltf.scene.rotation.y = rotation
     if (moveAction) {
         player.movementAction(moveAction)
     }

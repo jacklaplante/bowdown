@@ -69,9 +69,9 @@ camera.setPosition = function(nextPos) {
 
 camera.updateCamera = function() {
     if (player1!=null) {
-        var v = player1.scene.position.clone().sub(camera.position.clone())
+        var v = player1.getPosition().clone().sub(camera.position.clone())
         var v2 = new Vector3(-v.z, 0, v.x).normalize()
-        cameraTarget.copy(player1.scene.position.clone().add(v2)).setY(player1.scene.position.y+1.5)
+        cameraTarget.copy(player1.getPosition().clone().add(v2)).setY(player1.getPosition().y+1.5)
         
         var nextPos = camera.nextPosition(distance)
 

@@ -15,10 +15,6 @@ if (process.env.NODE_ENV == 'production') {
 
 const ws = new WebSocket(serverAddress);
 
-ws.onopen = function open() {
-    sendMessage({message: "sup fucker"})
-};
-
 ws.onmessage = function onMessage(message) {
     var message = JSON.parse(message.data)
     if (message.players) {
@@ -33,14 +29,14 @@ ws.onmessage = function onMessage(message) {
         } else if (message.chatMessage) {
             newChatMessage(message.chatMessage)
         }else {
-            if (!players.get(player)) {
-                players.add(player, new Vector3(message.x, message.y, message.z))
-            } else if (message.status==='disconnected') {
+            if (message.status==='disconnected') {
                 // player disconnected, remove
                 scene.remove(players.get(player).scene)
                 delete players.get(player)
-            } else if (players.get(player).scene && message.x!=null && message.y!=null && message.z!=null && message.rotation!=null) {
-                players.move(player, new Vector3(message.x, message.y, message.z), message.rotation, message.movementAction, message.bowAction)
+            } else if (!players.get(player)) {
+                players.add(player, message.position, message.race)
+            } else if (players.get(player).gltf.scene && message.position && message.rotation!=null) {
+                players.move(player, message.position, message.rotation, message.movementAction, message.bowAction)
             }
         }
     } else if (message.arrow) {

@@ -1,33 +1,29 @@
 // inspector for debugging
 const util = require('util')
-const fs = require('fs');
 const https = require('https');
 
 var players = {}
 
-const server = https.createServer({
-  cert: fs.readFileSync('./cert.pem'),
-  key: fs.readFileSync('./key.pem')
-});
-
 // WebSocket server
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocket.Server({ port: 18181 });
 wss.on('connection', function connection(ws, req) {
     sendMessage(ws, {players: players})
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
         if(message.player){
             var player = message.player
+            if (!players[player]) {
+                players[player] = {}
+            }
             if (!ws.player) {
                 ws.player = player
             }
-            if (message.x && message.y && message.z) {
-                players[player] = {
-                    x: message.x,
-                    y: message.y,
-                    z: message.z
-                }
+            if (message.position) {
+                players[player].position = message.position
+            }
+            if (message.race) {
+                players[player].race = message.race
             }
         }
         wss.clients.forEach(function each(client) {
@@ -53,4 +49,3 @@ function sendMessage(client, message) {
     console.log('sending: %s', JSON.stringify(message));
 }
 
-server.listen(18181);

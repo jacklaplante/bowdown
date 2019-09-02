@@ -9,16 +9,16 @@ import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
 
-import Adam from '../models/benji.glb'
-
 var playerUuid = uuid();
 
-var player1;
+var player1 = {}
 var mixer;
 const movementSpeed = 0.12;
 
-loader.load( Adam, ( gltf ) => {
-    player1 = gltf;
+player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
+loader.load('./models/benji_' + player1.race + '.gltf',
+  ( gltf ) => {
+    player1.gltf = gltf;
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
 
@@ -36,15 +36,29 @@ loader.load( Adam, ( gltf ) => {
         }
     })
 
+    player1.getPosition = function() {
+        return player1.gltf.scene.position
+    }
+
+    player1.getRotation = function() {
+        return player1.gltf.scene.rotation
+    }
+
+    sendMessage({
+        player: playerUuid,
+        position: player1.getPosition(),
+        race: player1.race
+    })
+
     player1.falling = function(delta){
         if (delta) {
-            var origin = player1.scene.position.clone().add(player1.velocity.clone().multiplyScalar(delta))
+            var origin = player1.getPosition().clone().add(player1.velocity.clone().multiplyScalar(delta))
             origin.y-=0.1
             var dir = new Vector3(0, 1, 0);
             var ray = new Raycaster(origin, dir, 0, 0.2+Math.abs(player1.velocity.y*delta));
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
-                player1.scene.position.copy(collisionResults[collisionResults.length-1].point)
+                player1.getPosition().copy(collisionResults[collisionResults.length-1].point)
                 return false
             }
             return true;   
@@ -54,9 +68,9 @@ loader.load( Adam, ( gltf ) => {
     var displayCollisionLines = false
     player1.collisionDetected = function(nextPos){
         if (displayCollisionLines){
-            player1.scene.children.forEach((child) => {
+            player1.gltf.scene.children.forEach((child) => {
                if (child.name === "collision line") {
-                   player1.scene.remove(child)
+                   player1.gltf.scene.remove(child)
                }
             })
         }
@@ -75,7 +89,7 @@ loader.load( Adam, ( gltf ) => {
                     var material = new LineBasicMaterial({color: 0xff0000});
                     var line = new Line( geometry, material )
                     line.name = "collision line"
-                    player1.scene.add(line);
+                    player1.gltf.scene.add(line);
                 }
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
                 var collisionResults = ray.intersectObjects(collidableEnvironment, true);
@@ -138,10 +152,8 @@ loader.load( Adam, ( gltf ) => {
         sendMessage(
             {
                 player: playerUuid,
-                x: player1.scene.position.x,
-                y: player1.scene.position.y,
-                z: player1.scene.position.z,
-                rotation: player1.scene.rotation.y,
+                position: player1.getPosition(),
+                rotation: player1.getRotation().y,
                 movementAction: player1.activeMovement,
                 bowAction: player1.activeBowAction,
                 bowState: player1.bowState
@@ -149,15 +161,15 @@ loader.load( Adam, ( gltf ) => {
         )
     }
 
-    player1.move = function(nextPos, rotation=player1.scene.rotation.y) {
+    player1.move = function(nextPos, rotation=player1.getRotation().y) {
         if(!player1.collisionDetected(nextPos)){
-            player1.scene.position.copy(nextPos)
+            player1.getPosition().copy(nextPos)
             if (player1.isFiring()) {
                 var direction = new Vector3();
                 camera.getWorldDirection(direction)
                 rotation = Math.atan2(direction.x, direction.z)
             }
-            player1.scene.rotation.y = rotation
+            player1.getRotation().y = rotation
             camera.updateCamera()
             player1.broadcast()
         } else {
@@ -213,7 +225,7 @@ loader.load( Adam, ( gltf ) => {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
-                    nextPos = player1.scene.position.clone()
+                    nextPos = player1.getPosition().clone()
                     nextPos.z += direction.y;
                     nextPos.x += direction.x;
                     // for moving up/down slopes
@@ -247,14 +259,14 @@ loader.load( Adam, ( gltf ) => {
                     var direction = new Vector3();
                     camera.getWorldDirection(direction)
                     rotation = Math.atan2(direction.x, direction.z)
-                    player1.scene.rotation.y = rotation
+                    player1.getRotation().y = rotation
                     camera.updateCamera()
                     player1.broadcast()
                 }
             }
         }
         if ( nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
-            if (!nextPos) nextPos = player1.scene.position
+            if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             player1.move(nextPos, rotation)
         }
@@ -273,11 +285,11 @@ loader.load( Adam, ( gltf ) => {
 
     player1.takeDamage = function() {
         gameOver()
-        player1.scene.position.y -=20
+        player1.getPosition().y -=20
     }
 
     player1.respawn = function() {
-        player1.scene.position.copy(new Vector3())
+        player1.getPosition().copy(new Vector3())
     }
 
     player1.equipBow()

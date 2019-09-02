@@ -25,7 +25,7 @@ function createArrow(origin, rotation){
 }
 
 function shootArrow(){
-    var origin = player1.scene.position.clone().add(new Vector3(0, 1.5, 0));
+    var origin = player1.getPosition().clone().add(new Vector3(0, 1.5, 0));
     var rotation = camera.rotation // this needs to be changed
     var arrow = createArrow(origin, rotation);
 
