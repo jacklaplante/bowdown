@@ -71,20 +71,15 @@ loader.load( Adam, ( gltf ) => {
                 var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert, 0, vert.length());
                 if (displayCollisionLines){
                     var geometry = new Geometry();
-                    geometry.vertices.push(
-                        vert,
-                        new Vector3()
-                    );
-                    var material = new LineBasicMaterial({
-                        color: 0xff0000
-                    });
+                    geometry.vertices.push(vert, new Vector3());
+                    var material = new LineBasicMaterial({color: 0xff0000});
                     var line = new Line( geometry, material )
                     line.name = "collision line"
                     player1.scene.add(line);
                 }
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
                 var collisionResults = ray.intersectObjects(collidableEnvironment, true);
-                if ( collisionResults.length > 0 && collisionResults[0].distance <= new Line3(new Vector3(), vert).distance()) {
+                if ( collisionResults.length > 0) {
                     if (displayCollisionLines && line) {
                         line.material.color.b=1
                         line.name = "collision"
