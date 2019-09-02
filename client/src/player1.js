@@ -292,6 +292,13 @@ loader.load('./models/benji_' + player1.race + '.gltf',
         player1.getPosition().copy(new Vector3())
     }
 
+    player1.sendChat = function(message) {
+        sendMessage({
+            player:playerUuid,
+            chatMessage: message
+        })
+    }
+
     player1.equipBow()
     player1.moveAction('idle')
 });

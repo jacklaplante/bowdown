@@ -69,6 +69,9 @@ function toggleKey(event, toggle) {
     }
 }
 function onKeyDown(event) {
+    if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
+        player1.sendChat(document.getElementById("chat-text-box").value)
+    }
     toggleKey(event, true);
 }
 function onKeyUp(event) {
@@ -76,7 +79,9 @@ function onKeyUp(event) {
 }
 
 function onMouseDown() {
-    if (event.button!=2) {
+    if (event.target.id == "chat") {
+        event.target.classList.add("chatting")
+    } else if (event.button!=2) {
         if (state == "paused") {
             document.body.requestPointerLock();
             play()
@@ -257,9 +262,6 @@ function start() {
 document.getElementById("respawn").onclick = function() {
     player1.respawn()
     play()   
-}
-document.getElementById("chat").onclick = function() {
-    console.log(this)
 }
 
 export {start, gameOver}

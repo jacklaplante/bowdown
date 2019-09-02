@@ -95,6 +95,14 @@ canvas {
     display: none;
 }
 
+#chat #chat-text-box {
+    display: none;
+}
+
+#chat.chatting #chat-text-box {
+    display: block
+}
+
 .playing #chat {
     width: 120pt;
     height: 100pt;
