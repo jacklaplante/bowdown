@@ -1,7 +1,7 @@
-import {Vector3, AnimationMixer, Raycaster, Line3, Geometry, LineBasicMaterial, Line, Vector2 } from 'three'
+import {Vector3, AnimationMixer, Raycaster, Vector2 } from 'three'
 
 import {loader} from './loader'
-import {uuid} from './utils'
+import {uuid, addCollisionLine, removeCollisionLines} from './utils'
 import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
 import {shootArrow} from './arrow'
@@ -32,18 +32,11 @@ loader.load('./models/benji_' + player1.race + '.gltf',
             if (event.action.getClip().name == "Fire bow") {
                 player1.bowState = "equipped"
             }
-            player1.moveAction("idle")
+            player1.idle()
         }
     })
 
-    player1.getPosition = function() {
-        return player1.gltf.scene.position
-    }
-
-    player1.getRotation = function() {
-        return player1.gltf.scene.rotation
-    }
-
+    // say hi to server
     sendMessage({
         player: playerUuid,
         position: player1.getPosition(),
@@ -65,39 +58,20 @@ loader.load('./models/benji_' + player1.race + '.gltf',
         }
     }
 
-    var displayCollisionLines = false
     player1.collisionDetected = function(nextPos){
-        if (displayCollisionLines){
-            player1.gltf.scene.children.forEach((child) => {
-               if (child.name === "collision line") {
-                   player1.gltf.scene.remove(child)
-               }
-            })
-        }
+        removeCollisionLines(player1)
         for(var a=-1; a<=1; a++){
             for(var c=-1; c<=1; c++){
-                // this dictates how long the collision rays are (how big the collision detection area is)
                 var collisionModifier = 0.5
                 a*=collisionModifier
                 c*=collisionModifier
                 var vert = new Vector3(a, 1, c);
                 vert = vert.clone().normalize()
                 var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert, 0, vert.length());
-                if (displayCollisionLines){
-                    var geometry = new Geometry();
-                    geometry.vertices.push(vert, new Vector3());
-                    var material = new LineBasicMaterial({color: 0xff0000});
-                    var line = new Line( geometry, material )
-                    line.name = "collision line"
-                    player1.gltf.scene.add(line);
-                }
+                addCollisionLine(player1, vert)
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
                 var collisionResults = ray.intersectObjects(collidableEnvironment, true);
                 if ( collisionResults.length > 0) {
-                    if (displayCollisionLines && line) {
-                        line.material.color.b=1
-                        line.name = "collision"
-                    }
                     return true
                 }
             }
@@ -105,14 +79,9 @@ loader.load('./models/benji_' + player1.race + '.gltf',
         return false;
     }
 
-    player1.moveAction = function(action) {
-        player1.movementAction(action)
-        player1.broadcast();
-    }
-
     player1.playBowAction = function(bowAction) {
         if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
-            player1.moveAction('runWithLegsOnly')
+            player1.movementAction('runWithLegsOnly')
         } else if (player1.activeMovement) {
             player1.anim[player1.activeMovement].stop()
             player1.activeMovement = null
@@ -143,7 +112,7 @@ loader.load('./models/benji_' + player1.race + '.gltf',
             player1.anim[player1.activeBowAction].stop()
             player1.activeBowAction = null
             player1.bowState = "equipped"
-            player1.moveAction("idle")
+            player1.idle()
             camera.zoomOut()
         }
     }
@@ -216,7 +185,7 @@ loader.load('./models/benji_' + player1.race + '.gltf',
             var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
                 player1.velocity.y = 5
-                player1.moveAction("jumping", rotation)
+                player1.movementAction("jumping")
             } else {
                 player1.velocity.set(0,0,0)
             }
@@ -239,11 +208,11 @@ loader.load('./models/benji_' + player1.race + '.gltf',
                     }
                     if (!player1.isRunning()) {
                         if (player1.bowState == "equipped") {
-                            player1.moveAction('runWithBow')
+                            player1.movementAction('runWithBow')
                         } else if (player1.isFiring()) {
-                            player1.moveAction('runWithLegsOnly')
+                            player1.movementAction('runWithLegsOnly')
                         } else {
-                            player1.moveAction('running')
+                            player1.movementAction('running')
                         }
                     }
                 }
@@ -252,7 +221,7 @@ loader.load('./models/benji_' + player1.race + '.gltf',
                     if (player1.isFiring()) {
                         player1.anim[player1.activeMovement].stop()
                     } else {
-                        player1.moveAction('idle')
+                        player1.idle()
                     }
                 }
                 if (player1.isFiring()) {
@@ -270,6 +239,11 @@ loader.load('./models/benji_' + player1.race + '.gltf',
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             player1.move(nextPos, rotation)
         }
+    }
+
+    player1.idle = function() {
+        player1.movementAction('idle')
+        player1.broadcast();
     }
 
     player1.equipBow = function() {
@@ -300,7 +274,7 @@ loader.load('./models/benji_' + player1.race + '.gltf',
     }
 
     player1.equipBow()
-    player1.moveAction('idle')
+    player1.idle()
 });
 
 export { player1, playerUuid, mixer }

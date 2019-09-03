@@ -92,6 +92,20 @@ function init(mixer, archer) {
     archer.isFiring = function() {
         return (archer.bowState && (archer.bowState == "drawn" || archer.bowState == "drawing" || archer.bowState == "firing"))
     }
+
+    archer.getPosition = function() {
+        if (archer.gltf) {
+            return archer.gltf.scene.position   
+        }
+        console.error("archer.gltf has not been defined yet")
+    }
+
+    archer.getRotation = function() {
+        if (archer.gltf) {
+            return archer.gltf.scene.rotation
+        }
+        console.error("archer.gltf has not been defined yet")
+    }
 }
 
 export {init}

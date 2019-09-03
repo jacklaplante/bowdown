@@ -20,6 +20,10 @@ players.get = (uuid) => {
 players.add = function(uuid, position, race) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     roster[uuid] = {}
+    if (race==null) {
+        console.error("race is undefined")
+        race = 'brown'
+    }
     loader.load('./models/benji_'+race+'.gltf', function(gltf) {
         roster[uuid].gltf = gltf;
         init(new AnimationMixer(gltf.scene), roster[uuid]);
