@@ -43,21 +43,6 @@ loader.load('./models/benji_' + player1.race + '.gltf',
         race: player1.race
     })
 
-    player1.falling = function(delta){
-        if (delta) {
-            var origin = player1.getPosition().clone().add(player1.velocity.clone().multiplyScalar(delta))
-            origin.y-=0.1
-            var dir = new Vector3(0, 1, 0);
-            var ray = new Raycaster(origin, dir, 0, 0.2+Math.abs(player1.velocity.y*delta));
-            var collisionResults = ray.intersectObjects(collidableEnvironment, true);
-            if ( collisionResults.length > 0) {
-                player1.getPosition().copy(collisionResults[collisionResults.length-1].point)
-                return false
-            }
-            return true;   
-        }
-    }
-
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
         for(var a=-1; a<=1; a++){
@@ -130,22 +115,6 @@ loader.load('./models/benji_' + player1.race + '.gltf',
         )
     }
 
-    player1.move = function(nextPos, rotation=player1.getRotation().y) {
-        if(!player1.collisionDetected(nextPos)){
-            player1.getPosition().copy(nextPos)
-            if (player1.isFiring()) {
-                var direction = new Vector3();
-                camera.getWorldDirection(direction)
-                rotation = Math.atan2(direction.x, direction.z)
-            }
-            player1.getRotation().y = rotation
-            camera.updateCamera()
-            player1.broadcast()
-        } else {
-            player1.velocity.set(0,0,0)
-        }
-    }
-
     function getDirection(input) {
         var direction = new Vector3();
         camera.getWorldDirection(direction)
@@ -178,9 +147,14 @@ loader.load('./models/benji_' + player1.race + '.gltf',
 
     player1.animate = function(delta, input){
         var nextPos;
-        if (player1.falling(delta)) {
-            player1.velocity.y -= delta*10
-        } else {
+        var rotation = player1.getRotation().y
+        var origin = player1.getPosition().clone().add(player1.velocity.clone().multiplyScalar(delta))
+        origin.y-=0.1
+        var dir = new Vector3(0, 1, 0);
+        var ray = new Raycaster(origin, dir, 0, 0.2+Math.abs(player1.velocity.y*delta));
+        var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+        if ( collisionResults.length > 0) {
+            player1.getPosition().copy(collisionResults[collisionResults.length-1].point)
             var direction = getDirection(input)
             var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
@@ -233,11 +207,25 @@ loader.load('./models/benji_' + player1.race + '.gltf',
                     player1.broadcast()
                 }
             }
+        } else {
+            player1.velocity.y -= delta*10   
         }
         if ( nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
             if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
-            player1.move(nextPos, rotation)
+            if(!player1.collisionDetected(nextPos)){
+                player1.getPosition().copy(nextPos)
+                if (player1.isFiring()) {
+                    var direction = new Vector3();
+                    camera.getWorldDirection(direction)
+                    rotation = Math.atan2(direction.x, direction.z)
+                }
+                player1.getRotation().y = rotation
+                camera.updateCamera()
+                player1.broadcast()
+            } else {
+                player1.velocity.set(0,0,0)
+            }
         }
     }
 
