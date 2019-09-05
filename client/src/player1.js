@@ -72,7 +72,7 @@ loader.load('./models/benji_' + player1.race + '.gltf',
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
                 var collisionResults = ray.intersectObjects(collidableEnvironment, true);
                 if ( collisionResults.length > 0) {
-                    return true
+                    return vert
                 }
             }
         }
@@ -130,22 +130,6 @@ loader.load('./models/benji_' + player1.race + '.gltf',
         )
     }
 
-    player1.move = function(nextPos, rotation=player1.getRotation().y) {
-        if(!player1.collisionDetected(nextPos)){
-            player1.getPosition().copy(nextPos)
-            if (player1.isFiring()) {
-                var direction = new Vector3();
-                camera.getWorldDirection(direction)
-                rotation = Math.atan2(direction.x, direction.z)
-            }
-            player1.getRotation().y = rotation
-            camera.updateCamera()
-            player1.broadcast()
-        } else {
-            player1.velocity.set(0,0,0)
-        }
-    }
-
     function getDirection(input) {
         var direction = new Vector3();
         camera.getWorldDirection(direction)
@@ -178,9 +162,8 @@ loader.load('./models/benji_' + player1.race + '.gltf',
 
     player1.animate = function(delta, input){
         var nextPos;
-        if (player1.falling(delta)) {
-            player1.velocity.y -= delta*10
-        } else {
+        var falling = player1.falling(delta)
+        if (!falling) {
             var direction = getDirection(input)
             var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
@@ -234,10 +217,34 @@ loader.load('./models/benji_' + player1.race + '.gltf',
                 }
             }
         }
-        if ( nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
-            if (!nextPos) nextPos = player1.getPosition()
+        if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
+            if (!nextPos) nextPos = player1.getPosition().clone()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
-            player1.move(nextPos, rotation)
+            var collisionVector = player1.collisionDetected(nextPos)
+            if(!collisionVector) {
+                if (falling) {
+                    player1.velocity.y -= delta*10   
+                }
+                player1.getPosition().copy(nextPos)
+                if (player1.isFiring()) {
+                    var direction = new Vector3();
+                    camera.getWorldDirection(direction)
+                    rotation = Math.atan2(direction.x, direction.z)
+                } else if (rotation == null) {
+                    rotation = player1.getRotation().y
+                }
+                player1.getRotation().y = rotation
+                camera.updateCamera()
+            } else {
+                if (falling) {// slide off edge
+                    player1.velocity.copy(collisionVector.clone().negate().normalize().multiplyScalar(10))
+                    nextPos.add(player1.velocity.clone().multiplyScalar(delta))
+                    player1.getPosition().copy(nextPos)
+                } else {
+                    player1.velocity.set(0,0,0)
+                }
+            }
+            player1.broadcast()
         }
     }
 
