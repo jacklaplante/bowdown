@@ -18,6 +18,7 @@
     "webpack-merge": "^4.2.1"
   },
   "dependencies": {
+    "hammerjs": "^2.0.8",
     "three": "^0.106.2"
   }
 }

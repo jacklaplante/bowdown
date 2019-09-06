@@ -123,6 +123,10 @@ canvas {
     width: 100vh;
     height: 100vw;
     margin-top: -100vw;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 #fps {
