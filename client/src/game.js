@@ -241,7 +241,7 @@ function start() {
     // renderer
     document.body.appendChild(renderer.domElement)
     // auto rotate
-    if (window.innerWidth < window.innerHeight && screen.orientation.type.includes("portrait")) {
+    if (window.innerWidth < window.innerHeight && document.body.requestPointerLock && document.body.requestPointerLock() && screen.orientation.type.includes("portrait")) {
         if (document.body.requestFullscreen) {
             document.body.requestFullscreen();
         } else if (document.body.mozRequestFullScreen) { /* Firefox */
