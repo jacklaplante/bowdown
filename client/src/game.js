@@ -1,4 +1,5 @@
 import { Clock } from 'three'
+import Hammer from 'hammerjs'
 
 import { scene } from './scene'
 import { renderer } from './renderer'
@@ -239,7 +240,23 @@ function start() {
     document.addEventListener('touchmove', handleTouch);
     document.addEventListener('touchend', onTouchEnd);
     // renderer
+    var rendererElement = renderer.domElement
     document.body.appendChild(renderer.domElement)
+    // hammerjs touch controls
+    var hammertime = new Hammer(rendererElement);
+    hammertime.get('pinch').set({ enable: true });
+    hammertime.on("pinchstart", function(event) { // FUCK YOU APPLE HGAHAHAHHAHAHHAHHAHHAHAHHHAHH
+        console.log("FUCK")
+        event.preventDefault();
+    });
+    hammertime.on("pinch", function(event) {
+        console.log("YOU")
+        event.preventDefault();
+    });
+    hammertime.on("pinchend", function(event) {
+        console.log("APPLE")
+        event.preventDefault();
+    });
     // auto rotate
     if (window.innerWidth < window.innerHeight && document.body.requestPointerLock && document.body.requestPointerLock() && screen.orientation.type.includes("portrait")) {
         if (document.body.requestFullscreen) {
