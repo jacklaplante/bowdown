@@ -363,7 +363,9 @@ function onMouseUp() {
 
 function onClick() {
     if (state !== "playing") {
-        document.body.requestPointerLock();
+        if (typeof document.body.requestPointerLock == "function") {
+            document.body.requestPointerLock();
+        }
         state = "playing"
     }
 }
