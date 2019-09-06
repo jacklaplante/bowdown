@@ -8,6 +8,7 @@ import {shootArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
+const models = require.context('../models/');
 
 var playerUuid = uuid();
 
@@ -16,7 +17,7 @@ var mixer;
 const movementSpeed = 0.12;
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
-loader.load('./models/benji_' + player1.race + '.gltf',
+loader.load(models('./benji_'+player1.race+'.gltf'),
   ( gltf ) => {
     player1.gltf = gltf;
     player1.velocity = new Vector3()

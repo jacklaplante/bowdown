@@ -4,6 +4,7 @@ import {loader} from './loader'
 import {scene} from './scene'
 import {init} from './archer'
 import {sendMessage} from './websocket';
+const models = require.context('../models/');
 
 var players = {};
 var roster = {}
