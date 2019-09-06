@@ -21,7 +21,9 @@ import(/* webpackChunkName: "game" */ './game').then(function(module) {
     document.body.classList.remove("loading")
     document.body.classList.add("ready")
     document.getElementById("start").onclick = function() {
-        document.body.requestPointerLock();
+        if (document.body.requestPointerLock) {
+            document.body.requestPointerLock();
+        }
         module.start();
     }
 })
