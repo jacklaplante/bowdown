@@ -83,7 +83,9 @@ function onMouseDown() {
         event.target.classList.add("chatting")
     } else if (event.button!=2) {
         if (state == "paused") {
-            document.body.requestPointerLock();
+            if (document.body.requestPointerLock) {
+                document.body.requestPointerLock();
+            }
             play()
         } else if (state == "playing") {
             player1.onMouseDown()
