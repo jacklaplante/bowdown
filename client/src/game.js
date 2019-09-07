@@ -9,6 +9,8 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 
 var clock = new Clock()
+var killCount = 0
+
 window.addEventListener('resize', resize);
 var input = {
     keyboard: {
@@ -114,6 +116,11 @@ function play() {
     state = "playing"
 }
 
+function setKillCount(count) {
+    killCount = count
+    document.getElementById("kill-count").innerHTML += 'X'
+}
+
 function gameOver() {
     state = "gameOver"
     document.body.classList.remove("playing")
@@ -210,7 +217,7 @@ function onTouchEnd(event) {
 }
 
 function onMouseMove(event) {
-    if (event.target.id != "shoot-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
+    if (event.target.id != "shoot-button" && event.target.id != "jump-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
         touchControls(false)        
     }
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
@@ -289,4 +296,4 @@ document.getElementById("respawn").onclick = function() {
     play()   
 }
 
-export {start, gameOver}
+export {start, gameOver, setKillCount}

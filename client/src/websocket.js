@@ -5,6 +5,7 @@ import { player1, playerUuid } from './player1'
 import { scene } from './scene'
 import { addOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
+import { setKillCount } from './game'
 
 var serverAddress
 if (process.env.NODE_ENV == 'production') {
@@ -25,6 +26,8 @@ ws.onmessage = function onMessage(message) {
         if (player == playerUuid) {
             if (message.damage) {
                 player1.takeDamage(message.damage)
+            } else if (message.kills) {
+                setKillCount(message.kills)
             }
         } else if (message.chatMessage) {
             newChatMessage(message.chatMessage)

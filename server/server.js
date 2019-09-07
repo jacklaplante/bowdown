@@ -1,7 +1,3 @@
-// inspector for debugging
-const util = require('util')
-const https = require('https');
-
 var players = {}
 
 // WebSocket server
@@ -14,7 +10,10 @@ wss.on('connection', function connection(ws, req) {
         if(message.player){
             var player = message.player
             if (!players[player]) {
-                players[player] = {}
+                players[player] = {
+                    hp: 100,
+                    kills: 0
+                }
             }
             if (!ws.player) {
                 ws.player = player
@@ -24,6 +23,16 @@ wss.on('connection', function connection(ws, req) {
             }
             if (message.race) {
                 players[player].race = message.race
+            }
+            if (message.damage) {
+                players[player].hp -= message.damage
+                if (players[player].hp <= 0) {
+                    players[ws.player].kills += 1
+                    sendMessage(ws, {
+                        player: ws.player,
+                        kills: players[ws.player].kills
+                    });
+                }
             }
         }
         wss.clients.forEach(function each(client) {

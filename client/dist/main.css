@@ -139,4 +139,12 @@ canvas {
     right: 0;
     position: absolute;
     color: #3fff00;
+    width: 100px;
+}
+
+#kill-count {
+    right: 0;
+    position: absolute;
+    color: white;
+    font-size: 16pt;
 }
