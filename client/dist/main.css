@@ -92,6 +92,16 @@ canvas {
     background-image: url(dot-and-circle.svg);
 }
 
+#jump-button {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 69%;
+    width: 20%;
+    height: 5%;
+    background-color: #3e6a47;
+}
+
 #chat {
     display: none;
 }

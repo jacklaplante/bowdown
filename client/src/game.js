@@ -27,8 +27,12 @@ var state = "playing"
 var usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
+var jumpTouch = {id: null}
 const cameraTouchSensitivity = 4
-const shootButton = document.getElementById("shoot-button")
+const touchElements = [
+    document.getElementById("shoot-button"),
+    document.getElementById("jump-button")
+]
 var rotated
 
 function animate() {
@@ -129,9 +133,9 @@ function onPointerLockChange() {
 function touchControls(bool) {
     if (bool!=usingTouchControls) {
         if (bool) {
-            shootButton.setAttribute("style", "display: block;")
+            touchElements.forEach((elem) => elem.setAttribute("style", "display: block;"))
         } else {
-            shootButton.setAttribute("style", "display: none;")
+            touchElements.forEach((elem) => elem.setAttribute("style", "display: none;"))
         }
         usingTouchControls = bool
     }
@@ -163,6 +167,10 @@ function handleTouch(event) {
             player1.onMouseDown()
             cameraTouch.shoot = true
         }
+        if (newTouch.target.id === "jump-button") {
+            input.keyboard.space = true
+            jumpTouch.id = newTouch.identifier
+        }
         if ((rotated && newTouch.pageY > window.innerHeight/2) || (!rotated && newTouch.pageX > window.innerWidth/2)) {
             cameraTouch.id = newTouch.identifier
             cameraTouch.x = newTouch.pageX
@@ -187,6 +195,9 @@ function handleTouch(event) {
 
 function onTouchEnd(event) {
     if (cameraTouch.id == event.changedTouches[0].identifier) {
+        if (cameraTouch.id == jumpTouch.id) {
+            input.keyboard.space = false
+        }
         if (cameraTouch.shoot) {
             player1.onMouseUp();
         }
@@ -251,9 +262,9 @@ function start() {
     // renderer
     document.body.appendChild(renderer.domElement)
     // hammerjs touch controls
-    initTouchElements([renderer.domElement, shootButton])
+    initTouchElements(touchElements.concat(renderer.domElement))
     // auto rotate
-    if (window.innerWidth < window.innerHeight && document.body.requestPointerLock && document.body.requestPointerLock() && screen.orientation.type.includes("portrait")) {
+    if (window.innerWidth < window.innerHeight && document.body.requestPointerLock && document.body.requestPointerLock() && screen.orientation.type && screen.orientation.type.includes("portrait")) {
         if (document.body.requestFullscreen) {
             document.body.requestFullscreen();
         } else if (document.body.mozRequestFullScreen) { /* Firefox */
