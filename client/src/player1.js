@@ -15,7 +15,7 @@ var playerUuid = uuid();
 var player1 = {}
 var mixer;
 const movementSpeed = 0.12
-const sprintModifier = 1.75
+const sprintModifier = 1.5
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -153,7 +153,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         direction.normalize().multiplyScalar(player1.runOrSprint(input));
         var x=0, y=0 // these are the inputDirections
         if (input.touch.x!=0 && input.touch.y!=0) {
-            var dir = new Vector2(input.touch.x, input.touch.y).normalize()
+            var dir = new Vector2(input.touch.x, input.touch.y)
+            if (dir.length()>100) {
+                input.keyboard.shift = true // sprinting
+            } else {
+                input.keyboard.shift = false
+            }
+            dir.normalize()
             x = dir.x
             y = dir.y
         }
