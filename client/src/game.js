@@ -51,7 +51,8 @@ function animate() {
 
 
 function toggleKey(event, toggle) {
-    switch(event.key) {
+    if (typeof event.key == "string") {
+        switch(event.key.toLowerCase()) {
         case 'w':
             input.keyboard.forward = toggle;
             break;
@@ -67,6 +68,10 @@ function toggleKey(event, toggle) {
         case ' ':
             input.keyboard.space = toggle;
             break;
+        case 'shift':
+            input.keyboard.shift = toggle;
+            break;
+        }   
     }
 }
 function onKeyDown(event) {

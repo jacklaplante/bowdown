@@ -10,11 +10,11 @@ fullScreenButton.onclick = function() {
     } else if (document.body.msRequestFullscreen) { /* IE/Edge */
         document.body.msRequestFullscreen();
     }
-    // if (!screen.orientation.type.includes("landscape")) {
-    //     screen.orientation.lock("landscape").catch(function(error) {
-    //         console.log("device orientation cannot be locked to landscape")
-    //     });;
-    // }
+    if (screen.orientation.type && !screen.orientation.type.includes("landscape")) {
+        screen.orientation.lock("landscape").catch(function(error) {
+            console.log("device orientation cannot be locked to landscape")
+        });;
+    }
 }
 
 import(/* webpackChunkName: "game" */ './game').then(function(module) {
