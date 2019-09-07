@@ -14,7 +14,7 @@ var playerUuid = uuid();
 
 var player1 = {}
 var mixer;
-const movementSpeed = 0.12
+const movementSpeed = 8
 const sprintModifier = 1.5
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
@@ -146,11 +146,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    function getDirection(input) {
+    function getDirection(input, delta) {
         var direction = new Vector3();
         camera.getWorldDirection(direction)
         direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
-        direction.normalize().multiplyScalar(player1.runOrSprint(input));
+        direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
         var x=0, y=0 // these are the inputDirections
         if (input.touch.x!=0 && input.touch.y!=0) {
             var dir = new Vector2(input.touch.x, input.touch.y)
@@ -186,7 +186,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos;
         var falling = player1.falling(delta)
         if (!falling) {
-            var direction = getDirection(input)
+            var direction = getDirection(input, delta)
             var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
                 player1.velocity.y = 5
