@@ -24,7 +24,18 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
 
-    scene.add( gltf.scene );
+    player1.addToWorld = function() {
+        scene.add( this.gltf.scene );
+        // say hi to server
+        sendMessage({
+            player: playerUuid,
+            position: player1.getPosition(),
+            race: player1.race
+        })
+        player1.equipBow()
+        player1.idle()
+    }
+    
     mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
     mixer.addEventListener('finished', (event) => {
@@ -36,13 +47,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             }
             player1.idle()
         }
-    })
-
-    // say hi to server
-    sendMessage({
-        player: playerUuid,
-        position: player1.getPosition(),
-        race: player1.race
     })
 
     player1.falling = function(delta){
@@ -301,9 +305,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             chatMessage: message
         })
     }
-
-    player1.equipBow()
-    player1.idle()
 });
 
 export { player1, playerUuid, mixer }

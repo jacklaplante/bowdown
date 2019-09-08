@@ -235,10 +235,10 @@ function resize() {
     } else if (rotated) {
         width = window.innerHeight
         height = window.innerWidth
-    } else if (window.innerWidth < window.innerHeight) {
-        rotate()
-        width = window.innerHeight
-        height = window.innerWidth
+//     } else if (window.innerWidth < window.innerHeight) { I'm going to remove this for now until I can commit to an mobile interface
+//         rotate()
+//         width = window.innerHeight
+//         height = window.innerWidth
     }
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
@@ -284,6 +284,8 @@ function start() {
         }
         rotate()
     }
+
+    player1.addToWorld()
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
