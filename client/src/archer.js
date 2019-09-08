@@ -47,6 +47,21 @@ function init(mixer, archer) {
         archer.gltf.scene.children[0].children[2].visible = bool
     }
 
+    archer.activeActions = []
+    archer.playAction = function(action) {
+        if (!this.activeActions.includes(action) && archer.anim[action]) {
+            archer.anim[action].reset().play()
+        }
+    }
+
+    archer.stopAction = function(action) {
+        if (this.activeActions.includes(action)) {
+            archer.anim[action].stop()
+        } else {
+            console.error("tried to stop action: " + action + ", but action was never started")
+        }
+    }
+
     archer.bowAction = function(bowAction) {
         if (archer.anim && archer.anim[bowAction]){
             if (archer.activeBowAction != bowAction) {

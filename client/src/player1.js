@@ -194,7 +194,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             var rotation = Math.atan2(direction.x, direction.y)
             if (input.keyboard.space) {
                 player1.velocity.y = 5
-                player1.movementAction("jumping")
+                player1.playBowAction("jumping")
             } else {
                 player1.velocity.set(0,0,0)
             }
