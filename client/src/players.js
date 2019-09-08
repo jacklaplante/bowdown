@@ -46,7 +46,7 @@ players.init = function(newPlayers) {
     Object.keys(newPlayers).forEach(
         (playerUuid) => {
             players.add(playerUuid,
-                new Vector3(newPlayers[playerUuid].x, newPlayers[playerUuid].y, newPlayers[playerUuid].z),
+                newPlayers[playerUuid].position,
                 newPlayers[playerUuid].race);
         })
 }
