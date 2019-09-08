@@ -34,7 +34,7 @@ ws.onmessage = function onMessage(message) {
         }else {
             if (message.status==='disconnected') {
                 // player disconnected, remove
-                scene.remove(players.get(player).scene)
+                scene.remove(players.get(player).gltf.scene)
                 delete players.get(player)
             } else if (!players.get(player)) {
                 players.add(player, message.position, message.race)
@@ -48,8 +48,10 @@ ws.onmessage = function onMessage(message) {
 }
 
 function sendMessage(message) {
-    if (ws.readyState) {
+    if (ws.readyState == 1) {
         ws.send(JSON.stringify(message))
+    } else {
+        console.error("error connecting to server")
     }
 }
 

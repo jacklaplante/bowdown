@@ -242,6 +242,7 @@ function resize() {
     }
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
+    camera.resetFocalLength();
     camera.updateProjectionMatrix();
 }
 

@@ -4,6 +4,8 @@ var players = {}
 const WebSocket = require('ws');
 const wss = new WebSocket.Server({ port: 18181 });
 wss.on('connection', function connection(ws, req) {
+    ws.isAlive = true;
+    ws.on('pong', heartbeat);
     sendMessage(ws, {players: players})
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
@@ -53,8 +55,24 @@ wss.on('connection', function connection(ws, req) {
     // ws.send('something');
 });
 
+function noop() {}
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach(function each(ws) {
+    if (ws.isAlive === false) {
+        return ws.terminate();
+    }
+    ws.isAlive = false;
+    ws.ping(noop);
+  });
+}, 3000);
+
 function sendMessage(client, message) {
     client.send(JSON.stringify(message));
     console.log('sending: %s', JSON.stringify(message));
+}
+
+function heartbeat() {
+    this.isAlive = true;
 }
 
