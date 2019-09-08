@@ -21,7 +21,7 @@ function init(mixer, archer) {
         running: mixer.clipAction(getAnimation(archer, "Running best")),
         runWithBow: mixer.clipAction(getAnimation(archer, "Running with bow best")),
         runWithLegsOnly: mixer.clipAction(getAnimation(archer, "Running legs only")),
-        jumping: mixer.clipAction(getAnimation(archer, "Jumping")).setLoop(LoopOnce),
+        jumping: mixer.clipAction(getAnimation(archer, "Jumping2")).setLoop(LoopOnce),
         equipBow: mixer.clipAction(getAnimation(archer, "Equip Bow")).setLoop(LoopOnce),
         drawBow: mixer.clipAction(getAnimation(archer, "Draw bow")).setLoop(LoopOnce),
         fireBow: mixer.clipAction(getAnimation(archer, "Fire bow")).setLoop(LoopOnce)
