@@ -65,7 +65,7 @@ const interval = setInterval(function ping() {
     ws.isAlive = false;
     ws.ping(noop);
   });
-}, 3000);
+}, 10000);
 
 function sendMessage(client, message) {
     client.send(JSON.stringify(message));
