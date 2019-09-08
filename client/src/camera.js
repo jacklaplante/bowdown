@@ -17,7 +17,7 @@ const focalLengthOut = camera.getFocalLength()
 const focalLengthIn = camera.getFocalLength()+16
 const zoomSpeed = 60
 camera.position.z = 5;
-var cameraTarget = new Vector3( 0, 1.5, 0 );
+var cameraTarget = new Vector3();
 var theta = 0
 var phi = 0
 
@@ -70,8 +70,8 @@ camera.setPosition = function(nextPos) {
 camera.updateCamera = function() {
     if (player1!=null) {
         var v = player1.getPosition().clone().sub(camera.position.clone())
-        var v2 = new Vector3(-v.z, 0, v.x).normalize()
-        cameraTarget.copy(player1.getPosition().clone().add(v2)).setY(player1.getPosition().y+1.5)
+        var v2 = new Vector3(-v.z, v.y, v.x).normalize().multiplyScalar(0.5)
+        cameraTarget.copy(player1.getPosition().clone().add(v2)).setY(player1.getPosition().y+1.8)
         
         var nextPos = camera.nextPosition(distance)
 
@@ -95,7 +95,7 @@ camera.moveCamera = function(movementX, movementY) {
     var x = phi + movementY * 0.2
     // this simply ensures the camera cannot go over the top/bottom
     // I have it set 10 135 and 80 because otherwise the camera gets all fucky but it's not the best solution
-    if (135 >= x && x >= -80) {
+    if (180 > x && x > -140) {
         phi = x
     }
     camera.updateCamera();
