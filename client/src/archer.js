@@ -51,11 +51,13 @@ function init(mixer, archer) {
     archer.playAction = function(action) {
         if (!this.activeActions.includes(action) && archer.anim[action]) {
             archer.anim[action].reset().play()
+            this.activeActions.push(action)
         }
     }
 
     archer.stopAction = function(action) {
         if (this.activeActions.includes(action)) {
+            this.activeActions = this.activeActions.filter(e => e != action)
             archer.anim[action].stop()
         } else {
             console.error("tried to stop action: " + action + ", but action was never started")
@@ -66,13 +68,13 @@ function init(mixer, archer) {
         if (archer.anim && archer.anim[bowAction]){
             if (archer.activeBowAction != bowAction) {
                 if (archer.activeBowAction) {
-                    archer.anim[archer.activeBowAction].stop()
+                    this.stopAction(archer.activeBowAction)
                 }
                 if (archer.activeMovement && archer.activeMovement != "runWithLegsOnly") {
-                    archer.anim[archer.activeMovement].stop()
+                    this.stopAction(archer.activeMovement)
                 }
                 if (bowAction) {
-                    archer.anim[bowAction].reset().play();
+                    this.playAction(bowAction)
                 }
                 archer.activeBowAction = bowAction
             }
@@ -85,12 +87,12 @@ function init(mixer, archer) {
         if (archer.anim && archer.anim[action]) {
             if (archer.activeMovement) {
                 if (archer.activeMovement != action) {
-                    archer.anim[archer.activeMovement].stop()
+                    this.stopAction(archer.activeMovement)
                 } else  {
                     return
                 }
             }
-            archer.anim[action].reset().play();
+            this.playAction(action)
             archer.activeMovement = action
         } else {
             console.error("action: " + action + " does not exist!");

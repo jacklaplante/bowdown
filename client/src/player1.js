@@ -89,7 +89,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
             player1.movementAction('runWithLegsOnly')
         } else if (player1.activeMovement) {
-            player1.anim[player1.activeMovement].stop()
+            player1.stopAction(player1.activeMovement)
             player1.activeMovement = null
         }
         player1.bowAction(bowAction);
@@ -109,13 +109,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.onMouseUp = function() {
         if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
-            player1.anim.drawBow.stop();
             shootArrow();
             player1.bowState = "firing"
             camera.zoomOut()
         } else if (player1.bowState === "drawing") {
-            player1.anim.drawBow.stop();
-            player1.anim[player1.activeBowAction].stop()
+            player1.stopAction(player1.activeBowAction)
             player1.activeBowAction = null
             player1.bowState = "equipped"
             player1.idle()
@@ -228,7 +226,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             } else {
                 if (player1.isRunning()) {
                     if (player1.isFiring()) {
-                        player1.anim[player1.activeMovement].stop()
+                        player1.stopAction(player1.activeMovement)
+                        player1.activeMovement = null
                     } else {
                         player1.idle()
                     }
