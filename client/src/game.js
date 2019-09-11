@@ -55,7 +55,7 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-
+input.jump = 0
 function toggleKey(event, toggle) {
     if (typeof event.key == "string") {
         switch(event.key.toLowerCase()) {
@@ -72,7 +72,11 @@ function toggleKey(event, toggle) {
             input.keyboard.right = toggle;
             break;
         case ' ':
-            input.keyboard.space = toggle;
+            if (input.jump != null) {
+                input.jump = toggle
+            } else if (!toggle) {
+                input.jump = false
+            }
             break;
         case 'shift':
             input.keyboard.shift = toggle;
@@ -175,7 +179,7 @@ function handleTouch(event) {
             cameraTouch.shoot = true
         }
         if (newTouch.target.id === "jump-button") {
-            input.keyboard.space = true
+            input.jump = true
             jumpTouch.id = newTouch.identifier
         }
         if ((rotated && newTouch.pageY > window.innerHeight/2) || (!rotated && newTouch.pageX > window.innerWidth/2)) {
@@ -203,7 +207,7 @@ function handleTouch(event) {
 function onTouchEnd(event) {
     if (cameraTouch.id == event.changedTouches[0].identifier) {
         if (cameraTouch.id == jumpTouch.id) {
-            input.keyboard.space = false
+            input.jump = false
         }
         if (cameraTouch.shoot) {
             player1.onMouseUp();

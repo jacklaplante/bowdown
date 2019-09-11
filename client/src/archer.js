@@ -49,9 +49,11 @@ function init(mixer, archer) {
 
     archer.activeActions = []
     archer.playAction = function(action) {
-        if (!this.activeActions.includes(action) && archer.anim[action]) {
+        if (archer.anim[action]) {
             archer.anim[action].reset().play()
-            this.activeActions.push(action)
+            if (!this.activeActions.includes(action)) {
+                this.activeActions.push(action)   
+            }
         }
     }
 
@@ -69,6 +71,7 @@ function init(mixer, archer) {
             if (archer.activeBowAction != bowAction) {
                 if (archer.activeBowAction) {
                     this.stopAction(archer.activeBowAction)
+                    archer.activeBowAction = null
                 }
                 if (archer.activeMovement && archer.activeMovement != "runWithLegsOnly") {
                     this.stopAction(archer.activeMovement)
@@ -77,6 +80,7 @@ function init(mixer, archer) {
                     this.playAction(bowAction)
                 }
                 archer.activeBowAction = bowAction
+                
             }
         } else {
             console.error("action: " + bowAction + " does not exist!");

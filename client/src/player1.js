@@ -14,8 +14,8 @@ var playerUuid = uuid();
 
 var player1 = {}
 var mixer;
-const movementSpeed = 8
-const sprintModifier = 1.5
+const movementSpeed = 7
+const sprintModifier = 1.3
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -184,23 +184,20 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return direction.rotateAround(new Vector2(), Math.atan2(x, y))
     }
 
+    var doubleJumped = false
     player1.animate = function(delta, input){
         var nextPos;
         var falling = player1.falling(delta)
         if (!falling) {
+            doubleJumped = false
             var direction = getDirection(input, delta)
             var rotation = Math.atan2(direction.x, direction.y)
-            if (input.keyboard.space) {
-                player1.velocity.y = 5
-                player1.playBowAction("jumping")
-            } else {
-                player1.velocity.set(0,0,0)
-            }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
-                if (input.keyboard.space) {
+                if (input.jump) {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
+                    player1.velocity.set(0,0,0)
                     nextPos = player1.getPosition().clone()
                     nextPos.z += direction.y;
                     nextPos.x += direction.x;
@@ -241,6 +238,18 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     player1.broadcast()
                 }
             }
+        }
+        if (input.jump && !doubleJumped) {
+            input.jump = null
+            if (falling) {
+                doubleJumped = true
+            }
+            player1.velocity.y = 5
+            if (this.activeMovement && this.activeMovement != "runWithLegsOnly") {
+                this.stopAction(this.activeMovement)
+                this.activeMovement = null
+            }
+            this.playAction("jumping")
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
             if (!nextPos) nextPos = player1.getPosition().clone()
