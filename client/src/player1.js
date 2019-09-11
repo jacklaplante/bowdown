@@ -100,6 +100,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
+            if (this.activeActions.includes("jumping")) {
+                this.stopAction("jumping")
+            }
             player1.playBowAction("drawBow")
             player1.bowState = "drawing"
             camera.zoomIn()
@@ -245,10 +248,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 doubleJumped = true
             }
             player1.velocity.y = 5
-            if (this.activeMovement && this.activeMovement != "runWithLegsOnly") {
-                this.stopAction(this.activeMovement)
-                this.activeMovement = null
-            }
             this.playAction("jumping")
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
