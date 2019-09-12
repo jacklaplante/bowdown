@@ -109,10 +109,14 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.onMouseUp = function() {
+    player1.onMouseUp = function(event) {
         if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
-            shootArrow();
+            if (event.button == 2) {
+                shootArrow("rope")
+            } else {
+                shootArrow("normal");   
+            }
             player1.bowState = "firing"
             camera.zoomOut()
         } else if (player1.bowState === "drawing") {

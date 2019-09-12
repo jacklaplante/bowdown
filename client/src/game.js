@@ -103,14 +103,15 @@ function onMouseDown() {
                 document.body.requestPointerLock();
             }
             play()
-        } else if (state == "playing") {
-            player1.onMouseDown()
         }
     }
+    if (state == "playing") {
+        player1.onMouseDown()
+    }
 }
-function onMouseUp() {
+function onMouseUp(event) {
     if (state === "playing") {
-        player1.onMouseUp()
+        player1.onMouseUp(event)
     }
 }
 

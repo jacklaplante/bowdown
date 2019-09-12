@@ -1,4 +1,4 @@
-import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster} from 'three'
+import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line} from 'three'
 
 import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
@@ -10,10 +10,19 @@ var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
 var arrowWidth = 0.06
 var arrowLength = 0.75
+const arrowTypes = {
+    normal: {
+        color: 0x00ff00
+    },
+    rope: {
+        color: 0xff7b00
+    }
+}
 
-function createArrow(origin, rotation){
+function createArrow(origin, rotation, type){
+    if (!arrowTypes[type]) console.error("arrow type: " + type + " does not exist");
     var geometry = new BoxGeometry(arrowWidth, arrowWidth, arrowLength);
-    var material = new MeshBasicMaterial( {color: 0x00ff00} );
+    var material = new MeshBasicMaterial({color: arrowTypes[type].color});
     var arrow = new Mesh( geometry, material );
     
     arrow.origin = origin
@@ -21,13 +30,15 @@ function createArrow(origin, rotation){
     arrow.rotation.copy(rotation)
     scene.add(arrow);
 
+    arrow.type = type
+
     return arrow
 }
 
-function shootArrow(){
+function shootArrow(type){
     var origin = player1.getPosition().clone().add(new Vector3(0, 1.5, 0));
     var rotation = camera.rotation // this needs to be changed
-    var arrow = createArrow(origin, rotation);
+    var arrow = createArrow(origin, rotation, type);
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
@@ -71,6 +82,13 @@ function animateArrows(delta) {
         if(!arrow.stopped){
             stopArrowIfOutOfBounds(arrow)
             moveArrow(arrow, delta)
+            if (arrow.type=="rope") {
+                var geometry = new Geometry();
+                var material = new LineBasicMaterial({color: 0xff0000});
+                geometry.vertices.push(arrow.origin, arrow.position);
+                var line = new Line(geometry, material)
+                scene.add(line)
+            }
             // detect arrow collisions
             var direction = new Vector3(0,0,1)
             direction.applyEuler(arrow.rotation).normalize()
