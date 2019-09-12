@@ -187,12 +187,12 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return direction.rotateAround(new Vector2(), Math.atan2(x, y))
     }
 
-    var doubleJumped = false
+    player1.doubleJumped = false
     player1.animate = function(delta, input){
         var nextPos;
         var falling = player1.falling(delta)
         if (!falling) {
-            doubleJumped = false
+            player1.doubleJumped = false
             var direction = getDirection(input, delta)
             var rotation = Math.atan2(direction.x, direction.y)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
@@ -242,10 +242,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 }
             }
         }
-        if (input.jump && !doubleJumped) {
+        if (input.jump && !player1.doubleJumped) {
             input.jump = null
             if (falling) {
-                doubleJumped = true
+                player1.doubleJumped = true
             }
             player1.velocity.y = 5
             this.playAction("jumping")
@@ -256,7 +256,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
                 if (falling) {
-                    player1.velocity.y -= delta*10   
+                    var gravityAcceleration = 10
+                    if (player1.doubleJumped && player1.isFiring()) {
+                        gravityAcceleration = 5
+                    }
+                    player1.velocity.y -= delta*gravityAcceleration  
                 }
                 player1.getPosition().copy(nextPos)
                 if (player1.isFiring()) {
