@@ -1,6 +1,6 @@
 import {PerspectiveCamera, Vector3, Raycaster} from 'three'
 import {collidableEnvironment} from './scene'
-import {player1} from './player1'
+import player1 from './player1'
 
 var distance = 3.5;
 var width, height;

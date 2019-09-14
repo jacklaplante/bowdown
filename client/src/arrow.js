@@ -2,7 +2,7 @@ import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, Line
 
 import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
-import {player1} from './player1'
+import player1 from './player1'
 import {camera} from './camera'
 import {sendMessage} from './websocket'
 import {uuid} from './utils'

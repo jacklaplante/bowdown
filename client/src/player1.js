@@ -11,7 +11,6 @@ import {gameOver} from './game'
 const models = require.context('../models/');
 
 var player1 = {uuid: uuid()}
-var mixer;
 const movementSpeed = 7
 const sprintModifier = 1.3
 
@@ -34,7 +33,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         player1.idle()
     }
     
-    mixer = new AnimationMixer(gltf.scene);
+    var mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
@@ -382,4 +381,4 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 });
 
-export { player1, mixer }
+export default player1

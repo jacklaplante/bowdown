@@ -1,10 +1,10 @@
 import { Clock } from 'three'
 import Hammer from 'hammerjs'
 
+import player1 from './player1'
 import { scene } from './scene'
 import { renderer } from './renderer'
 import { camera } from './camera'
-import { player1, mixer } from './player1'
 import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 
@@ -42,9 +42,9 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     animateArrows(delta);
-    if (player1 && mixer) {
+    if (player1 && player1.mixer) {
         player1.animate(delta, input);
-        mixer.update( delta );
+        player1.mixer.update( delta );
     }
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)

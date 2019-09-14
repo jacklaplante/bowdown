@@ -1,7 +1,7 @@
 import { Vector3 } from 'three'
 
 import { players } from './players'
-import { player1 } from './player1'
+import player1 from './player1'
 import { scene } from './scene'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
