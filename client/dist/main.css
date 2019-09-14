@@ -92,6 +92,16 @@ canvas {
     background-image: url(dot-and-circle.svg);
 }
 
+#rope-button {
+    display: none;
+    position: fixed;
+    top: 40%;
+    left: 70%;
+    width: 70pt;
+    height: 70pt;
+    background-image: url(rope.svg);
+}
+
 #jump-button {
     display: none;
     position: fixed;

@@ -33,6 +33,7 @@ var jumpTouch = {id: null}
 const cameraTouchSensitivity = 4
 const touchElements = [
     document.getElementById("shoot-button"),
+    document.getElementById("rope-button"),
     document.getElementById("jump-button")
 ]
 var rotated
@@ -178,6 +179,9 @@ function handleTouch(event) {
         if (newTouch.target.id === "shoot-button") {
             player1.onMouseDown()
             cameraTouch.shoot = true
+        } else if (newTouch.target.id === "rope-button") {
+            player1.onMouseDown()
+            cameraTouch.rope = true
         }
         if (newTouch.target.id === "jump-button") {
             input.jump = true
@@ -213,8 +217,12 @@ function onTouchEnd(event) {
         if (cameraTouch.shoot) {
             player1.onMouseUp();
         }
+        if (cameraTouch.rope) {
+            player1.onMouseUp({button: 2}) // emulate right click
+        }
         cameraTouch.id = null
         cameraTouch.shoot = false
+        cameraTouch.rope = false
     } else if (movementTouch.id == event.changedTouches[0].identifier) {
         movementTouch.id = null
         input.touch = {x:0, y:0}
@@ -222,7 +230,7 @@ function onTouchEnd(event) {
 }
 
 function onMouseMove(event) {
-    if (event.target.id != "shoot-button" && event.target.id != "jump-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
+    if (event.target.id != "shoot-button" && event.target.id != "jump-button" && event.target.id != "rope-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
         touchControls(false)        
     }
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;

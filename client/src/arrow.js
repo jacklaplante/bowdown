@@ -83,10 +83,14 @@ function animateArrows(delta) {
             stopArrowIfOutOfBounds(arrow)
             moveArrow(arrow, delta)
             if (arrow.type=="rope") {
+                if (arrow.rope) {
+                    scene.remove(arrow.rope)   
+                }
                 var geometry = new Geometry();
                 var material = new LineBasicMaterial({color: 0xff0000});
                 geometry.vertices.push(arrow.origin, arrow.position);
                 var line = new Line(geometry, material)
+                arrow.rope = line
                 scene.add(line)
             }
             // detect arrow collisions
