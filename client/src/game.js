@@ -215,7 +215,7 @@ function onTouchEnd(event) {
             input.jump = false
         }
         if (cameraTouch.shoot) {
-            player1.onMouseUp();
+            player1.onMouseUp({button: 0});
         }
         if (cameraTouch.rope) {
             player1.onMouseUp({button: 2}) // emulate right click
