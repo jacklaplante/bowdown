@@ -10,9 +10,7 @@ import {init} from './archer'
 import {gameOver} from './game'
 const models = require.context('../models/');
 
-var playerUuid = uuid();
-
-var player1 = {}
+var player1 = {uuid: uuid()}
 var mixer;
 const movementSpeed = 7
 const sprintModifier = 1.3
@@ -28,7 +26,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         scene.add( this.gltf.scene );
         // say hi to server
         sendMessage({
-            player: playerUuid,
+            player: player1.uuid,
             position: player1.getPosition(),
             race: player1.race
         })
@@ -131,11 +129,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.broadcast = async function() {
         sendMessage(
             {
-                player: playerUuid,
+                player: player1.uuid,
                 position: player1.getPosition(),
                 rotation: player1.getRotation().y,
-                movementAction: player1.activeMovement,
-                bowAction: player1.activeBowAction,
                 bowState: player1.bowState
             }
         )
@@ -316,10 +312,74 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.sendChat = function(message) {
         sendMessage({
-            player:playerUuid,
+            player: player1.uuid,
             chatMessage: message
         })
     }
+
+    player1.activeActions = []
+    player1.playAction = function(action) {
+        if (this.anim[action]) {
+            this.anim[action].reset().play()
+            sendMessage({
+                player: this.uuid,
+                playAction: action
+            })
+            if (!this.activeActions.includes(action)) {
+                this.activeActions.push(action)   
+            }
+        }
+    }
+
+    player1.stopAction = function(action) {
+        if (this.activeActions.includes(action)) {
+            this.activeActions = this.activeActions.filter(e => e != action)
+            this.anim[action].stop()
+            sendMessage({
+                player: this.uuid,
+                stopAction: action
+            })
+        } else {
+            console.error("tried to stop action: " + action + ", but action was never started")
+        }
+    }
+
+    player1.bowAction = function(bowAction) {
+        if (this.anim && this.anim[bowAction]){
+            if (this.activeBowAction != bowAction) {
+                if (this.activeBowAction) {
+                    this.stopAction(this.activeBowAction)
+                    this.activeBowAction = null
+                }
+                if (this.activeMovement && this.activeMovement != "runWithLegsOnly") {
+                    this.stopAction(this.activeMovement)
+                }
+                if (bowAction) {
+                    this.playAction(bowAction)
+                }
+                this.activeBowAction = bowAction
+                
+            }
+        } else {
+            console.error("action: " + bowAction + " does not exist!");
+        }
+    }
+
+    player1.movementAction = function(action="idle") {
+        if (this.anim && this.anim[action]) {
+            if (this.activeMovement) {
+                if (this.activeMovement != action) {
+                    this.stopAction(this.activeMovement)
+                } else  {
+                    return
+                }
+            }
+            this.playAction(action)
+            this.activeMovement = action
+        } else {
+            console.error("action: " + action + " does not exist!");
+        }
+    }
 });
 
-export { player1, playerUuid, mixer }
+export { player1, mixer }

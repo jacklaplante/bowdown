@@ -47,62 +47,6 @@ function init(mixer, archer) {
         archer.gltf.scene.children[0].children[2].visible = bool
     }
 
-    archer.activeActions = []
-    archer.playAction = function(action) {
-        if (archer.anim[action]) {
-            archer.anim[action].reset().play()
-            if (!this.activeActions.includes(action)) {
-                this.activeActions.push(action)   
-            }
-        }
-    }
-
-    archer.stopAction = function(action) {
-        if (this.activeActions.includes(action)) {
-            this.activeActions = this.activeActions.filter(e => e != action)
-            archer.anim[action].stop()
-        } else {
-            console.error("tried to stop action: " + action + ", but action was never started")
-        }
-    }
-
-    archer.bowAction = function(bowAction) {
-        if (archer.anim && archer.anim[bowAction]){
-            if (archer.activeBowAction != bowAction) {
-                if (archer.activeBowAction) {
-                    this.stopAction(archer.activeBowAction)
-                    archer.activeBowAction = null
-                }
-                if (archer.activeMovement && archer.activeMovement != "runWithLegsOnly") {
-                    this.stopAction(archer.activeMovement)
-                }
-                if (bowAction) {
-                    this.playAction(bowAction)
-                }
-                archer.activeBowAction = bowAction
-                
-            }
-        } else {
-            console.error("action: " + bowAction + " does not exist!");
-        }
-    }
-
-    archer.movementAction = function(action="idle") {
-        if (archer.anim && archer.anim[action]) {
-            if (archer.activeMovement) {
-                if (archer.activeMovement != action) {
-                    this.stopAction(archer.activeMovement)
-                } else  {
-                    return
-                }
-            }
-            this.playAction(action)
-            archer.activeMovement = action
-        } else {
-            console.error("action: " + action + " does not exist!");
-        }
-    }
-
     archer.isRunning = function() {
         if (archer.activeMovement) {
             return archer.activeMovement.toLowerCase().includes("run")

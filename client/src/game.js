@@ -298,12 +298,10 @@ function start() {
         rotate()
     }
 
-    player1.addToWorld()
-
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    player1.addToWorld()
     play()
 }
 

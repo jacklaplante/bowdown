@@ -1,9 +1,9 @@
 import { Vector3 } from 'three'
 
 import { players } from './players'
-import { player1, playerUuid } from './player1'
+import { player1 } from './player1'
 import { scene } from './scene'
-import { addOtherPlayerArrow } from './arrow'
+import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount } from './game'
 
@@ -23,7 +23,7 @@ ws.onmessage = function onMessage(message) {
     }
     if (message.player) {
         var player = message.player;
-        if (player == playerUuid) {
+        if (player == player1.uuid) {
             if (message.damage) {
                 player1.takeDamage(message.damage)
             } else if (message.kills) {
@@ -31,7 +31,7 @@ ws.onmessage = function onMessage(message) {
             }
         } else if (message.chatMessage) {
             newChatMessage(message.chatMessage)
-        }else {
+        } else {
             if (message.status==='disconnected') {
                 // player disconnected, remove
                 scene.remove(players.get(player).gltf.scene)
@@ -39,11 +39,19 @@ ws.onmessage = function onMessage(message) {
             } else if (!players.get(player)) {
                 players.add(player, message.position, message.race)
             } else if (players.get(player).gltf && message.position && message.rotation!=null) {
-                players.move(player, message.position, message.rotation, message.movementAction, message.bowAction)
+                players.move(player, message.position, message.rotation)
+            } else if (players.get(player).gltf && message.playAction) {
+                players.playAction(player, message.playAction)
+            } else if (players.get(player).gltf && message.stopAction) {
+                players.stopAction(player, message.stopAction)
             }
         }
     } else if (message.arrow) {
-        addOtherPlayerArrow(message.arrow)
+        if (message.arrow.stopped) {
+            stopOtherPlayerArrow(message.arrow)
+        } else {
+            addOtherPlayerArrow(message.arrow)   
+        }
     }
 }
 

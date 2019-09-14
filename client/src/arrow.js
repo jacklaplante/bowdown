@@ -4,7 +4,8 @@ import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
 import {player1} from './player1'
 import {camera} from './camera'
-import {sendMessage} from './websocket';
+import {sendMessage} from './websocket'
+import {uuid} from './utils'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
@@ -39,6 +40,9 @@ function shootArrow(type){
     var origin = player1.getPosition().clone().add(new Vector3(0, 1.5, 0));
     var rotation = camera.rotation // this needs to be changed
     var arrow = createArrow(origin, rotation, type);
+    arrow.uuid = uuid()
+    arrow.playerUuid = player1.uuid
+
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
@@ -57,7 +61,10 @@ function shootArrow(type){
 
     sendMessage({
         arrow: {
+            type: type,
             origin: arrow.position,
+            uuid: arrow.uuid,
+            player: player1.uuid,
             rotation: arrow.rotation,
             velocity: arrow.velocity,
             timeOfShoot: Date.now()
@@ -66,9 +73,11 @@ function shootArrow(type){
 }
 
 function addOtherPlayerArrow(newArrow) {
-    var arrow = createArrow(newArrow.origin, newArrow.rotation)
+    var arrow = createArrow(newArrow.origin, newArrow.rotation, newArrow.type)
+    arrow.uuid = newArrow.uuid
+    arrow.player = newArrow.player
     arrow.velocity = new Vector3(newArrow.velocity.x, newArrow.velocity.y, newArrow.velocity.z)
-    otherPlayerArrows.push(arrow)
+    otherPlayerArrows[arrow.uuid] = arrow
     moveArrow(arrow, (Date.now()-newArrow.timeOfShoot)/1000)
 }
 
@@ -113,12 +122,26 @@ function animateArrows(delta) {
             if (collisions.length > 0) {
                 arrow.position.copy(collisions.pop().point)
                 arrow.stopped = true
+                sendMessage({
+                    arrow: {
+                        stopped: true,
+                        position: arrow.position,
+                        uuid: arrow.uuid
+                    }
+                })
             }
         }
     })
-    otherPlayerArrows.forEach((arrow) => {
-        moveArrow(arrow, delta)
+    Object.keys(otherPlayerArrows).forEach((arrowUuid) => {
+        if (!otherPlayerArrows[arrowUuid].stopped) {
+            moveArrow(otherPlayerArrows[arrowUuid], delta)   
+        }
     })
+}
+
+function stopOtherPlayerArrow(stoppedArrow) {
+    otherPlayerArrows[stoppedArrow.uuid].position.copy(stoppedArrow.position)
+    otherPlayerArrows[stoppedArrow.uuid].stopped = true
 }
 
 function stopArrowIfOutOfBounds(arrow) {
@@ -127,4 +150,4 @@ function stopArrowIfOutOfBounds(arrow) {
     }
 }
 
-export {shootArrow, animateArrows, addOtherPlayerArrow}
+export {shootArrow, animateArrows, addOtherPlayerArrow, stopOtherPlayerArrow}

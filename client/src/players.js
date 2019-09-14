@@ -51,16 +51,20 @@ players.init = function(newPlayers) {
         })
 }
 
-players.move = function(playerUuid, pos, rotation, moveAction, bowAction) {
+players.move = function(playerUuid, pos, rotation) {
     var player = roster[playerUuid]
     player.gltf.scene.position.copy(pos)
     player.gltf.scene.rotation.y = rotation
-    if (moveAction) {
-        player.movementAction(moveAction)
-    }
-    if (bowAction) {
-        player.bowAction(bowAction)
-    }
+}
+
+players.playAction = function(playerUuid, action) {
+    var player = roster[playerUuid]
+    player.anim[action].reset().play()
+}
+
+players.stopAction = function(playerUuid, action) {
+    var player = roster[playerUuid]
+    player.anim[action].stop()
 }
 
 function animatePlayers(delta) {
