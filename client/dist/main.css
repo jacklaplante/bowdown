@@ -58,6 +58,7 @@ canvas {
 }
 
 #fullscreen {
+    display: none;
     position: fixed;
     top: 20pt;
     left: 20pt;
