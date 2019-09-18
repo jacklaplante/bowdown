@@ -1,10 +1,10 @@
 import { Clock } from 'three'
 import Hammer from 'hammerjs'
 
+import player1 from './player1'
 import { scene } from './scene'
 import { renderer } from './renderer'
 import { camera } from './camera'
-import { player1, mixer } from './player1'
 import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 
@@ -33,6 +33,7 @@ var jumpTouch = {id: null}
 const cameraTouchSensitivity = 4
 const touchElements = [
     document.getElementById("shoot-button"),
+    document.getElementById("rope-button"),
     document.getElementById("jump-button")
 ]
 var rotated
@@ -41,9 +42,9 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     animateArrows(delta);
-    if (player1 && mixer) {
+    if (player1 && player1.mixer) {
         player1.animate(delta, input);
-        mixer.update( delta );
+        player1.mixer.update( delta );
     }
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)
@@ -55,7 +56,7 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-
+input.jump = 0
 function toggleKey(event, toggle) {
     if (typeof event.key == "string") {
         switch(event.key.toLowerCase()) {
@@ -72,7 +73,11 @@ function toggleKey(event, toggle) {
             input.keyboard.right = toggle;
             break;
         case ' ':
-            input.keyboard.space = toggle;
+            if (input.jump != null) {
+                input.jump = toggle
+            } else if (!toggle) {
+                input.jump = false
+            }
             break;
         case 'shift':
             input.keyboard.shift = toggle;
@@ -99,14 +104,15 @@ function onMouseDown() {
                 document.body.requestPointerLock();
             }
             play()
-        } else if (state == "playing") {
-            player1.onMouseDown()
         }
     }
+    if (state == "playing") {
+        player1.onMouseDown()
+    }
 }
-function onMouseUp() {
+function onMouseUp(event) {
     if (state === "playing") {
-        player1.onMouseUp()
+        player1.onMouseUp(event)
     }
 }
 
@@ -173,9 +179,12 @@ function handleTouch(event) {
         if (newTouch.target.id === "shoot-button") {
             player1.onMouseDown()
             cameraTouch.shoot = true
+        } else if (newTouch.target.id === "rope-button") {
+            player1.onMouseDown()
+            cameraTouch.rope = true
         }
         if (newTouch.target.id === "jump-button") {
-            input.keyboard.space = true
+            input.jump = true
             jumpTouch.id = newTouch.identifier
         }
         if ((rotated && newTouch.pageY > window.innerHeight/2) || (!rotated && newTouch.pageX > window.innerWidth/2)) {
@@ -203,13 +212,17 @@ function handleTouch(event) {
 function onTouchEnd(event) {
     if (cameraTouch.id == event.changedTouches[0].identifier) {
         if (cameraTouch.id == jumpTouch.id) {
-            input.keyboard.space = false
+            input.jump = false
         }
         if (cameraTouch.shoot) {
-            player1.onMouseUp();
+            player1.onMouseUp({button: 0});
+        }
+        if (cameraTouch.rope) {
+            player1.onMouseUp({button: 2}) // emulate right click
         }
         cameraTouch.id = null
         cameraTouch.shoot = false
+        cameraTouch.rope = false
     } else if (movementTouch.id == event.changedTouches[0].identifier) {
         movementTouch.id = null
         input.touch = {x:0, y:0}
@@ -217,7 +230,7 @@ function onTouchEnd(event) {
 }
 
 function onMouseMove(event) {
-    if (event.target.id != "shoot-button" && event.target.id != "jump-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
+    if (event.target.id != "shoot-button" && event.target.id != "jump-button" && event.target.id != "rope-button") { // I'm not sure why this is needed but otherwise the shootBUtton disapears
         touchControls(false)        
     }
     var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
@@ -235,10 +248,10 @@ function resize() {
     } else if (rotated) {
         width = window.innerHeight
         height = window.innerWidth
-    } else if (window.innerWidth < window.innerHeight) {
-        rotate()
-        width = window.innerHeight
-        height = window.innerWidth
+//     } else if (window.innerWidth < window.innerHeight) { I'm going to remove this for now until I can commit to an mobile interface
+//         rotate()
+//         width = window.innerHeight
+//         height = window.innerWidth
     }
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
@@ -288,7 +301,7 @@ function start() {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+    player1.addToWorld()
     play()
 }
 

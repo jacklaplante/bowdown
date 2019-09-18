@@ -10,12 +10,9 @@ import {init} from './archer'
 import {gameOver} from './game'
 const models = require.context('../models/');
 
-var playerUuid = uuid();
-
-var player1 = {}
-var mixer;
-const movementSpeed = 8
-const sprintModifier = 1.5
+var player1 = {uuid: uuid()}
+const movementSpeed = 7
+const sprintModifier = 1.3
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -24,8 +21,19 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
 
-    scene.add( gltf.scene );
-    mixer = new AnimationMixer(gltf.scene);
+    player1.addToWorld = function() {
+        scene.add( this.gltf.scene );
+        // say hi to server
+        sendMessage({
+            player: player1.uuid,
+            position: player1.getPosition(),
+            race: player1.race
+        })
+        player1.equipBow()
+        player1.idle()
+    }
+    
+    var mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
@@ -36,13 +44,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             }
             player1.idle()
         }
-    })
-
-    // say hi to server
-    sendMessage({
-        player: playerUuid,
-        position: player1.getPosition(),
-        race: player1.race
     })
 
     player1.falling = function(delta){
@@ -85,7 +86,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
             player1.movementAction('runWithLegsOnly')
         } else if (player1.activeMovement) {
-            player1.anim[player1.activeMovement].stop()
+            player1.stopAction(player1.activeMovement)
             player1.activeMovement = null
         }
         player1.bowAction(bowAction);
@@ -96,22 +97,27 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
+            if (this.activeActions.includes("jumping")) {
+                this.stopAction("jumping")
+            }
             player1.playBowAction("drawBow")
             player1.bowState = "drawing"
             camera.zoomIn()
         }
     }
 
-    player1.onMouseUp = function() {
+    player1.onMouseUp = function(event) {
         if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
-            player1.anim.drawBow.stop();
-            shootArrow();
+            if (event.button == 2) {
+                shootArrow("rope")
+            } else {
+                shootArrow("normal");   
+            }
             player1.bowState = "firing"
             camera.zoomOut()
         } else if (player1.bowState === "drawing") {
-            player1.anim.drawBow.stop();
-            player1.anim[player1.activeBowAction].stop()
+            player1.stopAction(player1.activeBowAction)
             player1.activeBowAction = null
             player1.bowState = "equipped"
             player1.idle()
@@ -122,11 +128,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.broadcast = async function() {
         sendMessage(
             {
-                player: playerUuid,
+                player: player1.uuid,
                 position: player1.getPosition(),
                 rotation: player1.getRotation().y,
-                movementAction: player1.activeMovement,
-                bowAction: player1.activeBowAction,
                 bowState: player1.bowState
             }
         )
@@ -182,23 +186,20 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return direction.rotateAround(new Vector2(), Math.atan2(x, y))
     }
 
+    player1.doubleJumped = false
     player1.animate = function(delta, input){
         var nextPos;
         var falling = player1.falling(delta)
         if (!falling) {
+            player1.doubleJumped = false
             var direction = getDirection(input, delta)
             var rotation = Math.atan2(direction.x, direction.y)
-            if (input.keyboard.space) {
-                player1.velocity.y = 5
-                player1.movementAction("jumping")
-            } else {
-                player1.velocity.set(0,0,0)
-            }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
-                if (input.keyboard.space) {
+                if (input.jump) {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
+                    player1.velocity.set(0,0,0)
                     nextPos = player1.getPosition().clone()
                     nextPos.z += direction.y;
                     nextPos.x += direction.x;
@@ -224,7 +225,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             } else {
                 if (player1.isRunning()) {
                     if (player1.isFiring()) {
-                        player1.anim[player1.activeMovement].stop()
+                        player1.stopAction(player1.activeMovement)
+                        player1.activeMovement = null
                     } else {
                         player1.idle()
                     }
@@ -239,13 +241,25 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 }
             }
         }
+        if (input.jump && !player1.doubleJumped) {
+            input.jump = null
+            if (falling) {
+                player1.doubleJumped = true
+            }
+            player1.velocity.y = 5
+            this.playAction("jumping")
+        }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
             if (!nextPos) nextPos = player1.getPosition().clone()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
                 if (falling) {
-                    player1.velocity.y -= delta*10   
+                    var gravityAcceleration = 10
+                    if (player1.doubleJumped && player1.isFiring()) {
+                        gravityAcceleration = 5
+                    }
+                    player1.velocity.y -= delta*gravityAcceleration  
                 }
                 player1.getPosition().copy(nextPos)
                 if (player1.isFiring()) {
@@ -297,13 +311,74 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.sendChat = function(message) {
         sendMessage({
-            player:playerUuid,
+            player: player1.uuid,
             chatMessage: message
         })
     }
 
-    player1.equipBow()
-    player1.idle()
+    player1.activeActions = []
+    player1.playAction = function(action) {
+        if (this.anim[action]) {
+            this.anim[action].reset().play()
+            sendMessage({
+                player: this.uuid,
+                playAction: action
+            })
+            if (!this.activeActions.includes(action)) {
+                this.activeActions.push(action)   
+            }
+        }
+    }
+
+    player1.stopAction = function(action) {
+        if (this.activeActions.includes(action)) {
+            this.activeActions = this.activeActions.filter(e => e != action)
+            this.anim[action].stop()
+            sendMessage({
+                player: this.uuid,
+                stopAction: action
+            })
+        } else {
+            console.error("tried to stop action: " + action + ", but action was never started")
+        }
+    }
+
+    player1.bowAction = function(bowAction) {
+        if (this.anim && this.anim[bowAction]){
+            if (this.activeBowAction != bowAction) {
+                if (this.activeBowAction) {
+                    this.stopAction(this.activeBowAction)
+                    this.activeBowAction = null
+                }
+                if (this.activeMovement && this.activeMovement != "runWithLegsOnly") {
+                    this.stopAction(this.activeMovement)
+                }
+                if (bowAction) {
+                    this.playAction(bowAction)
+                }
+                this.activeBowAction = bowAction
+                
+            }
+        } else {
+            console.error("action: " + bowAction + " does not exist!");
+        }
+    }
+
+    player1.movementAction = function(action="idle") {
+        if (this.anim && this.anim[action]) {
+            if (this.activeMovement) {
+                if (this.activeMovement != action) {
+                    this.stopAction(this.activeMovement)
+                } else  {
+                    return
+                }
+            }
+            this.playAction(action)
+            this.activeMovement = action
+        } else {
+            console.error("action: " + action + " does not exist!");
+        }
+    }
 });
 
-export { player1, playerUuid, mixer }
+export default player1

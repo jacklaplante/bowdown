@@ -1,6 +1,6 @@
 import {PerspectiveCamera, Vector3, Raycaster} from 'three'
 import {collidableEnvironment} from './scene'
-import {player1} from './player1'
+import player1 from './player1'
 
 var distance = 3.5;
 var width, height;
@@ -48,7 +48,11 @@ camera.resetFocalLength()
 camera.animate = function(delta) {
     if (camera.zoomState == "zooming in") {
         if (camera.getFocalLength() < focalLengthIn) {
-            var focalLength = camera.getFocalLength()+delta*zoomSpeed
+            var speed = zoomSpeed
+            if (player1.doubleJumped) {
+                speed/=2
+            }
+            var focalLength = camera.getFocalLength()+delta*speed
             if (focalLength < focalLengthIn) {
                 camera.setFocalLength(focalLength)
             } else {

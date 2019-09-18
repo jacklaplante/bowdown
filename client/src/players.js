@@ -46,21 +46,25 @@ players.init = function(newPlayers) {
     Object.keys(newPlayers).forEach(
         (playerUuid) => {
             players.add(playerUuid,
-                new Vector3(newPlayers[playerUuid].x, newPlayers[playerUuid].y, newPlayers[playerUuid].z),
+                newPlayers[playerUuid].position,
                 newPlayers[playerUuid].race);
         })
 }
 
-players.move = function(playerUuid, pos, rotation, moveAction, bowAction) {
+players.move = function(playerUuid, pos, rotation) {
     var player = roster[playerUuid]
     player.gltf.scene.position.copy(pos)
     player.gltf.scene.rotation.y = rotation
-    if (moveAction) {
-        player.movementAction(moveAction)
-    }
-    if (bowAction) {
-        player.bowAction(bowAction)
-    }
+}
+
+players.playAction = function(playerUuid, action) {
+    var player = roster[playerUuid]
+    player.anim[action].reset().play()
+}
+
+players.stopAction = function(playerUuid, action) {
+    var player = roster[playerUuid]
+    player.anim[action].stop()
 }
 
 function animatePlayers(delta) {
