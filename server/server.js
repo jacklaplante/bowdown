@@ -5,10 +5,13 @@ const WebSocket = require('ws');
 var players = {}
 
 const server = https.createServer({
-    cert: fs.readFileSync('./certs/cert.pem'),
-    key: fs.readFileSync('./certs/privkey.pem')
+    // cert: fs.readFileSync('./certs/cert.pem'),
+    cert: fs.readFileSync('./certs/localhost.crt'),
+    // key: fs.readFileSync('./certs/privkey.pem')
+    key: fs.readFileSync('./certs/localhost.key')
 });
 const wss = new WebSocket.Server({ server });
+
 wss.on('connection', function connection(ws, req) {
     ws.isAlive = true;
     ws.on('pong', heartbeat);
@@ -60,6 +63,14 @@ wss.on('connection', function connection(ws, req) {
     })
     // ws.send('something');
 });
+
+wss.on('listening', _ => 
+    console.log("ws server is up and listening")
+)
+
+server.listen(function listening() {
+    console.log("http server is up and listening on port: " + server.address().port)
+})
 
 function noop() {}
 
