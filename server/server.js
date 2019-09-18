@@ -1,8 +1,14 @@
+const fs = require('fs');
+const https = require('https');
+const WebSocket = require('ws');
+
 var players = {}
 
-// WebSocket server
-const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 18181 });
+const server = https.createServer({
+    cert: fs.readFileSync('./certs/cert.pem'),
+    key: fs.readFileSync('./certs/privkey.pem')
+});
+const wss = new WebSocket.Server({ server });
 wss.on('connection', function connection(ws, req) {
     ws.isAlive = true;
     ws.on('pong', heartbeat);
