@@ -94,10 +94,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     player1.onMouseDown = function() {
-        if (player1.bowState == "unequipped") {
+        if (activeRopeArrow!=null) {
+            activeRopeArrow = null
+            retractRopeArrow();
+        } else if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
-            if (!ropeArrowActive) {
+            if (activeRopeArrow==null) {
                 if (this.activeActions.includes("jumping")) {
                     this.stopAction("jumping")
                 }
@@ -108,16 +111,12 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    var ropeArrowActive = false
+    var activeRopeArrow
     player1.onMouseUp = function(event) {
-        if (ropeArrowActive) {
-            ropeArrowActive = false
-            retractRopeArrow();
-        } else if (player1.bowState == "drawn") {
+         if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
             if (event.button == 2) {
-                shootArrow("rope")
-                ropeArrowActive = true
+                activeRopeArrow = shootArrow("rope")
             } else {
                 shootArrow("normal");   
             }
@@ -255,6 +254,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             }
             player1.velocity.y = 5
             this.playAction("jumping")
+        }
+        if (activeRopeArrow!=null && activeRopeArrow.stopped) {
+            this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
             if (!nextPos) nextPos = player1.getPosition().clone()

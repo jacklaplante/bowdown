@@ -70,6 +70,8 @@ function shootArrow(type){
             timeOfShoot: Date.now()
         }
     })
+
+    return arrow
 }
 
 function addOtherPlayerArrow(newArrow) {
