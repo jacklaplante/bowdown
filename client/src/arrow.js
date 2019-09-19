@@ -44,7 +44,6 @@ function shootArrow(type){
     arrow.uuid = uuid()
     arrow.playerUuid = player1.uuid
 
-
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
     raycaster.setFromCamera({x: 0, y: 0}, camera) // the {x: 0, y: 0} means the center of the screen; there may eventually be issues with this not actually lining up with the html reticle
@@ -79,7 +78,7 @@ function addOtherPlayerArrow(newArrow) {
     arrow.player = newArrow.player
     arrow.velocity = new Vector3(newArrow.velocity.x, newArrow.velocity.y, newArrow.velocity.z)
     otherPlayerArrows[arrow.uuid] = arrow
-    moveArrow(arrow, (Date.now()-newArrow.timeOfShoot)/1000)
+    moveArrow(arrow, (Date.now() - newArrow.timeOfShoot)/1000)
 }
 
 function moveArrow(arrow, delta) {
@@ -140,6 +139,14 @@ function animateArrows(delta) {
     })
 }
 
+function retractRopeArrow() {
+    player1Arrows.forEach((arrow) => {
+        if (arrow.type == "rope") {
+            arrow.type = null
+        }
+    })
+}
+
 function stopOtherPlayerArrow(stoppedArrow) {
     otherPlayerArrows[stoppedArrow.uuid].position.copy(stoppedArrow.position)
     otherPlayerArrows[stoppedArrow.uuid].stopped = true
@@ -151,4 +158,4 @@ function stopArrowIfOutOfBounds(arrow) {
     }
 }
 
-export {shootArrow, animateArrows, addOtherPlayerArrow, stopOtherPlayerArrow}
+export {shootArrow, animateArrows, addOtherPlayerArrow, stopOtherPlayerArrow, retractRopeArrow}

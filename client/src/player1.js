@@ -4,7 +4,7 @@ import {loader} from './loader'
 import {uuid, addCollisionLine, removeCollisionLines} from './utils'
 import {scene, collidableEnvironment} from './scene'
 import {camera} from './camera'
-import {shootArrow} from './arrow'
+import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
@@ -97,20 +97,27 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
-            if (this.activeActions.includes("jumping")) {
-                this.stopAction("jumping")
+            if (!ropeArrowActive) {
+                if (this.activeActions.includes("jumping")) {
+                    this.stopAction("jumping")
+                }
+                player1.playBowAction("drawBow")
+                player1.bowState = "drawing"
+                camera.zoomIn()
             }
-            player1.playBowAction("drawBow")
-            player1.bowState = "drawing"
-            camera.zoomIn()
         }
     }
 
+    var ropeArrowActive = false
     player1.onMouseUp = function(event) {
-        if (player1.bowState == "drawn") {
+        if (ropeArrowActive) {
+            ropeArrowActive = false
+            retractRopeArrow();
+        } else if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
             if (event.button == 2) {
                 shootArrow("rope")
+                ropeArrowActive = true
             } else {
                 shootArrow("normal");   
             }
