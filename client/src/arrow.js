@@ -95,7 +95,7 @@ function animateArrows(delta) {
                 scene.remove(arrow.rope)
             }
             var geometry = new Geometry();
-            var material = new LineBasicMaterial({color: 0xff0000});
+            var material = new LineBasicMaterial({color: 0xfffae8, linewidth: 10});
             geometry.vertices.push(player1.getPosition().clone().add(originOffset), arrow.position);
             var line = new Line(geometry, material)
             arrow.rope = line
