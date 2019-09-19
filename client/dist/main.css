@@ -65,7 +65,7 @@ canvas {
     transform: translate(-50%, -50%);
     width: 20pt;
     height: 20pt;
-    background-image: url(fullscreen.svg);
+    background-image: url(icons/fullscreen.svg);
 }
 
 #crosshair {
@@ -76,7 +76,7 @@ canvas {
     transform: translate(-50%, -50%);
     width: 30px;
     height: 30px;
-    background-image: url(crosshair.svg);
+    background-image: url(icons/crosshair.svg);
 }
 
 .playing #crosshair {
@@ -90,7 +90,7 @@ canvas {
     left: 85%;
     width: 70pt;
     height: 70pt;
-    background-image: url(dot-and-circle.svg);
+    background-image: url(icons/dot-and-circle.svg);
 }
 
 #rope-button {
@@ -100,7 +100,7 @@ canvas {
     left: 70%;
     width: 70pt;
     height: 70pt;
-    background-image: url(rope.svg);
+    background-image: url(icons/rope.svg);
 }
 
 #jump-button {
