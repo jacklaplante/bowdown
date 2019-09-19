@@ -11,6 +11,7 @@ var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
 var arrowWidth = 0.06
 var arrowLength = 0.75
+const originOffset = new Vector3(0, 1.5, 0)
 const arrowTypes = {
     normal: {
         color: 0x00ff00
@@ -37,7 +38,7 @@ function createArrow(origin, rotation, type){
 }
 
 function shootArrow(type){
-    var origin = player1.getPosition().clone().add(new Vector3(0, 1.5, 0));
+    var origin = player1.getPosition().clone().add(originOffset);
     var rotation = camera.rotation // this needs to be changed
     var arrow = createArrow(origin, rotation, type);
     arrow.uuid = uuid()
@@ -88,20 +89,20 @@ function moveArrow(arrow, delta) {
 
 function animateArrows(delta) {
     player1Arrows.forEach((arrow) => {
+        if (arrow.type=="rope") {
+            if (arrow.rope) {
+                scene.remove(arrow.rope)   
+            }
+            var geometry = new Geometry();
+            var material = new LineBasicMaterial({color: 0xff0000});
+            geometry.vertices.push(player1.getPosition().clone().add(originOffset), arrow.position);
+            var line = new Line(geometry, material)
+            arrow.rope = line
+            scene.add(line)
+        }
         if(!arrow.stopped){
             stopArrowIfOutOfBounds(arrow)
             moveArrow(arrow, delta)
-            if (arrow.type=="rope") {
-                if (arrow.rope) {
-                    scene.remove(arrow.rope)   
-                }
-                var geometry = new Geometry();
-                var material = new LineBasicMaterial({color: 0xff0000});
-                geometry.vertices.push(arrow.origin, arrow.position);
-                var line = new Line(geometry, material)
-                arrow.rope = line
-                scene.add(line)
-            }
             // detect arrow collisions
             var direction = new Vector3(0,0,1)
             direction.applyEuler(arrow.rotation).normalize()
