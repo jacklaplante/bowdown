@@ -13,6 +13,7 @@ const models = require.context('../models/');
 var player1 = {uuid: uuid()}
 const movementSpeed = 7
 const sprintModifier = 1.3
+const collisionModifier = 0.5
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -63,19 +64,26 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
+        var vert, ray, collisionResults;
         for(var a=-1; a<=1; a++){
             for(var c=-1; c<=1; c++){
-                var collisionModifier = 0.5
                 a*=collisionModifier
                 c*=collisionModifier
-                var vert = new Vector3(a, 1, c);
+                vert = new Vector3(a, 1, c);
                 vert = vert.clone().normalize()
-                var ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert, 0, vert.length());
+                ray = new Raycaster(new Vector3(nextPos.x, nextPos.y, nextPos.z), vert, 0, vert.length());
                 addCollisionLine(player1, vert)
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
-                var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+                collisionResults = ray.intersectObjects(collidableEnvironment, true);
                 if ( collisionResults.length > 0) {
                     return vert
+                }
+                // this bit of code below is supposed to prevent the player from going through meshes in between frames. The issue is that it only checks for collisions around waist level
+                var inBetweenFramesCollisionVector = nextPos.clone().sub(player1.getPosition())
+                ray = new Raycaster(player1.getPosition().clone().add(vert), inBetweenFramesCollisionVector.clone().normalize(), 0, inBetweenFramesCollisionVector.length())
+                collisionResults = ray.intersectObjects(collidableEnvironment, true)
+                if (collisionResults.length > 0) {
+                    return inBetweenFramesCollisionVector;
                 }
             }
         }
