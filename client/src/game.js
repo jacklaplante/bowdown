@@ -7,6 +7,7 @@ import { renderer } from './renderer'
 import { camera } from './camera'
 import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
+require.context('../icons/');
 
 var clock = new Clock()
 var killCount = 0
