@@ -90,7 +90,7 @@ function animateArrows(delta) {
     player1Arrows.forEach((arrow) => {
         if (arrow.type=="rope") {
             if (arrow.rope) {
-                scene.remove(arrow.rope)   
+                scene.remove(arrow.rope)
             }
             var geometry = new Geometry();
             var material = new LineBasicMaterial({color: 0xff0000});
@@ -143,6 +143,7 @@ function retractRopeArrow() {
     player1Arrows.forEach((arrow) => {
         if (arrow.type == "rope") {
             arrow.type = null
+            scene.remove(arrow.rope)
         }
     })
 }
