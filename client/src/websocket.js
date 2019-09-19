@@ -9,7 +9,7 @@ import { setKillCount } from './game'
 
 var serverAddress
 if (process.env.NODE_ENV == 'production') {
-    serverAddress = 'ws://ec2-18-191-136-250.us-east-2.compute.amazonaws.com:18181'
+    serverAddress = 'wss://ws.bowdown.io:18181'
 } else {
     serverAddress = 'ws://localhost:18181'
 }
