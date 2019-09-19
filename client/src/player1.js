@@ -204,9 +204,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.animate = function(delta, input){
         var nextPos;
         var falling = player1.falling(delta)
+        var direction = getDirection(input, delta)
         if (!falling) {
             player1.doubleJumped = false
-            var direction = getDirection(input, delta)
             var rotation = Math.atan2(direction.x, direction.y)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 if (input.jump) {
@@ -219,7 +219,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     nextPos.x += direction.x;
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
-                    var origin = new Vector3(nextPos.x, nextPos.y+1, nextPos.z)
+                    var origin = new Vector3(nextPos.x, nextPos.y+0.5, nextPos.z)
                     var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0), 0, 1)
                     var top = slopeRay.intersectObjects(collidableEnvironment, true);
                     if (top.length>0){
