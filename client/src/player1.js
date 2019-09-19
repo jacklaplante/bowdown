@@ -14,6 +14,7 @@ var player1 = {uuid: uuid()}
 const movementSpeed = 7
 const sprintModifier = 1.3
 const collisionModifier = 0.5
+const velocityInfluenceModifier = 100
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -166,9 +167,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     function getDirection(input, delta) {
         var direction = new Vector3();
-        camera.getWorldDirection(direction)
-        direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
-        direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
         var x=0, y=0 // these are the inputDirections
         if (input.touch.x!=0 && input.touch.y!=0) {
             var dir = new Vector2(input.touch.x, input.touch.y)
@@ -197,22 +195,28 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             x += 1
             y += 0
         }
-        return direction.rotateAround(new Vector2(), Math.atan2(x, y))
+        if (x!=0 || y!=0) {
+            camera.getWorldDirection(direction)
+            direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
+            direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
+            direction.rotateAround(new Vector2(), Math.atan2(x, y))
+        }
+        return direction
     }
 
     player1.doubleJumped = false
     player1.animate = function(delta, input){
-        var nextPos;
+        var nextPos, rotation;
         var falling = player1.falling(delta)
         var direction = getDirection(input, delta)
         if (!falling) {
             player1.doubleJumped = false
-            var rotation = Math.atan2(direction.x, direction.y)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 if (input.jump) {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
+                    rotation = Math.atan2(direction.x, direction.y)
                     player1.velocity.set(0,0,0)
                     nextPos = player1.getPosition().clone()
                     nextPos.z += direction.y;
@@ -246,9 +250,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                 }
                 if (player1.isFiring()) {
-                    var direction = new Vector3();
-                    camera.getWorldDirection(direction)
-                    rotation = Math.atan2(direction.x, direction.z)
+                    var dir = new Vector3();
+                    camera.getWorldDirection(dir)
+                    rotation = Math.atan2(dir.x, dir.z)
                     player1.getRotation().y = rotation
                     camera.updateCamera()
                     player1.broadcast()
@@ -264,6 +268,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             this.playAction("jumping")
         }
         if (activeRopeArrow!=null && activeRopeArrow.stopped) {
+            player1.velocity.x += direction.x*velocityInfluenceModifier*delta
+            player1.velocity.z += direction.y*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
@@ -280,9 +286,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 }
                 player1.getPosition().copy(nextPos)
                 if (player1.isFiring()) {
-                    var direction = new Vector3();
-                    camera.getWorldDirection(direction)
-                    rotation = Math.atan2(direction.x, direction.z)
+                    var dir = new Vector3();
+                    camera.getWorldDirection(dir)
+                    rotation = Math.atan2(dir.x, dir.z)
                 } else if (rotation == null) {
                     rotation = player1.getRotation().y
                 }
