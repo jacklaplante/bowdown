@@ -22,18 +22,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.gltf = gltf;
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
-
-    player1.addToWorld = function() {
-        scene.add( this.gltf.scene );
-        // say hi to server
-        sendMessage({
-            player: player1.uuid,
-            position: player1.getPosition(),
-            race: player1.race
-        })
-        player1.equipBow()
-        player1.idle()
-    }
     
     var mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
@@ -402,6 +390,16 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             console.error("action: " + action + " does not exist!");
         }
     }
+
+    scene.add( player1.gltf.scene );
+    // say hi to server
+    sendMessage({
+        player: player1.uuid,
+        position: player1.getPosition(),
+        race: player1.race
+    })
+    player1.equipBow()
+    player1.idle()
 });
 
 export default player1
