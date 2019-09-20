@@ -28,6 +28,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
             player1.bowState = "drawn"
+        } else if (event.action.getClip().name == "death") {
+            scene.remove(player1.gltf.scene)
         } else {
             if (event.action.getClip().name == "Fire bow") {
                 player1.bowState = "equipped"
@@ -313,10 +315,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.takeDamage = function() {
         gameOver()
-        player1.getPosition().y -=20
+        this.playAction("death")
     }
 
     player1.respawn = function() {
+        scene.add(player1.gltf.scene)
         player1.getPosition().copy(new Vector3())
     }
 

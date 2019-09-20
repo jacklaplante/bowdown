@@ -24,7 +24,8 @@ function init(mixer, archer) {
         jumping: mixer.clipAction(getAnimation(archer, "Jumping2")).setLoop(LoopOnce),
         equipBow: mixer.clipAction(getAnimation(archer, "Equip Bow")).setLoop(LoopOnce),
         drawBow: mixer.clipAction(getAnimation(archer, "Draw bow")).setLoop(LoopOnce),
-        fireBow: mixer.clipAction(getAnimation(archer, "Fire bow")).setLoop(LoopOnce)
+        fireBow: mixer.clipAction(getAnimation(archer, "Fire bow")).setLoop(LoopOnce),
+        death: mixer.clipAction(getAnimation(archer, "death")).setLoop(LoopOnce)
     }
     archer.anim.drawBow.clampWhenFinished = true
 
