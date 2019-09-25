@@ -46,7 +46,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             var ray = new Raycaster(origin, dir, 0, 0.2+Math.abs(player1.velocity.y*delta));
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
-                player1.getPosition().copy(collisionResults[collisionResults.length-1].point)
                 return false
             }
             return true;   
