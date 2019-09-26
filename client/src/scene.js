@@ -1,7 +1,7 @@
 import { Scene, HemisphereLight, DirectionalLight, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide } from 'three'
 
 import { loader } from './loader'
-import env from '../models/env.glb'
+import env from '../models/battle_planet.glb'
 import heather_ft from '../skybox/heather_ft.jpg'
 import heather_bk from '../skybox/heather_bk.jpg'
 import heather_up from '../skybox/heather_up.jpg'
