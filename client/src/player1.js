@@ -278,13 +278,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     var dir = new Vector3();
                     camera.getWorldDirection(dir)
                     rotation = Math.atan2(dir.x, dir.z)
-                    player1.getRotation().y = rotation
                 } else if (rotation == null) {
-                    // rotation = player1.getRotation().y
-                    var p1p = player1.getPosition().clone().normalize()
-                    player1.getRotation() = new Vector3(Math.atan2(p1p.y, p1p.x), Math.atan2(p1p.x, p1p.z), Math.atan2(p1p.z, p1p.y))
+                    rotation = player1.getRotation().y
                 }
+                player1.gltf.scene.lookAt(new Vector3())
+                player1.gltf.scene.rotateOnAxis(new Vector3(1,0,0), -Math.PI/2)
                 
+                // player1.getRotation().y = rotation
                 camera.updateCamera()
             } else {
                 if (falling) {// slide off edge
@@ -397,6 +397,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     player1.getPosition().y += 200
+    player1.getPosition().z += 200
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
