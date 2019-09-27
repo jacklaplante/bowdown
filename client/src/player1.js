@@ -271,7 +271,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     if (player1.doubleJumped && player1.isFiring()) {
                         gravityAcceleration = 5
                     }
-                    player1.velocity.y -= delta*gravityAcceleration  
+                    player1.velocity.sub(player1.getPosition().clone().normalize().multiplyScalar(gravityAcceleration*delta))
                 }
                 player1.getPosition().copy(nextPos)
                 if (player1.isFiring()) {
