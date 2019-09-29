@@ -79,80 +79,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return false;
     }
 
-    player1.playBowAction = function(bowAction) {
-        if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
-            player1.movementAction('runWithLegsOnly')
-        } else if (player1.activeMovement) {
-            player1.stopAction(player1.activeMovement)
-            player1.activeMovement = null
-        }
-        player1.bowAction(bowAction);
-        player1.broadcast();
-    }
-
-    player1.onMouseDown = function() {
-        if (activeRopeArrow!=null) {
-            activeRopeArrow = null
-            retractRopeArrow();
-        } else if (player1.bowState == "unequipped") {
-            player1.equipBow()
-        } else {
-            if (activeRopeArrow==null) {
-                if (this.activeActions.includes("jumping")) {
-                    this.stopAction("jumping")
-                }
-                player1.playBowAction("drawBow")
-                player1.bowState = "drawing"
-                camera.zoomIn()
-            }
-        }
-    }
-
-    var activeRopeArrow
-    player1.onMouseUp = function(event) {
-         if (player1.bowState == "drawn") {
-            player1.playBowAction("fireBow")
-            if (event.button == 2) {
-                activeRopeArrow = shootArrow("rope")
-            } else {
-                shootArrow("normal");   
-            }
-            player1.bowState = "firing"
-            camera.zoomOut()
-        } else if (player1.bowState === "drawing") {
-            player1.stopAction(player1.activeBowAction)
-            player1.activeBowAction = null
-            player1.bowState = "equipped"
-            player1.idle()
-            camera.zoomOut()
-        }
-    }
-
-    player1.broadcast = async function() {
-        sendMessage(
-            {
-                player: player1.uuid,
-                position: player1.getPosition(),
-                rotation: player1.getRotation().y,
-                bowState: player1.bowState
-            }
-        )
-    }
-
-    player1.runOrSprint = function(input) {
-        if (input.keyboard.shift) {
-            if (this.isRunning()) {
-                this.anim[this.activeMovement].timeScale = sprintModifier
-            }   
-            return movementSpeed*sprintModifier
-        } else {
-            if (this.anim[this.activeMovement]) {
-                this.anim[this.activeMovement].timeScale = 1
-            }
-            return movementSpeed
-        }
-    }
-
     function getDirection(input, delta) {
         var direction = new Vector3();
         var x=0, y=0 // these are the inputDirections
@@ -392,6 +318,80 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             this.activeMovement = action
         } else {
             console.error("action: " + action + " does not exist!");
+        }
+    }
+
+    player1.playBowAction = function(bowAction) {
+        if (player1.isRunning() && player1.activeMovement!='runWithLegsOnly') {
+            player1.movementAction('runWithLegsOnly')
+        } else if (player1.activeMovement) {
+            player1.stopAction(player1.activeMovement)
+            player1.activeMovement = null
+        }
+        player1.bowAction(bowAction);
+        player1.broadcast();
+    }
+
+    player1.onMouseDown = function() {
+        if (activeRopeArrow!=null) {
+            activeRopeArrow = null
+            retractRopeArrow();
+        } else if (player1.bowState == "unequipped") {
+            player1.equipBow()
+        } else {
+            if (activeRopeArrow==null) {
+                if (this.activeActions.includes("jumping")) {
+                    this.stopAction("jumping")
+                }
+                player1.playBowAction("drawBow")
+                player1.bowState = "drawing"
+                camera.zoomIn()
+            }
+        }
+    }
+
+    var activeRopeArrow
+    player1.onMouseUp = function(event) {
+         if (player1.bowState == "drawn") {
+            player1.playBowAction("fireBow")
+            if (event.button == 2) {
+                activeRopeArrow = shootArrow("rope")
+            } else {
+                shootArrow("normal");   
+            }
+            player1.bowState = "firing"
+            camera.zoomOut()
+        } else if (player1.bowState === "drawing") {
+            player1.stopAction(player1.activeBowAction)
+            player1.activeBowAction = null
+            player1.bowState = "equipped"
+            player1.idle()
+            camera.zoomOut()
+        }
+    }
+
+    player1.broadcast = async function() {
+        sendMessage(
+            {
+                player: player1.uuid,
+                position: player1.getPosition(),
+                rotation: player1.getRotation().y,
+                bowState: player1.bowState
+            }
+        )
+    }
+
+    player1.runOrSprint = function(input) {
+        if (input.keyboard.shift) {
+            if (this.isRunning()) {
+                this.anim[this.activeMovement].timeScale = sprintModifier
+            }   
+            return movementSpeed*sprintModifier
+        } else {
+            if (this.anim[this.activeMovement]) {
+                this.anim[this.activeMovement].timeScale = 1
+            }
+            return movementSpeed
         }
     }
 
