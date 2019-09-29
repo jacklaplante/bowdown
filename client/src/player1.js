@@ -396,7 +396,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.getPosition().y += 200
+    player1.getPosition().y -= 200
     player1.getPosition().z += 200
     scene.add( player1.gltf.scene );
     // say hi to server

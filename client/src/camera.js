@@ -46,6 +46,9 @@ camera.resetFocalLength = function() {
 camera.resetFocalLength()
 
 camera.animate = function(delta) {
+    if (player1.gltf) {
+        camera.up.copy(player1.getPosition().clone().normalize())
+    }
     if (camera.zoomState == "zooming in") {
         if (camera.getFocalLength() < focalLengthIn) {
             var speed = zoomSpeed
