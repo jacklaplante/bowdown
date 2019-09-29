@@ -27,7 +27,7 @@ camera.nextPosition = function(dist) {
         nextPos.x = dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
         nextPos.y = dist * Math.sin(phi * Math.PI / 360);
         nextPos.z = dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-        return nextPos
+        return cameraTarget.clone().add(nextPos.clone().applyEuler(player1.getRotation()))
     }
 }
 
@@ -94,7 +94,7 @@ camera.updateCamera = function() {
             // jk, I take the difference between the nextPos and the point of collision, normalize it, multiply it by 0.1, and add that to the collision point to get the new nextPos
             // really all it does is make sure the camera is slightly above the surface that it's colliding with (instead of at the surface)
         }
-        camera.setPosition(cameraTarget.clone().add(nextPos.clone().applyEuler(player1.getRotation())))
+        camera.setPosition(nextPos)
     }
     camera.up.copy(player1.getPosition().clone().normalize())
     camera.lookAt(cameraTarget);
