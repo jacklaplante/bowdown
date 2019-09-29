@@ -1,4 +1,5 @@
-import {Geometry, Vector3, LineBasicMaterial, Line} from 'three'
+import {Geometry, Vector3, LineBasicMaterial, Line, BoxGeometry, Mesh, MeshBasicMaterial} from 'three'
+import {scene} from './scene'
 
 function uuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -8,27 +9,42 @@ function uuid() {
 }
 
 
-const displayCollisionLines = false
+const displayCollisionLines = true
+const displayCollisionPoint = true
 
-function addCollisionLine(player1, vert) {
+function addCollisionLine(nextPos, vert) {
     if (displayCollisionLines){
         var geometry = new Geometry();
-        geometry.vertices.push(vert, new Vector3());
+        geometry.vertices.push(nextPos.clone().add(vert), nextPos);
         var material = new LineBasicMaterial({color: 0xff0000});
         var line = new Line( geometry, material )
         line.name = "collision line"
-        player1.gltf.scene.add(line);
+        scene.add(line)
     }
 }
 
 function removeCollisionLines(player1) {
-    if (displayCollisionLines){
-        player1.gltf.scene.children.forEach((child) => {
+    if (displayCollisionLines, displayCollisionPoint){
+        scene.children.forEach((child) => {
             if (child.name === "collision line") {
-                player1.gltf.scene.remove(child)
+                scene.remove(child)
+            }
+            if (child.name === "fuck face") {
+                scene.remove(child)
             }
         })
     }
 }
 
-export {uuid, addCollisionLine, removeCollisionLines}
+function showCollisionPoint(point) {
+    if (displayCollisionPoint) {
+        var geo = new BoxGeometry(0.1, 0.1, 0.1);
+        var mat = new MeshBasicMaterial({color: 0x34eb43});
+        var collPoint = new Mesh(geo, mat);
+        collPoint.name = "fuck face";
+        scene.add(collPoint)
+        collPoint.position.copy(point)
+    }
+}
+
+export {uuid, addCollisionLine, removeCollisionLines, showCollisionPoint}
