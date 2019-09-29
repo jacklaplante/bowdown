@@ -3,7 +3,7 @@ import {Vector3, AnimationMixer, Raycaster, Vector2 } from 'three'
 import {loader} from './loader'
 import {uuid, addCollisionLine, removeCollisionLines} from './utils'
 import {scene, collidableEnvironment} from './scene'
-import {camera} from './camera'
+import {camera, cameraTarget} from './camera'
 import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
@@ -281,6 +281,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 } else if (rotation == null) {
                     rotation = player1.getRotation().y
                 }
+                this.gltf.scene.up = this.getPosition().clone().normalize()
                 player1.gltf.scene.lookAt(new Vector3())
                 player1.gltf.scene.rotateOnAxis(new Vector3(1,0,0), -Math.PI/2)
                 
@@ -398,6 +399,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.getPosition().y -= 200
     player1.getPosition().z += 200
+//     player1.gltf.scene.add(cameraTarget)
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
