@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Vector2, Euler} from 'three'
+import {Vector3, AnimationMixer, Raycaster, Vector2, Euler, Quaternion} from 'three'
 
 import {loader} from './loader'
 import {uuid, addCollisionLine, removeCollisionLines, showCollisionPoint} from './utils'
@@ -17,8 +17,7 @@ const collisionModifier = 0.5
 const velocityInfluenceModifier = 100
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
-loader.load(models('./benji_'+player1.race+'.gltf'),
-  ( gltf ) => {
+loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
     player1.gltf = gltf;
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
@@ -80,39 +79,33 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     function getDirection(input, delta) {
-        var direction = new Vector3();
-        var x=0, y=0 // these are the inputDirections
+        var direction = new Vector2();
         if (input.touch.x!=0 && input.touch.y!=0) {
-            var dir = new Vector2(input.touch.x, input.touch.y)
-            if (dir.length()>100) {
+            var touchDir = new Vector2(input.touch.x, input.touch.y)
+            if (touchDir.length()>100) {
                 input.keyboard.shift = true // sprinting
             } else {
                 input.keyboard.shift = false
             }
-            dir.normalize()
-            x = dir.x
-            y = dir.y
+            touchDir.normalize()
+            direction.x = touchDir.x
+            direction.y = touchDir.y
         }
         if (input.keyboard.forward) {
-            x += 0
-            y += 1
+            direction.x += 0
+            direction.y += 1
         }
         if (input.keyboard.backward) {
-            x += 0
-            y += -1
+            direction.x += 0
+            direction.y += -1
         }
         if (input.keyboard.left) {
-            x += -1
-            y += 0
+            direction.x += -1
+            direction.y += 0
         }
         if (input.keyboard.right) {
-            x += 1
-            y += 0
-        }
-        if (x!=0 || y!=0) {
-            camera.getWorldDirection(direction)
-            direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
-            direction.applyEuler(new Euler(0, Math.atan2(x, y), 0))
+            direction.x += 1
+            direction.y += 0
         }
         return direction
     }
@@ -127,11 +120,16 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 if (input.jump) {
                     player1.velocity.x = (direction.x)/delta
-                    player1.velocity.z = (direction.z)/delta
+                    player1.velocity.z = (direction.y)/delta
                 } else {
-//                     rotation = Math.atan2(direction.x, direction.z)
+                    rotation = Math.atan2(direction.x, direction.y)
                     player1.velocity.set(0,0,0)
-                    nextPos = player1.getPosition().clone().add(direction)
+
+                    var testDirection = new Vector3()
+                    camera.getWorldDirection(testDirection)
+                    testDirection.normalize().multiplyScalar(delta*player1.runOrSprint(input));
+                    testDirection.applyEuler(new Euler(0, Math.atan2(direction.x, direction.y), 0))                    
+                    nextPos = player1.getPosition().clone().add(testDirection)
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                     var origin = nextPos.clone().add(
@@ -166,7 +164,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     var dir = new Vector3();
                     camera.getWorldDirection(dir)
                     rotation = Math.atan2(dir.x, dir.z)
-//                     player1.getRotation().y = rotation
+//                     this.gltf.scene.rotateOnAxis(this.gltf.scene.up, rotation)
                     camera.updateCamera()
                     player1.broadcast()
                 }
@@ -201,15 +199,18 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     var dir = new Vector3();
                     camera.getWorldDirection(dir)
                     rotation = Math.atan2(dir.x, dir.z)
-                } else if (rotation == null) {
-                    rotation = player1.getRotation().y
                 }
                 this.gltf.scene.up = this.getPosition().clone().normalize()
                 player1.gltf.scene.lookAt(new Vector3())
-                player1.gltf.scene.rotateOnAxis(new Vector3(1,0,0), -Math.PI/2)
+                player1.gltf.scene.rotateX(-Math.PI/2)
+                if (rotation != null) {
+                    var quat = new Quaternion().setFromAxisAngle(new Vector3(0,1,0), rotation);
+                    player1.gltf.scene.applyQuaternion(quat)
+//                     this.gltf.scene.rotateY(0.01)
+//                     this.gltf.scene.rotateOnAxis(direction.cross(this.gltf.scene.up), Math.acos(direction.dot(this.gltf.scene.up)/direction.length()))
+//                     this.getRotation().y = rotation
+                }
                 player1.getPosition().copy(nextPos)
-                
-                // player1.getRotation().y = rotation
                 camera.updateCamera()
             } else {
                 if (falling) {// slide off edge
@@ -395,8 +396,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.getPosition().y += 200
-//     player1.getPosition().z += 200
+    player1.getPosition().y -= 150
+    player1.getPosition().z -= 150
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
