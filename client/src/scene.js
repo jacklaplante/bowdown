@@ -28,7 +28,7 @@ materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(yellow
 materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(yellowcloud_lf) }));
 for (let i = 0; i < 6; i++)
   materialArray[i].side = BackSide;
-let skyboxGeo = new BoxGeometry(1000, 1000, 1000);
+let skyboxGeo = new BoxGeometry(3000, 3000, 3000);
 let skybox = new Mesh( skyboxGeo, materialArray );
 scene.add( skybox );
 
