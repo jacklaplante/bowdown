@@ -201,12 +201,15 @@ loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
                     rotation = Math.atan2(dir.x, dir.z)
                 }
                 this.gltf.scene.up = this.getPosition().clone().normalize()
-                player1.gltf.scene.lookAt(new Vector3())
-                player1.gltf.scene.rotateX(-Math.PI/2)
+                this.gltf.scene.quaternion.setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
                 if (rotation != null) {
-                    var quat = new Quaternion().setFromAxisAngle(new Vector3(0,1,0), rotation);
-                    player1.gltf.scene.applyQuaternion(quat)
-//                     this.gltf.scene.rotateY(0.01)
+//                     this.gltf.scene.lookAt(testDirection)
+//                     var quat = new Quaternion().setFromAxisAngle(new Vector3(0,0,1), Math.atan2(testDirection.x, testDirection.y));
+//                     player1.gltf.scene.applyQuaternion(quat)
+
+//                     this.gltf.scene.quaternion.setFromUnitVectors(this.getPosition().clone().applyEuler(new Euler(0, 0, -Math.PI/2)).normalize(), testDirection.clone().normalize())
+
+//                     this.gltf.scene.rotateY(Math.atan2(testDirection.x, testDirection.y))
 //                     this.gltf.scene.rotateOnAxis(direction.cross(this.gltf.scene.up), Math.acos(direction.dot(this.gltf.scene.up)/direction.length()))
 //                     this.getRotation().y = rotation
                 }
@@ -396,8 +399,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
         }
     }
 
-    player1.getPosition().y -= 150
-    player1.getPosition().z -= 150
+    player1.getPosition().y = 200
+//     player1.getPosition().z -= 150
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
