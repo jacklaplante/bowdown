@@ -11,7 +11,7 @@ import {gameOver} from './game'
 const models = require.context('../models/');
 
 var player1 = {uuid: uuid()}
-const movementSpeed = 7
+const movementSpeed = 70
 const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 100
@@ -112,9 +112,21 @@ loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
 
     player1.doubleJumped = false
     player1.animate = function(delta, input){
+        this.gltf.scene.up = this.getPosition().clone().normalize()        
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        var direction = getDirection(input, delta)
+        var inputDirection = getDirection(input, delta)
+        var cameraDirection = new Vector3()
+        camera.getWorldDirection(cameraDirection)
+        var localCameraDirection = cameraDirection.clone().applyQuaternion(this.gltf.scene.quaternion.clone().conjugate())
+        localCameraDirection.setY(0).normalize()
+        var direction = localCameraDirection.clone().applyAxisAngle(new Vector3(0,1,0), -Math.atan2(inputDirection.x, inputDirection.y)).applyEuler(this.getRotation()).multiplyScalar(delta*player1.runOrSprint(input))
+        var quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), this.gltf.scene.up)
+        if (inputDirection.length()) {
+            quat.multiply(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), Math.atan2(inputDirection.x, inputDirection.y)))
+//             quat.multiply(new Quaternion().setFromUnitVectors(new Vector3(1,0,0)), direction.clone().normalize())
+        }
+        this.gltf.scene.setRotationFromQuaternion(quat)
         if (!falling) {
             player1.doubleJumped = false
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
@@ -122,14 +134,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
                     player1.velocity.x = (direction.x)/delta
                     player1.velocity.z = (direction.y)/delta
                 } else {
-                    rotation = Math.atan2(direction.x, direction.y)
                     player1.velocity.set(0,0,0)
+                    nextPos = player1.getPosition().clone().add(direction)
 
-                    var testDirection = new Vector3()
-                    camera.getWorldDirection(testDirection)
-                    testDirection.normalize().multiplyScalar(delta*player1.runOrSprint(input));
-                    testDirection.applyEuler(new Euler(0, Math.atan2(direction.x, direction.y), 0))                    
-                    nextPos = player1.getPosition().clone().add(testDirection)
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                     var origin = nextPos.clone().add(
@@ -179,8 +186,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
             this.playAction("jumping")
         }
         if (activeRopeArrow!=null && activeRopeArrow.stopped) {
-            player1.velocity.x += direction.x*velocityInfluenceModifier*delta
-            player1.velocity.z += direction.z*velocityInfluenceModifier*delta
+            player1.velocity.x += inputDirection.x*velocityInfluenceModifier*delta
+            player1.velocity.z += inputDirection.z*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
@@ -200,8 +207,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'), ( gltf ) => {
                     camera.getWorldDirection(dir)
                     rotation = Math.atan2(dir.x, dir.z)
                 }
-                this.gltf.scene.up = this.getPosition().clone().normalize()
-                this.gltf.scene.quaternion.setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
+                
                 if (rotation != null) {
 //                     this.gltf.scene.lookAt(testDirection)
 //                     var quat = new Quaternion().setFromAxisAngle(new Vector3(0,0,1), Math.atan2(testDirection.x, testDirection.y));
