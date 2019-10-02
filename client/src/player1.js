@@ -209,8 +209,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     rotation = Math.atan2(direction.x, direction.y)
                     player1.velocity.set(0,0,0)
                     nextPos = player1.getPosition().clone()
-                    nextPos.z += direction.y;
-                    nextPos.x += direction.x;
+                    nextPos.add(cameraDirection.clone().applyAxisAngle(this.getPosition().clone().normalize(), Math.atan2(inputDirection.x, inputDirection.y)).projectOnPlane(this.getPosition()).normalize().multiplyScalar(delta*player1.runOrSprint(input)))
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                     var origin = nextPos.clone().add(
