@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Vector2 } from 'three'
+import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler} from 'three'
 
 import {loader} from './loader'
 import {uuid, addCollisionLine, removeCollisionLines} from './utils'
@@ -194,6 +194,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     player1.doubleJumped = false
+    var testy = true
     player1.animate = function(delta, input){
         var nextPos, rotation;
         var falling = player1.falling(delta)
@@ -261,7 +262,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             player1.velocity.z += direction.y*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
-        if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
+        if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {            
             if (!nextPos) nextPos = player1.getPosition().clone()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             var collisionVector = player1.collisionDetected(nextPos)
@@ -273,7 +274,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                     player1.velocity.y -= delta*gravityAcceleration  
                 }
-                player1.getPosition().copy(nextPos)
+
                 if (player1.isFiring()) {
                     var dir = new Vector3();
                     camera.getWorldDirection(dir)
@@ -281,7 +282,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 } else if (rotation == null) {
                     rotation = player1.getRotation().y
                 }
-                player1.getRotation().y = rotation
+                player1.getRotation().copy(new Euler(0,rotation,0))
+                var quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
+                this.gltf.scene.applyQuaternion(quat)
+                if (direction.length() != 0 && testy) {
+                    testy = false
+                }
+                player1.getPosition().copy(nextPos)
                 camera.updateCamera()
             } else {
                 if (falling) {// slide off edge
@@ -393,6 +400,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
+    player1.getPosition().y += 200
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
