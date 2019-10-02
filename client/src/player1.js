@@ -190,7 +190,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     player1.doubleJumped = false
-    var testy = true
     player1.animate = function(delta, input){
         var nextPos, rotation;
         var falling = player1.falling(delta)
@@ -283,9 +282,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 player1.getRotation().copy(new Euler(0,rotation,0))
                 var quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
                 this.gltf.scene.applyQuaternion(quat)
-                if (direction.length() != 0 && testy) {
-                    testy = false
-                }
                 player1.getPosition().copy(nextPos)
                 camera.updateCamera()
             } else {
