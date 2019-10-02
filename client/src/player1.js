@@ -40,10 +40,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.falling = function(delta){
         if (delta) {
-            var origin = player1.getPosition().clone().add(player1.velocity.clone().multiplyScalar(delta))
-            origin.y-=0.1
-            var dir = new Vector3(0, 1, 0);
-            var ray = new Raycaster(origin, dir, 0, 0.2+Math.abs(player1.velocity.y*delta));
+            var origin = player1.getPosition().clone().add(player1.velocity.clone().multiplyScalar(delta)).sub(new Vector3(0, 0.1, 0).applyEuler(player1.getRotation()));
+            var dir = new Vector3(0, 1, 0).applyEuler(player1.getRotation());
+            var ray = new Raycaster(origin, dir, 0, 0.2+player1.velocity.length()*delta);
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
                 return false
