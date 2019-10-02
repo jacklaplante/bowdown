@@ -150,8 +150,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    function getDirection(input, delta) {
-        var direction = new Vector3();
+    function getInputDirection(input) {
         var x=0, y=0 // these are the inputDirections
         if (input.touch.x!=0 && input.touch.y!=0) {
             var dir = new Vector2(input.touch.x, input.touch.y)
@@ -180,11 +179,15 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             x += 1
             y += 0
         }
-        if (x!=0 || y!=0) {
-            camera.getWorldDirection(direction)
+        return new Vector2(x, y)
+    }
+
+    function getDirection(inputDirection, cameraDirection, input, delta) {
+        var direction = cameraDirection.clone()
+        if (inputDirection.length() > 0 ) {
             direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
             direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
-            direction.rotateAround(new Vector2(), Math.atan2(x, y))
+            direction.rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y))
         }
         return direction
     }
@@ -193,7 +196,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.animate = function(delta, input){
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        var direction = getDirection(input, delta)
+        var inputDirection = getInputDirection(input) // Vector2
+        var cameraDirection = camera.getWorldDirection(new Vector3())
+        var direction = getDirection(inputDirection, cameraDirection, input, delta)
         if (!falling) {
             player1.doubleJumped = false
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
