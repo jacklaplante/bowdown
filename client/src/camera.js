@@ -96,6 +96,7 @@ camera.updateCamera = function() {
         }
         camera.setPosition(nextPos)
     }
+    camera.up.copy(player1.getPosition().clone().normalize())
     camera.lookAt(cameraTarget);
     camera.updateMatrix();
 }
@@ -105,9 +106,9 @@ camera.moveCamera = function(movementX, movementY) {
     var x = phi + movementY * 0.2
     // this simply ensures the camera cannot go over the top/bottom
     // I have it set 10 135 and 80 because otherwise the camera gets all fucky but it's not the best solution
-    if (180 > x && x > -140) {
+//     if (180 > x && x > -140) {
         phi = x
-    }
+//     }
     camera.updateCamera();
 }
 
