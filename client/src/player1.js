@@ -185,6 +185,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     function getDirection(inputDirection, cameraDirection, input, delta) {
         var direction = cameraDirection.clone()
         if (inputDirection.length() > 0 ) {
+            direction.projectOnPlane(player1.getPosition().clone().normalize())
+            direction.applyQuaternion(
+                new Quaternion().setFromUnitVectors(
+                    player1.getPosition().clone().normalize(), new Vector3(0,1,0)))
             direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
             direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
             direction.rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y))
