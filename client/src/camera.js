@@ -1,4 +1,4 @@
-import {PerspectiveCamera, Vector3, Raycaster} from 'three'
+import {PerspectiveCamera, Vector3, Raycaster, Quaternion} from 'three'
 import {collidableEnvironment} from './scene'
 import player1 from './player1'
 
@@ -24,10 +24,13 @@ var phi = 0
 camera.nextPosition = function(dist) {
     if (player1!=null) {
         var nextPos = new Vector3();
-        nextPos.x = cameraTarget.x + dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-        nextPos.y = cameraTarget.y + dist * Math.sin(phi * Math.PI / 360);
-        nextPos.z = cameraTarget.z + dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-        return nextPos
+        nextPos.x = dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+        nextPos.y = dist * Math.sin(phi * Math.PI / 360);
+        nextPos.z = dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+        return cameraTarget.clone().add(
+            nextPos.applyQuaternion(
+                new Quaternion().setFromUnitVectors(
+                    new Vector3(0,1,0), cameraTarget.clone().normalize()))) // maybe try setFromAxisAngle?
     }
 }
 
