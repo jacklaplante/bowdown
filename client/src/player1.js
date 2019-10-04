@@ -211,7 +211,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     player1.velocity.z = (direction.y)/delta
                 } else {
                     rotation = Math.atan2(direction.x, direction.y)
-                    console.log(rotation)
                     player1.velocity.set(0,0,0)
                     nextPos = player1.getPosition().clone()
                     nextPos.add(cameraDirection.clone()
