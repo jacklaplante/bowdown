@@ -11,7 +11,7 @@ import {gameOver} from './game'
 const models = require.context('../models/');
 
 var player1 = {uuid: uuid()}
-const movementSpeed = 70
+const movementSpeed = 7
 const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 100
@@ -404,7 +404,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.getPosition().y -= 200
+    player1.getPosition().y = 200
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
