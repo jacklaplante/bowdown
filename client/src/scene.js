@@ -36,7 +36,7 @@ scene.add(getHemisphereLight());
 scene.add(getDirectionalLight());
 
 scene.animate = function(delta) {
-    skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(1,1,1).normalize(), delta/10))
+    skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(1,1,1).normalize(), delta/20))
 }
 
 function getHemisphereLight() {
