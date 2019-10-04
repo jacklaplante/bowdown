@@ -3,7 +3,7 @@ import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler} from 'th
 import {loader} from './loader'
 import {uuid, addCollisionLine, removeCollisionLines} from './utils'
 import {scene, collidableEnvironment} from './scene'
-import {camera} from './camera'
+import {camera, cameraTarget} from './camera'
 import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
@@ -188,7 +188,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             direction.projectOnPlane(player1.getPosition().clone().normalize())
             direction.applyQuaternion(
                 new Quaternion().setFromUnitVectors(
-                    player1.getPosition().clone().normalize(), new Vector3(0,1,0)))
+                    cameraTarget.clone().normalize(), new Vector3(0,1,0)))
             direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
             direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
             direction.rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y))
@@ -213,7 +213,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     rotation = Math.atan2(direction.x, direction.y)
                     player1.velocity.set(0,0,0)
                     nextPos = player1.getPosition().clone()
-                    nextPos.add(cameraDirection.clone().applyAxisAngle(this.getPosition().clone().normalize(), -Math.atan2(inputDirection.x, inputDirection.y)).projectOnPlane(this.getPosition()).normalize().multiplyScalar(delta*player1.runOrSprint(input)))
+                    nextPos.add(cameraDirection.clone()
+                                               .applyAxisAngle(this.getPosition().clone().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                                               .projectOnPlane(this.getPosition()).normalize())
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                     var origin = nextPos.clone().add(
@@ -267,7 +269,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             player1.velocity.z += direction.y*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
-        if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {            
+        if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
             if (!nextPos) nextPos = player1.getPosition().clone()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             var collisionVector = player1.collisionDetected(nextPos)
@@ -285,7 +287,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     camera.getWorldDirection(dir)
                     rotation = Math.atan2(dir.x, dir.z)
                 } else if (rotation == null) {
-                    rotation = player1.getRotation().y
+//                     rotation = player1.getRotation().y
                 }
                 player1.getRotation().copy(new Euler(0,rotation,0))
                 var quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
@@ -402,7 +404,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.getPosition().y += 200
+    player1.getPosition().y -= 200
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
