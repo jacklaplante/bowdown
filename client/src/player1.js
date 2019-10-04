@@ -40,8 +40,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.falling = function(delta){
         if (delta) {
-            var origin = player1.getPosition().add(player1.velocity.clone().multiplyScalar(delta)).sub(this.localVector(new Vector3(0, 0.1, 0)));
-            var dir = this.localVector(new Vector3(0, 1, 0));
+            var origin = player1.getPosition().add(player1.velocity.clone().multiplyScalar(delta)).sub(this.globalVector(new Vector3(0, 0.1, 0)));
+            var dir = this.globalVector(new Vector3(0, 1, 0));
             var ray = new Raycaster(origin, dir, 0, 0.2+player1.velocity.length()*delta);
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
@@ -56,7 +56,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var vert, ray, collisionResults;
         for(var a=-1; a<=1; a++){
             for(var c=-1; c<=1; c++){
-                vert = this.localVector(new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize());
+                vert = this.globalVector(new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize());
                 ray = new Raycaster(nextPos, vert, 0, 1);
                 addCollisionLine(player1, vert)
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
@@ -185,7 +185,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     function getDirection(inputDirection, cameraDirection, input, delta) {
         var direction = cameraDirection.clone()
         if (inputDirection.length() > 0 ) {
-            direction.projectOnPlane(player1.getPosition().normalize())
             direction.applyQuaternion(
                 new Quaternion().setFromUnitVectors(
                     cameraTarget.clone().normalize(), new Vector3(0,1,0)))
@@ -201,39 +200,36 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         var inputDirection = getInputDirection(input) // Vector2
-        var cameraDirection = camera.getWorldDirection(new Vector3())
-        var direction = getDirection(inputDirection, cameraDirection, input, delta)
+        var globalDirection = camera.getWorldDirection(new Vector3()).projectOnPlane(this.getPosition().normalize())
+        var localDirection = getDirection(inputDirection, globalDirection, input, delta)
         if (!falling) {
             player1.doubleJumped = false
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
-                if (input.jump) {
-                    player1.velocity.x = (direction.x)/delta
-                    player1.velocity.z = (direction.y)/delta
-                } else {
-                    rotation = Math.atan2(direction.x, direction.y)
-                    player1.velocity.set(0,0,0)
-                    nextPos = player1.getPosition()
-                    nextPos.add(cameraDirection.clone()
-                                               .applyAxisAngle(this.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                                               .projectOnPlane(this.getPosition()).normalize().multiplyScalar(delta*player1.runOrSprint(input)))
-                    // for moving up/down slopes
-                    // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
-                    var origin = nextPos.clone().add(this.localVector(new Vector3(0, 0.5, 0))
-                    )
-                    var slopeRay = new Raycaster(origin, this.localVector(new Vector3(0, -1, 0)), 0, 1)
-                    var top = slopeRay.intersectObjects(collidableEnvironment, true);
-                    if (top.length>0){
-                        // the 0.01 is kinda hacky tbh
-                        nextPos = top[0].point.add(this.localVector(new Vector3(0, 0.01, 0)))
-                    }
-                    if (!player1.isRunning()) {
-                        if (player1.bowState == "equipped") {
-                            player1.movementAction('runWithBow')
-                        } else if (player1.isFiring()) {
-                            player1.movementAction('runWithLegsOnly')
-                        } else {
-                            player1.movementAction('running')
-                        }
+                rotation = Math.atan2(localDirection.x, localDirection.y)
+                player1.velocity.set(0,0,0)
+                nextPos = player1.getPosition()
+                var movementDelta = globalDirection.clone()
+                                                   .applyAxisAngle(this.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                                                   .normalize()
+                                                   .multiplyScalar(delta*player1.runOrSprint(input))
+                nextPos.add(movementDelta)
+                // for moving up/down slopes
+                // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
+                var origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.5, 0))
+                )
+                var slopeRay = new Raycaster(origin, this.globalVector(new Vector3(0, -1, 0)), 0, 1)
+                var top = slopeRay.intersectObjects(collidableEnvironment, true);
+                if (top.length>0){
+                    // the 0.01 is kinda hacky tbh
+                    nextPos = top[0].point.add(this.globalVector(new Vector3(0, 0.01, 0)))
+                }
+                if (!player1.isRunning()) {
+                    if (player1.bowState == "equipped") {
+                        player1.movementAction('runWithBow')
+                    } else if (player1.isFiring()) {
+                        player1.movementAction('runWithLegsOnly')
+                    } else {
+                        player1.movementAction('running')
                     }
                 }
             } else {
@@ -260,12 +256,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (falling) {
                 player1.doubleJumped = true
             }
-            player1.velocity.y = 5
             this.playAction("jumping")
         }
         if (activeRopeArrow!=null && activeRopeArrow.stopped) {
-            player1.velocity.x += direction.x*velocityInfluenceModifier*delta
-            player1.velocity.z += direction.y*velocityInfluenceModifier*delta
+            player1.velocity.x += localDirection.x*velocityInfluenceModifier*delta
+            player1.velocity.z += localDirection.y*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {

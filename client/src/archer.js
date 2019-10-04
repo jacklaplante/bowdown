@@ -81,8 +81,8 @@ function init(mixer, archer) {
         console.error("archer.gltf has not been defined yet")
     }
 
-    archer.localVector = function(globalVector) {
-        return globalVector.applyEuler(this.getRotation());
+    archer.globalVector = function(localVector) {
+        return localVector.applyEuler(this.getRotation());
     }
 }
 
