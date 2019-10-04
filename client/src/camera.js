@@ -11,7 +11,7 @@ var width, height;
     width = window.innerWidth
     height = window.innerHeight
 // }
-var camera = new PerspectiveCamera( 75, width / height, 0.1, 3000 );
+var camera = new PerspectiveCamera( 75, width / height, 0.1, 10000 );
 camera.zoomState = "out"
 var focalLengthOut = camera.getFocalLength()
 var focalLengthIn = camera.getFocalLength()+16

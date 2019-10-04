@@ -51,6 +51,7 @@ function animate() {
         animatePlayers(delta)
     }
     camera.animate(delta);
+    scene.animate(delta);
     if (process.env.NODE_ENV == 'development') {
         document.getElementById("fps").innerHTML = Math.round(1/delta)
     }

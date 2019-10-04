@@ -1,13 +1,13 @@
-import { Scene, HemisphereLight, DirectionalLight, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Euler, Quaternion, Vector3 } from 'three'
 
 import { loader } from './loader'
 import env from '../models/battle_planet.glb'
-import heather_ft from '../skybox/heather_ft.jpg'
-import heather_bk from '../skybox/heather_bk.jpg'
-import heather_up from '../skybox/heather_up.jpg'
-import heather_dn from '../skybox/heather_dn.jpg'
-import heather_rt from '../skybox/heather_rt.jpg'
-import heather_lf from '../skybox/heather_lf.jpg'
+import heather_ft from '../skybox/yellowcloud_ft.jpg'
+import heather_bk from '../skybox/yellowcloud_bk.jpg'
+import heather_up from '../skybox/yellowcloud_up.jpg'
+import heather_dn from '../skybox/yellowcloud_dn.jpg'
+import heather_rt from '../skybox/yellowcloud_rt.jpg'
+import heather_lf from '../skybox/yellowcloud_lf.jpg'
 
 var scene = new Scene();
 var collidableEnvironment = []
@@ -28,12 +28,16 @@ materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heathe
 materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_lf) }));
 for (let i = 0; i < 6; i++)
   materialArray[i].side = BackSide;
-let skyboxGeo = new BoxGeometry(1000, 1000, 1000);
+let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
 let skybox = new Mesh( skyboxGeo, materialArray );
 scene.add( skybox );
 
 scene.add(getHemisphereLight());
 scene.add(getDirectionalLight());
+
+scene.animate = function(delta) {
+    skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(1,1,1).normalize(), delta/10))
+}
 
 function getHemisphereLight() {
     var hemiLight = new HemisphereLight( 0xffffff, 0x9bc9a7 );
