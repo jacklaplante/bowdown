@@ -61,9 +61,17 @@ function init(mixer, archer) {
 
     archer.getPosition = function() {
         if (archer.gltf) {
-            return archer.gltf.scene.position   
+            return archer.gltf.scene.position.clone()
         }
         console.error("archer.gltf has not been defined yet")
+    }
+
+    archer.setPosition = function(newPos) {
+        if (archer.gltf != null) {
+            archer.gltf.scene.position.copy(newPos)
+        } else {
+            console.error("archer.gltf has not been defined yet")   
+        }
     }
 
     archer.getRotation = function() {
@@ -71,6 +79,10 @@ function init(mixer, archer) {
             return archer.gltf.scene.rotation
         }
         console.error("archer.gltf has not been defined yet")
+    }
+
+    archer.localVector = function(globalVector) {
+        return globalVector.applyEuler(this.getRotation());
     }
 }
 

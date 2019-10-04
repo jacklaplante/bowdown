@@ -82,9 +82,9 @@ camera.setPosition = function(nextPos) {
 
 camera.updateCamera = function() {
     if (player1!=null) {
-        var v = player1.getPosition().clone().sub(camera.position.clone())
-        var v2 = player1.getPosition().clone().normalize().cross(v).normalize().multiplyScalar(-0.5)
-        cameraTarget.copy(player1.getPosition().clone().add(v2).add(player1.getPosition().clone().normalize().multiplyScalar(1.8)))
+        var v = player1.getPosition().sub(camera.position.clone())
+        var v2 = player1.getPosition().normalize().cross(v).normalize().multiplyScalar(-0.5)
+        cameraTarget.copy(player1.getPosition().add(v2).add(player1.getPosition().normalize().multiplyScalar(1.8)))
         
         var nextPos = camera.nextPosition(distance)
 
@@ -99,7 +99,7 @@ camera.updateCamera = function() {
         }
         camera.setPosition(nextPos)
     }
-    camera.up.copy(player1.getPosition().clone().normalize())
+    camera.up.copy(player1.getPosition().normalize())
     camera.lookAt(cameraTarget);
     camera.updateMatrix();
 }

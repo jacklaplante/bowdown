@@ -40,8 +40,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.falling = function(delta){
         if (delta) {
-            var origin = player1.getPosition().clone().add(player1.velocity.clone().multiplyScalar(delta)).sub(new Vector3(0, 0.1, 0).applyEuler(player1.getRotation()));
-            var dir = new Vector3(0, 1, 0).applyEuler(player1.getRotation());
+            var origin = player1.getPosition().add(player1.velocity.clone().multiplyScalar(delta)).sub(this.localVector(new Vector3(0, 0.1, 0)));
+            var dir = this.localVector(new Vector3(0, 1, 0));
             var ray = new Raycaster(origin, dir, 0, 0.2+player1.velocity.length()*delta);
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
@@ -56,7 +56,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var vert, ray, collisionResults;
         for(var a=-1; a<=1; a++){
             for(var c=-1; c<=1; c++){
-                vert = new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize().applyEuler(this.getRotation());
+                vert = this.localVector(new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize());
                 ray = new Raycaster(nextPos, vert, 0, 1);
                 addCollisionLine(player1, vert)
                 // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
@@ -66,7 +66,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 }
                 // this bit of code below is supposed to prevent the player from going through meshes in between frames. The issue is that it only checks for collisions around waist level
                 var inBetweenFramesCollisionVector = nextPos.clone().sub(player1.getPosition())
-                ray = new Raycaster(player1.getPosition().clone().add(vert), inBetweenFramesCollisionVector.clone().normalize(), 0, inBetweenFramesCollisionVector.length())
+                ray = new Raycaster(player1.getPosition().add(vert), inBetweenFramesCollisionVector.clone().normalize(), 0, inBetweenFramesCollisionVector.length())
                 collisionResults = ray.intersectObjects(collidableEnvironment, true)
                 if (collisionResults.length > 0) {
                     return inBetweenFramesCollisionVector;
@@ -185,7 +185,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     function getDirection(inputDirection, cameraDirection, input, delta) {
         var direction = cameraDirection.clone()
         if (inputDirection.length() > 0 ) {
-            direction.projectOnPlane(player1.getPosition().clone().normalize())
+            direction.projectOnPlane(player1.getPosition().normalize())
             direction.applyQuaternion(
                 new Quaternion().setFromUnitVectors(
                     cameraTarget.clone().normalize(), new Vector3(0,1,0)))
@@ -212,20 +212,19 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 } else {
                     rotation = Math.atan2(direction.x, direction.y)
                     player1.velocity.set(0,0,0)
-                    nextPos = player1.getPosition().clone()
+                    nextPos = player1.getPosition()
                     nextPos.add(cameraDirection.clone()
-                                               .applyAxisAngle(this.getPosition().clone().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                                               .applyAxisAngle(this.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
                                                .projectOnPlane(this.getPosition()).normalize().multiplyScalar(delta*player1.runOrSprint(input)))
                     // for moving up/down slopes
                     // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
-                    var origin = nextPos.clone().add(
-                        new Vector3(0, 0.5, 0).applyEuler(player1.getRotation())
+                    var origin = nextPos.clone().add(this.localVector(new Vector3(0, 0.5, 0))
                     )
-                    var slopeRay = new Raycaster(origin, new Vector3(0, -1, 0).applyEuler(player1.getRotation()), 0, 1)
+                    var slopeRay = new Raycaster(origin, this.localVector(new Vector3(0, -1, 0)), 0, 1)
                     var top = slopeRay.intersectObjects(collidableEnvironment, true);
                     if (top.length>0){
                         // the 0.01 is kinda hacky tbh
-                        nextPos = top[0].point.add(new Vector3(0, 0.01, 0).applyEuler(player1.getRotation()))
+                        nextPos = top[0].point.add(this.localVector(new Vector3(0, 0.01, 0)))
                     }
                     if (!player1.isRunning()) {
                         if (player1.bowState == "equipped") {
@@ -270,7 +269,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
-            if (!nextPos) nextPos = player1.getPosition().clone()
+            if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
@@ -279,7 +278,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     if (player1.doubleJumped && player1.isFiring()) {
                         gravityAcceleration = 5
                     }
-                    player1.velocity.sub(player1.getPosition().clone().normalize().multiplyScalar(gravityAcceleration*delta))
+                    player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(gravityAcceleration*delta))
                 }
 
                 if (player1.isFiring()) {
@@ -292,13 +291,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 player1.getRotation().copy(new Euler(0,rotation,0))
                 var quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
                 this.gltf.scene.applyQuaternion(quat)
-                player1.getPosition().copy(nextPos)
+                player1.setPosition(nextPos)
                 camera.updateCamera()
             } else {
                 if (falling) {// slide off edge
                     player1.velocity.copy(collisionVector.clone().negate().normalize().multiplyScalar(10))
                     nextPos.add(player1.velocity.clone().multiplyScalar(delta))
-                    player1.getPosition().copy(nextPos)
+                    player1.setPosition(nextPos)
                 } else {
                     player1.velocity.set(0,0,0)
                 }
@@ -330,7 +329,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
-        player1.getPosition().copy(new Vector3())
+        player1.setPosition(new Vector3())
     }
 
     player1.sendChat = function(message) {
@@ -404,7 +403,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.getPosition().y = 200
+    player1.gltf.scene.position.y = 200
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({

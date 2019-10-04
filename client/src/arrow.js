@@ -38,7 +38,7 @@ function createArrow(origin, rotation, type){
 }
 
 function shootArrow(type){
-    var origin = player1.getPosition().clone().add(originOffset);
+    var origin = player1.getPosition().add(originOffset);
     var rotation = camera.rotation // this needs to be changed
     var arrow = createArrow(origin, rotation, type);
     arrow.uuid = uuid()
@@ -96,7 +96,7 @@ function animateArrows(delta) {
             }
             var geometry = new Geometry();
             var material = new LineBasicMaterial({color: 0xfffae8, linewidth: 10});
-            geometry.vertices.push(player1.getPosition().clone().add(originOffset), arrow.position);
+            geometry.vertices.push(player1.getPosition().add(originOffset), arrow.position);
             var line = new Line(geometry, material)
             arrow.rope = line
             scene.add(line)
