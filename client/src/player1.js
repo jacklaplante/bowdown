@@ -137,15 +137,15 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         )
     }
 
-    player1.runOrSprint = function(input) {
+    function runOrSprint(input) {
         if (input.keyboard.shift) {
-            if (this.isRunning()) {
-                this.anim[this.activeMovement].timeScale = sprintModifier
+            if (player1.isRunning()) {
+                player1.anim[player1.activeMovement].timeScale = sprintModifier
             }   
             return movementSpeed*sprintModifier
         } else {
-            if (this.anim[this.activeMovement]) {
-                this.anim[this.activeMovement].timeScale = 1
+            if (player1.anim[player1.activeMovement]) {
+                player1.anim[player1.activeMovement].timeScale = 1
             }
             return movementSpeed
         }
@@ -188,7 +188,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             .projectOnPlane(player1.getPosition().normalize())
             .applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
             .normalize()
-            .multiplyScalar(delta*player1.runOrSprint(input))
+            .multiplyScalar(delta*runOrSprint(input))
     }
 
     function getForwardDirection(cameraDirection) {
@@ -209,13 +209,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.doubleJumped = false
     player1.animate = function(delta, input){
+        var inputDirection = getInputDirection(input) // Vector2 describing the direction of user input for movement
+        var cameraDirection = camera.getWorldDirection(new Vector3())// Vector3 describing the direction the camera is pointed
+        var globalDirection = getGlobalDirection(cameraDirection, inputDirection, input, delta) // Vector3 describing the players forward movement in the world
+        var forwardDirection = getForwardDirection(cameraDirection) // Vector2 describing the direction the relative direction (if the player were on flat land) (not taking into account user movement input)in
+        var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        var inputDirection = getInputDirection(input) // Vector2
-        var cameraDirection = camera.getWorldDirection(new Vector3())// Vector3
-        var globalDirection = getGlobalDirection(cameraDirection, inputDirection, input, delta) // Vector3
-        var forwardDirection = getForwardDirection(cameraDirection) // Vector2
-        var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) // Vector2
         if (!falling) {
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
