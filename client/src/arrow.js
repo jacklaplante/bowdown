@@ -84,7 +84,7 @@ function addOtherPlayerArrow(newArrow) {
 }
 
 function moveArrow(arrow, delta) {
-    arrow.velocity.y -= delta*9
+    arrow.velocity.sub(arrow.position.clone().normalize().multiplyScalar(9*delta))
     arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
 }
 
@@ -156,9 +156,9 @@ function stopOtherPlayerArrow(stoppedArrow) {
 }
 
 function stopArrowIfOutOfBounds(arrow) {
-    if (arrow.position.x > 500 ||  arrow.position.x < -500 || arrow.position.y > 500 ||  arrow.position.y < -500 || arrow.position.z > 500 ||  arrow.position.z < -500) {
-        arrow.stopped = true
-    }
+//     if (arrow.position.x > 500 ||  arrow.position.x < -500 || arrow.position.y > 500 ||  arrow.position.y < -500 || arrow.position.z > 500 ||  arrow.position.z < -500) {
+//         arrow.stopped = true
+//     }
 }
 
 export {shootArrow, animateArrows, addOtherPlayerArrow, stopOtherPlayerArrow, retractRopeArrow}

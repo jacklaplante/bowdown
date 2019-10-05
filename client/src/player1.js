@@ -251,6 +251,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                 }
             }
+        } else {
+            // if the player is falling
+            var gravityAcceleration = 10 // this should be a constant
+            if (player1.doubleJumped && player1.isFiring()) {
+                gravityAcceleration = 5
+            }
+            player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(gravityAcceleration*delta))
         }
         if (player1.isFiring()) {
             rotation = Math.atan2(forwardDirection.x, forwardDirection.y)
@@ -273,19 +280,14 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             player1.velocity.z += localDirection.y*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
-        updateRotation(nextPos, rotation);
-        if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
+        if (player1.velocity.length()) {
             if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
+        }
+        updateRotation(nextPos, rotation)
+        if (nextPos) {
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
-                if (falling) {
-                    var gravityAcceleration = 10 // this should be a constant
-                    if (player1.doubleJumped && player1.isFiring()) {
-                        gravityAcceleration = 5
-                    }
-                    player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(gravityAcceleration*delta))
-                }
                 player1.setPosition(nextPos)
                 camera.updateCamera()
             } else {
