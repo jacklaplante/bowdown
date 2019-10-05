@@ -259,6 +259,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (falling) {
                 player1.doubleJumped = true
             }
+            if (inputDirection.length()) {
+                this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta))
+            }
+            this.velocity.add(this.getPosition().normalize().multiplyScalar(5))
             this.playAction("jumping")
         }
         if (activeRopeArrow!=null && activeRopeArrow.stopped) {
