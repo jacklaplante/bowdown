@@ -183,24 +183,28 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return new Vector2(x, y)
     }
 
-    function getLocalDirection(inputDirection, delta) {
-        var direction = camera.getWorldDirection(new Vector3())
-        if (inputDirection.length() > 0 ) {
-            direction.applyQuaternion(
-                new Quaternion().setFromUnitVectors(
-                    cameraTarget.clone().normalize(), new Vector3(0,1,0)))
-            direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
-            direction.rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y))
-        }
-        return direction
+    function getGlobalDirection(cameraDirection, inputDirection, input, delta) {
+        return cameraDirection.clone()
+            .projectOnPlane(player1.getPosition().normalize())
+            .applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+            .normalize()
+            .multiplyScalar(delta*player1.runOrSprint(input))
     }
 
-    function getGlobalDirection(inputDirection, input, delta) {
-        return camera.getWorldDirection(new Vector3())
-                    .projectOnPlane(player1.getPosition().normalize())
-                    .applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                    .normalize()
-                    .multiplyScalar(delta*player1.runOrSprint(input))
+    function getForwardDirection(cameraDirection) {
+        var direction = cameraDirection.clone()
+        direction.applyQuaternion(
+            new Quaternion().setFromUnitVectors(
+                cameraTarget.clone().normalize(), new Vector3(0,1,0)))
+        return new Vector2(direction.x, direction.z)
+    }
+
+    function getLocalDirection(forwardDirection, inputDirection, delta) {
+        if (inputDirection.length() == 0 ) {
+            inputDirection = new Vector2(0, 1)
+        }
+        return forwardDirection.clone()
+            .rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y))
     }
 
     player1.doubleJumped = false
@@ -208,9 +212,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         var inputDirection = getInputDirection(input) // Vector2
-        var globalDirection = getGlobalDirection(inputDirection, input, delta)
-        var localDirection = getLocalDirection(inputDirection, delta)
-        if (!falling) {            
+        var cameraDirection = camera.getWorldDirection(new Vector3())// Vector3
+        var globalDirection = getGlobalDirection(cameraDirection, inputDirection, input, delta) // Vector3
+        var forwardDirection = getForwardDirection(cameraDirection) // Vector2
+        var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) // Vector2
+        if (!falling) {
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 player1.velocity.set(0,0,0)
@@ -244,15 +250,12 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                         player1.idle()
                     }
                 }
-                if (player1.isFiring()) {
-                    var dir = new Vector3();
-                    camera.getWorldDirection(dir)
-                    rotation = Math.atan2(dir.x, dir.z)
-                    player1.getRotation().y = rotation
-                    camera.updateCamera()
-                    player1.broadcast()
-                }
             }
+        }
+        if (player1.isFiring()) {
+            rotation = Math.atan2(forwardDirection.x, forwardDirection.y)
+            camera.updateCamera() // is this needed?
+            player1.broadcast()
         }
         if (input.jump && !player1.doubleJumped) {
             input.jump = null
@@ -270,29 +273,19 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             player1.velocity.z += localDirection.y*velocityInfluenceModifier*delta
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
         }
+        updateRotation(nextPos, rotation);
         if ( falling || nextPos || player1.velocity.x || player1.velocity.y || player1.velocity.z) {
             if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
                 if (falling) {
-                    var gravityAcceleration = 10
+                    var gravityAcceleration = 10 // this should be a constant
                     if (player1.doubleJumped && player1.isFiring()) {
                         gravityAcceleration = 5
                     }
                     player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(gravityAcceleration*delta))
                 }
-
-                if (player1.isFiring()) {
-                    var dir = new Vector3();
-                    camera.getWorldDirection(dir)
-                    rotation = Math.atan2(dir.x, dir.z)
-                } else if (rotation == null) {
-//                     rotation = player1.getRotation().y
-                }
-                player1.getRotation().copy(new Euler(0,rotation,0))
-                var quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), nextPos.clone().normalize())
-                this.gltf.scene.applyQuaternion(quat)
                 player1.setPosition(nextPos)
                 camera.updateCamera()
             } else {
@@ -306,6 +299,22 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             }
             player1.broadcast()
         }
+    }
+
+    function updateRotation(nextPos, rotation) {
+        var quat, quatVert;
+        if (nextPos) {
+            quatVert = nextPos.clone().normalize()
+        } else {
+            quatVert = player1.getPosition().normalize()
+        }
+        if (rotation) {
+            player1.getRotation().copy(new Euler(0,rotation,0))
+            quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), quatVert)   
+        } else if (nextPos) {
+            quat = new Quaternion().setFromUnitVectors(player1.getPosition().normalize(), quatVert)   
+        }
+        if (quat) player1.gltf.scene.applyQuaternion(quat)
     }
 
     player1.idle = function() {
@@ -405,7 +414,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
+    player1.gltf.scene.position.z = 200
     player1.gltf.scene.position.y = 200
+    player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
     scene.add( player1.gltf.scene );
     // say hi to server
     sendMessage({
