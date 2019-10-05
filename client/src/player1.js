@@ -45,6 +45,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             var ray = new Raycaster(origin, dir, 0, 0.2+player1.velocity.length()*delta);
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
+                player1.doubleJumped = false
                 return false
             }
             return true;   
@@ -182,17 +183,24 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return new Vector2(x, y)
     }
 
-    function getDirection(inputDirection, cameraDirection, input, delta) {
-        var direction = cameraDirection.clone()
+    function getLocalDirection(inputDirection, delta) {
+        var direction = camera.getWorldDirection(new Vector3())
         if (inputDirection.length() > 0 ) {
             direction.applyQuaternion(
                 new Quaternion().setFromUnitVectors(
                     cameraTarget.clone().normalize(), new Vector3(0,1,0)))
             direction = new Vector2(direction.x, direction.z) // 3d z becomes 2d y
-            direction.normalize().multiplyScalar(delta*player1.runOrSprint(input));
             direction.rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y))
         }
         return direction
+    }
+
+    function getGlobalDirection(inputDirection, input, delta) {
+        return camera.getWorldDirection(new Vector3())
+                    .projectOnPlane(player1.getPosition().normalize())
+                    .applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                    .normalize()
+                    .multiplyScalar(delta*player1.runOrSprint(input))
     }
 
     player1.doubleJumped = false
@@ -200,19 +208,14 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         var inputDirection = getInputDirection(input) // Vector2
-        var globalDirection = camera.getWorldDirection(new Vector3()).projectOnPlane(this.getPosition().normalize())
-        var localDirection = getDirection(inputDirection, globalDirection, input, delta)
-        if (!falling) {
-            player1.doubleJumped = false
+        var globalDirection = getGlobalDirection(inputDirection, input, delta)
+        var localDirection = getLocalDirection(inputDirection, delta)
+        if (!falling) {            
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 player1.velocity.set(0,0,0)
                 nextPos = player1.getPosition()
-                var movementDelta = globalDirection.clone()
-                                                   .applyAxisAngle(this.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                                                   .normalize()
-                                                   .multiplyScalar(delta*player1.runOrSprint(input))
-                nextPos.add(movementDelta)
+                nextPos.add(globalDirection)
                 // for moving up/down slopes
                 // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
                 var origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.5, 0))
