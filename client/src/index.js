@@ -30,3 +30,13 @@ import(/* webpackChunkName: "game" */ './game').then(function(module) {
         module.start();
     }
 })
+
+import('../audio/Menu_Theme.mp3').then(function(song) {
+    var song = new Audio(song.default);
+    song.addEventListener("load", function() {
+        song.play();
+    }, true);
+    song.autoplay=true
+    song.loop=true
+    song.load()
+})
