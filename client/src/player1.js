@@ -11,7 +11,7 @@ import {gameOver} from './game'
 const models = require.context('../models/');
 
 var player1 = {uuid: uuid()}
-const movementSpeed = 70
+const movementSpeed = 7
 const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
