@@ -131,7 +131,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             {
                 player: player1.uuid,
                 position: player1.getPosition(),
-                rotation: player1.getRotation().y,
+                rotation: player1.getRotation(),
                 bowState: player1.bowState
             }
         )

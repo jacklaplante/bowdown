@@ -54,7 +54,7 @@ players.init = function(newPlayers) {
 players.move = function(playerUuid, pos, rotation) {
     var player = roster[playerUuid]
     player.gltf.scene.position.copy(pos)
-    player.gltf.scene.rotation.y = rotation
+    player.gltf.scene.rotation.copy(rotation)
 }
 
 players.playAction = function(playerUuid, action) {
