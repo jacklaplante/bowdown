@@ -11,10 +11,10 @@ import {gameOver} from './game'
 const models = require.context('../models/');
 
 var player1 = {uuid: uuid()}
-const movementSpeed = 7
+const movementSpeed = 70
 const sprintModifier = 1.3
 const collisionModifier = 0.5
-const velocityInfluenceModifier = 100
+const velocityInfluenceModifier = 15
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -270,17 +270,19 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 player1.doubleJumped = true
             }
             if (inputDirection.length()) {
-                this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta))
+                this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta)) // I'm not sure if this 1/delta is right
             }
             this.velocity.add(this.getPosition().normalize().multiplyScalar(5))
             this.playAction("jumping")
         }
         if (activeRopeArrow!=null && activeRopeArrow.stopped) {
-            player1.velocity.x += localDirection.x*velocityInfluenceModifier*delta
-            player1.velocity.z += localDirection.y*velocityInfluenceModifier*delta
-            this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize())
+            if (inputDirection.length() != 0) {
+                var velocityInfluence = cameraDirection.clone().applyAxisAngle(this.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                this.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
+            }
+            this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize().multiplyScalar(velocityInfluenceModifier*delta))
         }
-        if (player1.velocity.length()) {
+        if (player1.velocity.length() != 0) {
             if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
         }
