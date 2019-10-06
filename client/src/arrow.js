@@ -1,17 +1,19 @@
-import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line} from 'three'
+import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, PositionalAudio, AudioLoader} from 'three'
 
 import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
 import player1 from './player1'
-import {camera} from './camera'
+import {camera, listener} from './camera'
 import {sendMessage} from './websocket'
 import {uuid} from './utils'
+
+import bruh from '../audio/effects/bruh.mp3'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
 var arrowWidth = 0.06
 var arrowLength = 0.75
-const originOffset = new Vector3(0, 1.5, 0)
+const localOffset = new Vector3(0, 1.5, 0)
 const arrowTypes = {
     normal: {
         color: 0x00ff00
@@ -38,11 +40,18 @@ function createArrow(origin, rotation, type){
 }
 
 function shootArrow(type){
-    var origin = player1.getPosition().add(originOffset);
+    var origin = player1.getPosition().add(getGlobalOffset());
     var rotation = camera.rotation // this needs to be changed
     var arrow = createArrow(origin, rotation, type);
     arrow.uuid = uuid()
     arrow.playerUuid = player1.uuid
+    arrow.sound = new PositionalAudio(listener);
+    var audioLoader = new AudioLoader();
+    audioLoader.load(bruh, function(buffer) {
+        arrow.sound.setBuffer( buffer );
+        arrow.sound.setRefDistance( 20 );
+        arrow.sound.play();
+    })
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
@@ -96,7 +105,7 @@ function animateArrows(delta) {
             }
             var geometry = new Geometry();
             var material = new LineBasicMaterial({color: 0xfffae8, linewidth: 10});
-            geometry.vertices.push(player1.getPosition().add(originOffset), arrow.position);
+            geometry.vertices.push(player1.getPosition().add(getGlobalOffset()), arrow.position);
             var line = new Line(geometry, material)
             arrow.rope = line
             scene.add(line)
@@ -148,6 +157,10 @@ function retractRopeArrow() {
             scene.remove(arrow.rope)
         }
     })
+}
+
+function getGlobalOffset() {
+    return player1.globalVector(localOffset)
 }
 
 function stopOtherPlayerArrow(stoppedArrow) {

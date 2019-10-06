@@ -82,7 +82,7 @@ function init(mixer, archer) {
     }
 
     archer.globalVector = function(localVector) {
-        return localVector.applyEuler(this.getRotation());
+        return localVector.clone().applyEuler(this.getRotation());
     }
 }
 

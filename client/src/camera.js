@@ -1,4 +1,4 @@
-import {PerspectiveCamera, Vector3, Raycaster, Quaternion} from 'three'
+import {PerspectiveCamera, Vector3, Raycaster, Quaternion, AudioListener} from 'three'
 import {collidableEnvironment} from './scene'
 import player1 from './player1'
 
@@ -12,6 +12,8 @@ var width, height;
     height = window.innerHeight
 // }
 var camera = new PerspectiveCamera( 75, width / height, 0.1, 10000 );
+var listener = new AudioListener();
+camera.add( listener );
 camera.zoomState = "out"
 var focalLengthOut = camera.getFocalLength()
 var focalLengthIn = camera.getFocalLength()+16
@@ -115,4 +117,4 @@ camera.moveCamera = function(movementX, movementY) {
     camera.updateCamera();
 }
 
-export { camera, cameraTarget };
+export { camera, cameraTarget, listener };
