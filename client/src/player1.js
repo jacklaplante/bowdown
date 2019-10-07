@@ -21,6 +21,7 @@ const movementSpeed = 7
 const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
+const spawnPoint = new Vector3(230,150,80)
 
 var audioLoader = new AudioLoader();
 var sounds = {}
@@ -379,7 +380,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
-        player1.setPosition(new Vector3())
+        player1.setPosition(spawnPoint)
     }
 
     player1.sendChat = function(message) {
@@ -453,7 +454,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.setPosition(new Vector3(230,150,80))
+    player1.setPosition(spawnPoint)
     player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
     scene.add( player1.gltf.scene );
     // say hi to server
