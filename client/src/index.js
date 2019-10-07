@@ -27,16 +27,19 @@ import(/* webpackChunkName: "game" */ './game').then(function(module) {
         if (typeof document.body.requestPointerLock == "function") {
             document.body.requestPointerLock();
         }
+        document.getElementsByTagName("audio")[0].pause()
         module.start();
     }
 })
 
+var song
 import('../audio/Menu_Theme.mp3').then(function(song) {
-    var song = new Audio(song.default);
+    song = new Audio(song.default);
     song.addEventListener("load", function() {
         song.play();
     }, true);
     song.autoplay=true
     song.loop=true
+    document.body.appendChild(song)
     song.load()
 })

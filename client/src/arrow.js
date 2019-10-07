@@ -3,7 +3,7 @@ import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, Line
 import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
 import player1 from './player1'
-import {camera, listener} from './camera'
+import {camera} from './camera'
 import {sendMessage} from './websocket'
 import {uuid} from './utils'
 
@@ -45,7 +45,7 @@ function shootArrow(type){
     var arrow = createArrow(origin, rotation, type);
     arrow.uuid = uuid()
     arrow.playerUuid = player1.uuid
-    arrow.sound = new PositionalAudio(listener);
+    arrow.sound = new PositionalAudio(camera.listener);
     var audioLoader = new AudioLoader();
     audioLoader.load(bruh, function(buffer) {
         arrow.sound.setBuffer( buffer );

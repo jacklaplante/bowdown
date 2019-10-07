@@ -12,8 +12,8 @@ var width, height;
     height = window.innerHeight
 // }
 var camera = new PerspectiveCamera( 75, width / height, 0.1, 10000 );
-var listener = new AudioListener();
-camera.add( listener );
+camera.listener = new AudioListener();
+camera.add( camera.listener );
 camera.zoomState = "out"
 var focalLengthOut = camera.getFocalLength()
 var focalLengthIn = camera.getFocalLength()+16
@@ -117,4 +117,4 @@ camera.moveCamera = function(movementX, movementY) {
     camera.updateCamera();
 }
 
-export { camera, cameraTarget, listener };
+export { camera, cameraTarget };
