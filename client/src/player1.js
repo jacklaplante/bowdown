@@ -121,8 +121,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.onMouseDown = function() {
         if (activeRopeArrow!=null) {
             activeRopeArrow = null
-            sounds.grappleReel.stop()
             retractRopeArrow();
+            if (sounds.grappleReel.isPlaying) {
+                sounds.grappleReel.stop()   
+            }
         } else if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
