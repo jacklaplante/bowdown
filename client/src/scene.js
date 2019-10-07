@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Euler, Quaternion, Vector3 } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Euler, Quaternion, Vector3 } from 'three'
 
 import { loader } from './loader'
 import env from '../models/battle_planet.glb'
@@ -33,6 +33,11 @@ let skybox = new Mesh( skyboxGeo, materialArray );
 scene.add( skybox );
 
 scene.add(getHemisphereLight());
+var directionalLight = getDirectionalLight();
+if (process.env.NODE_ENV == 'development') {
+    var helper = new DirectionalLightHelper(directionalLight)
+    scene.add(helper)
+}
 scene.add(getDirectionalLight());
 
 scene.animate = function(delta) {
@@ -43,16 +48,15 @@ function getHemisphereLight() {
     var hemiLight = new HemisphereLight( 0xffffff, 0x9bc9a7 );
     hemiLight.color.setHSL( 0.6, 1, 0.8 );
     hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-    hemiLight.position.set( 0, 50, 0 );
+    hemiLight.position.set(-690,-450,-240);
     hemiLight.visible = true;
     return hemiLight;
 }
 
 function getDirectionalLight() {
-    var dirLight = new DirectionalLight();
+    var dirLight = new DirectionalLight(0xffffff, 3);
     dirLight.color.setHSL( 0.1, 1, 0.95 );
-    dirLight.position.set( - 1, 1.75, 1 );
-    dirLight.position.multiplyScalar( 30 );
+    dirLight.position.set(230,150,80);
     dirLight.castShadow = true;
     dirLight.shadow.mapSize.width = 2048;
     dirLight.shadow.mapSize.height = 2048;
