@@ -48,7 +48,7 @@ function shootArrow(type){
     arrow.sound = new PositionalAudio(camera.listener);
     var audioLoader = new AudioLoader();
     audioLoader.load(bruh, function(buffer) {
-        arrow.sound.setBuffer( buffer );
+        arrow.sound.setBuffer(buffer);
         arrow.sound.setRefDistance( 20 );
         arrow.sound.play();
     })

@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler} from 'three'
+import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler, PositionalAudio, AudioLoader} from 'three'
 
 import {loader} from './loader'
 import {uuid, addCollisionLine, removeCollisionLines} from './utils'
@@ -8,6 +8,9 @@ import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
+
+import audioBowShot from '../audio/effects/Bow Shot.mp3'
+
 const models = require.context('../models/');
 
 var player1 = {uuid: uuid()}
@@ -15,6 +18,13 @@ const movementSpeed = 7
 const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
+
+var bowShotSound = new PositionalAudio(camera.listener);
+var audioLoader = new AudioLoader();
+audioLoader.load(audioBowShot, function(buffer) {
+    bowShotSound.setBuffer(buffer);
+    bowShotSound.setRefDistance(20);
+})
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -113,6 +123,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (event.button == 2) {
                 activeRopeArrow = shootArrow("rope")
             } else {
+                bowShotSound.play();
                 shootArrow("normal");   
             }
             player1.bowState = "firing"
