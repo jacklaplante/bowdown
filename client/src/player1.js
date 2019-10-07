@@ -8,6 +8,7 @@ import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
+import {loadAudio} from './audio'
 
 import audioBowShot from '../audio/effects/Bow Shot.mp3'
 import audioBowDraw from '../audio/effects/Bow Draw.mp3'
@@ -25,26 +26,10 @@ const spawnPoint = new Vector3(230,150,80)
 
 var audioLoader = new AudioLoader();
 var sounds = {}
-sounds.bowShot = new PositionalAudio(camera.listener);
-sounds.bowDraw = new PositionalAudio(camera.listener);
-sounds.grappleShot = new PositionalAudio(camera.listener);
-sounds.grappleReel = new PositionalAudio(camera.listener);
-audioLoader.load(audioBowShot, function(buffer) {
-    sounds.bowShot.setBuffer(buffer);
-    sounds.bowShot.setRefDistance(5);
-})
-audioLoader.load(audioBowDraw, function(buffer) {
-    sounds.bowDraw.setBuffer(buffer);
-    sounds.bowDraw.setRefDistance(5);
-})
-audioLoader.load(audioGrappleShot, function(buffer) {
-    sounds.grappleShot.setBuffer(buffer);
-    sounds.grappleShot.setRefDistance(5);
-})
-audioLoader.load(audioGrappleReel, function(buffer) {
-    sounds.grappleReel.setBuffer(buffer);
-    sounds.grappleReel.setRefDistance(5);
-})
+sounds.bowShot = loadAudio(audioBowShot)
+sounds.bowDraw = loadAudio(audioBowDraw)
+sounds.grappleShot = loadAudio(audioGrappleShot)
+sounds.grappleReel = loadAudio(audioGrappleReel)
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
@@ -316,7 +301,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 this.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
             }
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize().multiplyScalar(velocityInfluenceModifier*delta))
-            sounds.grappleReel.play()
+            if (!sounds.grappleReel.isPlaying) {
+                sounds.grappleReel.play()
+            }
         }
         if (player1.velocity.length() != 0) {
             if (!nextPos) nextPos = player1.getPosition()
