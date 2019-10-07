@@ -11,6 +11,8 @@ import {gameOver} from './game'
 
 import audioBowShot from '../audio/effects/Bow Shot.mp3'
 import audioBowDraw from '../audio/effects/Bow Draw.mp3'
+import audioGrappleShot from '../audio/effects/Grapple Shot.mp3'
+import audioGrappleReel from '../audio/effects/Grapple Reel Loop.mp3'
 
 const models = require.context('../models/');
 
@@ -21,23 +23,33 @@ const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
 
 var audioLoader = new AudioLoader();
-var bowShotSound = new PositionalAudio(camera.listener);
+var sounds = {}
+sounds.bowShot = new PositionalAudio(camera.listener);
+sounds.bowDraw = new PositionalAudio(camera.listener);
+sounds.grappleShot = new PositionalAudio(camera.listener);
+sounds.grappleReel = new PositionalAudio(camera.listener);
 audioLoader.load(audioBowShot, function(buffer) {
-    bowShotSound.setBuffer(buffer);
-    bowShotSound.setRefDistance( 20 );
+    sounds.bowShot.setBuffer(buffer);
+    sounds.bowShot.setRefDistance(5);
 })
-var bowDrawSound = new PositionalAudio(camera.listener);
 audioLoader.load(audioBowDraw, function(buffer) {
-    bowDrawSound.setBuffer(buffer);
-    bowDrawSound.setRefDistance( 20 );
+    sounds.bowDraw.setBuffer(buffer);
+    sounds.bowDraw.setRefDistance(5);
+})
+audioLoader.load(audioGrappleShot, function(buffer) {
+    sounds.grappleShot.setBuffer(buffer);
+    sounds.grappleShot.setRefDistance(5);
+})
+audioLoader.load(audioGrappleReel, function(buffer) {
+    sounds.grappleReel.setBuffer(buffer);
+    sounds.grappleReel.setRefDistance(5);
 })
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
   ( gltf ) => {
     player1.gltf = gltf;
-    player1.gltf.scene.add(bowShotSound)
-    player1.gltf.scene.add(bowDrawSound)
+    Object.keys(sounds).forEach((sound) => player1.gltf.scene.add(sounds[sound]))
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
     
@@ -109,6 +121,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.onMouseDown = function() {
         if (activeRopeArrow!=null) {
             activeRopeArrow = null
+            sounds.grappleReel.stop()
             retractRopeArrow();
         } else if (player1.bowState == "unequipped") {
             player1.equipBow()
@@ -116,7 +129,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (this.activeActions.includes("jumping")) {
                 this.stopAction("jumping")
             }
-            bowDrawSound.play();
+            sounds.bowDraw.play();
             player1.playBowAction("drawBow")
             player1.bowState = "drawing"
             camera.zoomIn()
@@ -129,8 +142,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             player1.playBowAction("fireBow")
             if (event.button == 2) {
                 activeRopeArrow = shootArrow("rope")
+                sounds.grappleShot.play()
             } else {
-                bowShotSound.play();
+                sounds.bowShot.play();
                 shootArrow("normal");   
             }
             player1.bowState = "firing"
@@ -299,6 +313,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 this.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
             }
             this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize().multiplyScalar(velocityInfluenceModifier*delta))
+            sounds.grappleReel.play()
         }
         if (player1.velocity.length() != 0) {
             if (!nextPos) nextPos = player1.getPosition()

@@ -9,6 +9,7 @@ import {uuid} from './utils'
 
 import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
 import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
+import grappleHitAudio from '../audio/effects/Grapple Hit.mp3'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
@@ -28,6 +29,7 @@ var audioLoader = new AudioLoader();
 var sounds = {}
 sounds.arrowHitGround = new PositionalAudio(camera.listener);
 sounds.arrowHitPlayer = new PositionalAudio(camera.listener);
+sounds.grappleHit = new PositionalAudio(camera.listener)
 audioLoader.load(arrowHitGroundAudio, function(buffer) {
     sounds.arrowHitGround.setBuffer(buffer);
     sounds.arrowHitGround.setRefDistance(5);
@@ -36,13 +38,21 @@ audioLoader.load(arrowHitPlayerAudio, function(buffer) {
     sounds.arrowHitPlayer.setBuffer(buffer);
     sounds.arrowHitPlayer.setRefDistance(5);
 })
+audioLoader.load(grappleHitAudio, function(buffer) {
+    sounds.grappleHit.setBuffer(buffer);
+    sounds.grappleHit.setRefDistance(5);
+})
 
 function createArrow(origin, rotation, type){
     if (!arrowTypes[type]) console.error("arrow type: " + type + " does not exist");
     var geometry = new BoxGeometry(arrowWidth, arrowWidth, arrowLength);
     var material = new MeshBasicMaterial({color: arrowTypes[type].color});
     var arrow = new Mesh( geometry, material );
-    arrow.add(sounds.arrowHitGround)
+    if (type == "rope") {
+        arrow.add(sounds.grappleHit)
+    } else {
+        arrow.add(sounds.arrowHitGround)   
+    }
     arrow.add(sounds.arrowHitPlayer)
     
     arrow.origin = origin
@@ -142,7 +152,11 @@ function animateArrows(delta) {
             collisions = ray.intersectObjects(collidableEnvironment, true)
             if (collisions.length > 0) {
                 arrow.position.copy(collisions.pop().point)
-                sounds.arrowHitGround.play()
+                if (arrow.type=="rope") {
+                    sounds.grappleHit.play()
+                } else {
+                    sounds.arrowHitGround.play()
+                }
                 arrow.stopped = true
                 sendMessage({
                     arrow: {
