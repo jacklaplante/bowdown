@@ -10,6 +10,7 @@ import {init} from './archer'
 import {gameOver} from './game'
 
 import audioBowShot from '../audio/effects/Bow Shot.mp3'
+import audioBowDraw from '../audio/effects/Bow Draw.mp3'
 
 const models = require.context('../models/');
 
@@ -19,11 +20,14 @@ const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
 
-var bowShotSound = new PositionalAudio(camera.listener);
 var audioLoader = new AudioLoader();
+var bowShotSound = new PositionalAudio(camera.listener);
 audioLoader.load(audioBowShot, function(buffer) {
     bowShotSound.setBuffer(buffer);
-    bowShotSound.setRefDistance(20);
+})
+var bowDrawSound = new PositionalAudio(camera.listener);
+audioLoader.load(audioBowDraw, function(buffer) {
+    bowDrawSound.setBuffer(buffer);
 })
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
@@ -105,14 +109,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         } else if (player1.bowState == "unequipped") {
             player1.equipBow()
         } else {
-            if (activeRopeArrow==null) {
-                if (this.activeActions.includes("jumping")) {
-                    this.stopAction("jumping")
-                }
-                player1.playBowAction("drawBow")
-                player1.bowState = "drawing"
-                camera.zoomIn()
+            if (this.activeActions.includes("jumping")) {
+                this.stopAction("jumping")
             }
+            bowDrawSound.play();
+            player1.playBowAction("drawBow")
+            player1.bowState = "drawing"
+            camera.zoomIn()
         }
     }
 
