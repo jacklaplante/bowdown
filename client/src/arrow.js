@@ -7,7 +7,8 @@ import {camera} from './camera'
 import {sendMessage} from './websocket'
 import {uuid} from './utils'
 
-import bruh from '../audio/effects/bruh.mp3'
+import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
+import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
@@ -23,11 +24,26 @@ const arrowTypes = {
     }
 }
 
+var audioLoader = new AudioLoader();
+var sounds = {}
+sounds.arrowHitGround = new PositionalAudio(camera.listener);
+sounds.arrowHitPlayer = new PositionalAudio(camera.listener);
+audioLoader.load(arrowHitGroundAudio, function(buffer) {
+    sounds.arrowHitGround.setBuffer(buffer);
+    sounds.arrowHitGround.setRefDistance(5);
+})
+audioLoader.load(arrowHitPlayerAudio, function(buffer) {
+    sounds.arrowHitPlayer.setBuffer(buffer);
+    sounds.arrowHitPlayer.setRefDistance(5);
+})
+
 function createArrow(origin, rotation, type){
     if (!arrowTypes[type]) console.error("arrow type: " + type + " does not exist");
     var geometry = new BoxGeometry(arrowWidth, arrowWidth, arrowLength);
     var material = new MeshBasicMaterial({color: arrowTypes[type].color});
     var arrow = new Mesh( geometry, material );
+    arrow.add(sounds.arrowHitGround)
+    arrow.add(sounds.arrowHitPlayer)
     
     arrow.origin = origin
     arrow.position.copy(origin)
@@ -45,13 +61,6 @@ function shootArrow(type){
     var arrow = createArrow(origin, rotation, type);
     arrow.uuid = uuid()
     arrow.playerUuid = player1.uuid
-    arrow.sound = new PositionalAudio(camera.listener);
-    var audioLoader = new AudioLoader();
-    audioLoader.load(bruh, function(buffer) {
-        arrow.sound.setBuffer(buffer);
-        arrow.sound.setRefDistance( 20 );
-        arrow.sound.play();
-    })
 
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
@@ -125,6 +134,7 @@ function animateArrows(delta) {
             if (collisions.length > 0) {
                 var collision = collisions.pop()
                 arrow.position.copy(collision.point)
+                sounds.arrowHitPlayer.play()
                 arrow.stopped = true
                 killPlayer(collision.object.playerUuid)
             }
@@ -132,6 +142,7 @@ function animateArrows(delta) {
             collisions = ray.intersectObjects(collidableEnvironment, true)
             if (collisions.length > 0) {
                 arrow.position.copy(collisions.pop().point)
+                sounds.arrowHitGround.play()
                 arrow.stopped = true
                 sendMessage({
                     arrow: {

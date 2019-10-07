@@ -24,16 +24,20 @@ var audioLoader = new AudioLoader();
 var bowShotSound = new PositionalAudio(camera.listener);
 audioLoader.load(audioBowShot, function(buffer) {
     bowShotSound.setBuffer(buffer);
+    bowShotSound.setRefDistance( 20 );
 })
 var bowDrawSound = new PositionalAudio(camera.listener);
 audioLoader.load(audioBowDraw, function(buffer) {
     bowDrawSound.setBuffer(buffer);
+    bowDrawSound.setRefDistance( 20 );
 })
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
 loader.load(models('./benji_'+player1.race+'.gltf'),
   ( gltf ) => {
     player1.gltf = gltf;
+    player1.gltf.scene.add(bowShotSound)
+    player1.gltf.scene.add(bowDrawSound)
     player1.velocity = new Vector3()
     player1.bowState = "unequipped"
     
