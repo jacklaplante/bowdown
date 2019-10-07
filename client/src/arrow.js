@@ -6,6 +6,7 @@ import player1 from './player1'
 import {camera} from './camera'
 import {sendMessage} from './websocket'
 import {uuid} from './utils'
+import {loadAudio} from './audio'
 
 import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
 import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
@@ -27,21 +28,9 @@ const arrowTypes = {
 
 var audioLoader = new AudioLoader();
 var sounds = {}
-sounds.arrowHitGround = new PositionalAudio(camera.listener);
-sounds.arrowHitPlayer = new PositionalAudio(camera.listener);
-sounds.grappleHit = new PositionalAudio(camera.listener)
-audioLoader.load(arrowHitGroundAudio, function(buffer) {
-    sounds.arrowHitGround.setBuffer(buffer);
-    sounds.arrowHitGround.setRefDistance(5);
-})
-audioLoader.load(arrowHitPlayerAudio, function(buffer) {
-    sounds.arrowHitPlayer.setBuffer(buffer);
-    sounds.arrowHitPlayer.setRefDistance(5);
-})
-audioLoader.load(grappleHitAudio, function(buffer) {
-    sounds.grappleHit.setBuffer(buffer);
-    sounds.grappleHit.setRefDistance(5);
-})
+sounds.arrowHitGround = loadAudio(arrowHitGroundAudio)
+sounds.arrowHitPlayer = loadAudio(arrowHitPlayerAudio)
+sounds.grappleHit = loadAudio(grappleHitAudio)
 
 function createArrow(origin, rotation, type){
     if (!arrowTypes[type]) console.error("arrow type: " + type + " does not exist");
