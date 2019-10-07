@@ -453,8 +453,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.gltf.scene.position.z = 200
-    player1.gltf.scene.position.y = 200
+    player1.setPosition(new Vector3(230,150,80))
     player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
     scene.add( player1.gltf.scene );
     // say hi to server
