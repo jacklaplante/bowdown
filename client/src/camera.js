@@ -32,7 +32,7 @@ camera.nextPosition = function(dist) {
         return cameraTarget.clone().add(
             nextPos.applyQuaternion(
                 new Quaternion().setFromUnitVectors(
-                    new Vector3(0,1,0), cameraTarget.clone().normalize()))) // maybe try setFromAxisAngle?
+                    new Vector3(0,1,0), cameraTarget.clone().normalize())))
     }
 }
 
@@ -109,11 +109,9 @@ camera.updateCamera = function() {
 camera.moveCamera = function(movementX, movementY) {
     theta -= movementX * 0.2
     var x = phi + movementY * 0.2
-    // this simply ensures the camera cannot go over the top/bottom
-    // I have it set 10 135 and 80 because otherwise the camera gets all fucky but it's not the best solution
-//     if (180 > x && x > -140) {
+    if (140 > x && x > -145) {
         phi = x
-//     }
+    }
     camera.updateCamera();
 }
 
