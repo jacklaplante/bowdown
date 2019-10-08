@@ -346,7 +346,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
                     player1.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
                 }
-                player1.velocity.add(activeRopeArrow.position.clone().sub(player1.getPosition()).normalize().multiplyScalar(velocityInfluenceModifier*delta))
+                var arrowToPlayer = activeRopeArrow.position.clone().sub(player1.getPosition())
+                player1.velocity.add(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
+                if (player1.velocity.angleTo(arrowToPlayer) > Math.PI/2) {
+                    player1.velocity.projectOnPlane(arrowToPlayer.clone().normalize())
+                }
                 if (!sounds.grappleReel.isPlaying) {
                     sounds.grappleReel.play()
                 }
