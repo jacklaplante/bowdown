@@ -295,24 +295,15 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             this.velocity.add(this.getPosition().normalize().multiplyScalar(5))
             this.playAction("jumping")
         }
-        if (activeRopeArrow!=null && activeRopeArrow.stopped) {
-            if (inputDirection.length() != 0) {
-                var velocityInfluence = cameraDirection.clone().applyAxisAngle(this.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                this.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
-            }
-            this.velocity.add(activeRopeArrow.position.clone().sub(this.getPosition()).normalize().multiplyScalar(velocityInfluenceModifier*delta))
-            if (!sounds.grappleReel.isPlaying) {
-                sounds.grappleReel.play()
-            }
-        }
-        if (player1.velocity.length() != 0) {
+        var positionDeltaFromVelocity = velocityToPositionDelta(delta, inputDirection, cameraDirection)
+        if (positionDeltaFromVelocity) {
             if (!nextPos) nextPos = player1.getPosition()
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
         }
-        updateRotation(nextPos, rotation)
         if (nextPos) {
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
+                updateRotation(nextPos, rotation)
                 player1.setPosition(nextPos)
                 camera.updateCamera()
             } else {
@@ -342,6 +333,22 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             quat = new Quaternion().setFromUnitVectors(player1.getPosition().normalize(), quatVert)   
         }
         if (quat) player1.gltf.scene.applyQuaternion(quat)
+    }
+
+    function velocityToPositionDelta(delta, inputDirection, cameraDirection) {
+        if (player1.velocity.length() != 0) {
+            if (activeRopeArrow!=null && activeRopeArrow.stopped) {
+                if (inputDirection.length() != 0) {
+                    var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                    player1.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
+                }
+                player1.velocity.add(activeRopeArrow.position.clone().sub(player1.getPosition()).normalize().multiplyScalar(velocityInfluenceModifier*delta))
+                if (!sounds.grappleReel.isPlaying) {
+                    sounds.grappleReel.play()
+                }
+            }
+            return player1.velocity.clone().multiplyScalar(delta)
+        }
     }
 
     player1.idle = function() {
