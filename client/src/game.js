@@ -105,16 +105,19 @@ function onKeyUp(event) {
 function onMouseDown() {
     if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
         document.getElementById("chat").classList.add("chatting")
-    } else if (event.button!=2) {
-        if (state == "paused") {
-            if (document.body.requestPointerLock) {
-                document.body.requestPointerLock();
+    } else {
+        document.getElementById("chat").classList.remove("chatting")
+        if (event.button!=2) {
+            if (state == "paused") {
+                if (document.body.requestPointerLock) {
+                    document.body.requestPointerLock();
+                }
+                play()
             }
-            play()
         }
-    }
-    if (state == "playing") {
-        player1.onMouseDown()
+        if (state == "playing") {
+            player1.onMouseDown()
+        }
     }
 }
 function onMouseUp(event) {
