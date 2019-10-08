@@ -22,7 +22,7 @@ const movementSpeed = 7
 const sprintModifier = 1.3
 const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
-const spawnPoint = new Vector3(230,150,80)
+const spawnPoint = new Vector3(230,150,80).multiplyScalar(0.75)
 
 var audioLoader = new AudioLoader();
 var sounds = {}
@@ -58,7 +58,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (delta) {
             var origin = player1.getPosition().add(player1.velocity.clone().multiplyScalar(delta)).sub(this.globalVector(new Vector3(0, 0.1, 0)));
             var dir = this.globalVector(new Vector3(0, 1, 0));
-            var ray = new Raycaster(origin, dir, 0, 0.2+player1.velocity.length()*delta);
+            var ray = new Raycaster(origin, dir, 0, 0.2 + player1.velocity.length() * delta);
             var collisionResults = ray.intersectObjects(collidableEnvironment, true);
             if ( collisionResults.length > 0) {
                 player1.doubleJumped = false
@@ -71,8 +71,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
         var vert, ray, collisionResults;
-        for(var a=-1; a<=1; a++){
-            for(var c=-1; c<=1; c++){
+        for(var a=-1; a<=1; a++) {
+            for(var c=-1; c<=1; c++) {
                 vert = this.globalVector(new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize());
                 ray = new Raycaster(nextPos, vert, 0, 1);
                 addCollisionLine(player1, vert)
@@ -303,11 +303,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (nextPos) {
             var collisionVector = player1.collisionDetected(nextPos)
             if(!collisionVector) {
-                updateRotation(nextPos, rotation)
-                player1.setPosition(nextPos)
-                camera.updateCamera()
+                updatePosition(nextPos, rotation)
             } else {
-                if (falling) {// slide off edge
+                if (falling) {// slide off edge, I'm pretty sure this code is garbage
                     player1.velocity.copy(collisionVector.clone().negate().normalize().multiplyScalar(10))
                     nextPos.add(player1.velocity.clone().multiplyScalar(delta))
                     player1.setPosition(nextPos)
@@ -317,6 +315,12 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             }
             player1.broadcast()
         }
+    }
+
+    function updatePosition(nextPos ,rotation) {
+        updateRotation(nextPos, rotation)
+        player1.setPosition(nextPos)
+        camera.updateCamera()
     }
 
     function updateRotation(nextPos, rotation) {
