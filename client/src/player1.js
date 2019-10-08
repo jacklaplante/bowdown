@@ -314,6 +314,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 }
             }
             player1.broadcast()
+        } else if (rotation) {
+            updateRotation(nextPos, rotation)
         }
     }
 
