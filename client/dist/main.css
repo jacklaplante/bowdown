@@ -122,7 +122,15 @@ canvas {
 }
 
 #chat.chatting #chat-text-box {
-    display: block
+    display: block;
+    position: fixed;
+    bottom: 0;
+}
+
+#chat p.message {
+    display: inline-block;
+    width: 100%;
+    margin: 1pt 0 1pt 2pt;
 }
 
 .playing #chat {

@@ -7,6 +7,7 @@ import { renderer } from './renderer'
 import { camera } from './camera'
 import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
+import { newChatMessage } from './chat'
 require.context('../icons/');
 
 var clock = new Clock()
@@ -89,7 +90,11 @@ function toggleKey(event, toggle) {
 }
 function onKeyDown(event) {
     if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
-        player1.sendChat(document.getElementById("chat-text-box").value)
+        var chatTextBox = document.getElementById("chat-text-box")
+        player1.sendChat(chatTextBox.value)
+        newChatMessage(chatTextBox.value)
+        chatTextBox.value = ""
+        document.getElementById("chat").classList.remove("chatting")
     }
     toggleKey(event, true);
 }
@@ -98,8 +103,8 @@ function onKeyUp(event) {
 }
 
 function onMouseDown() {
-    if (event.target.id == "chat") {
-        event.target.classList.add("chatting")
+    if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
+        document.getElementById("chat").classList.add("chatting")
     } else if (event.button!=2) {
         if (state == "paused") {
             if (document.body.requestPointerLock) {

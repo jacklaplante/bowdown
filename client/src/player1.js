@@ -24,7 +24,6 @@ const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
 const spawnPoint = new Vector3(230,150,80).multiplyScalar(0.75)
 
-var audioLoader = new AudioLoader();
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
 sounds.bowDraw = loadAudio(audioBowDraw)
