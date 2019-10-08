@@ -236,7 +236,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        if (!falling) {
+        if (!falling && scene.loaded) {
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 player1.velocity.set(0,0,0)

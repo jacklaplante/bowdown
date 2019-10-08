@@ -10,6 +10,7 @@ import heather_rt from '../skybox/yellowcloud_rt.jpg'
 import heather_lf from '../skybox/yellowcloud_lf.jpg'
 
 var scene = new Scene();
+scene.loaded = false
 var collidableEnvironment = []
 
 loader.load(env, function (gltf) {
@@ -17,6 +18,7 @@ loader.load(env, function (gltf) {
     mesh.position.y -=10
     scene.add(mesh);
     collidableEnvironment.push(mesh)
+    scene.loaded = true
 });
 
 let materialArray = [];  
