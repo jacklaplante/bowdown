@@ -44,7 +44,9 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && player1.mixer) {
-        player1.animate(delta, input);
+        if (state != "gameOver") {
+            player1.animate(delta, input);   
+        }
         player1.mixer.update( delta );
     }
     animateArrows(delta);

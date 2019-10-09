@@ -387,8 +387,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     player1.takeDamage = function() {
-        gameOver()
         this.playAction("death")
+        gameOver()
     }
 
     player1.respawn = function() {
