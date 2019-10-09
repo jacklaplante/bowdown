@@ -132,7 +132,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     var activeRopeArrow
     player1.onMouseUp = function(event) {
-         if (player1.bowState == "drawn") {
+        if (sounds.bowDraw.isPlaying) {
+            sounds.bowDraw.stop()
+        }
+        if (player1.bowState == "drawn") {
             player1.playBowAction("fireBow")
             if (event.button == 2) {
                 activeRopeArrow = shootArrow("rope")
