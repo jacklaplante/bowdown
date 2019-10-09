@@ -20,7 +20,6 @@ const models = require.context('../models/');
 var player1 = {uuid: uuid()}
 const movementSpeed = 7
 const sprintModifier = 1.3
-const collisionModifier = 0.5
 const velocityInfluenceModifier = 15
 const spawnPoint = new Vector3(230,150,80).multiplyScalar(0.75)
 
@@ -67,28 +66,36 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
+    const collisionModifier = 0.5
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
         var vert, ray, collisionResults;
-        for(var a=-1; a<=1; a++) {
-            for(var c=-1; c<=1; c++) {
-                vert = this.globalVector(new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize());
-                ray = new Raycaster(nextPos, vert, 0, 1);
-                addCollisionLine(player1, vert)
-                // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
-                collisionResults = ray.intersectObjects(collidableEnvironment, true);
-                if ( collisionResults.length > 0) {
-                    return vert
-                }
-                // this bit of code below is supposed to prevent the player from going through meshes in between frames. The issue is that it only checks for collisions around waist level
+        // for(var a=-1; a<=1; a++) {
+        //     for(var c=-1; c<=1; c++) {
+                // vert = this.globalVector(new Vector3(a*collisionModifier, 1, c*collisionModifier).normalize());
+                // ray = new Raycaster(nextPos, vert, 0, 1);
+                // addCollisionLine(player1, vert)
+                // // the true below denotes to recursivly check for collision with objects and all their children. Might not be efficient
+                // collisionResults = ray.intersectObjects(collidableEnvironment, true);
+                // if ( collisionResults.length > 0) {
+                //     return vert
+                // }
+                // // this bit of code below is supposed to prevent the player from going through meshes in between frames. The issue is that it only checks for collisions around waist level
+                // var inBetweenFramesCollisionVector = nextPos.clone().sub(player1.getPosition())
+                // ray = new Raycaster(player1.getPosition().add(vert), inBetweenFramesCollisionVector.clone().normalize(), 0, inBetweenFramesCollisionVector.length())
+                // collisionResults = ray.intersectObjects(collidableEnvironment, true)
+                // if (collisionResults.length > 0) {
+                //     return inBetweenFramesCollisionVector;
+                // }
+
                 var inBetweenFramesCollisionVector = nextPos.clone().sub(player1.getPosition())
-                ray = new Raycaster(player1.getPosition().add(vert), inBetweenFramesCollisionVector.clone().normalize(), 0, inBetweenFramesCollisionVector.length())
+                ray = new Raycaster(player1.getPosition(), inBetweenFramesCollisionVector.clone().normalize(), 0, inBetweenFramesCollisionVector.length())
                 collisionResults = ray.intersectObjects(collidableEnvironment, true)
                 if (collisionResults.length > 0) {
                     return inBetweenFramesCollisionVector;
                 }
-            }
-        }
+        //    }
+        // }
         return false;
     }
 
