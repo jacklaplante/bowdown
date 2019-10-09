@@ -43,11 +43,11 @@ var rotated
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
-    animateArrows(delta);
     if (player1 && player1.mixer) {
         player1.animate(delta, input);
         player1.mixer.update( delta );
     }
+    animateArrows(delta);
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)
     }
