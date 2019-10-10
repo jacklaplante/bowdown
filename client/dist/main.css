@@ -76,10 +76,17 @@ canvas {
     transform: translate(-50%, -50%);
     width: 30px;
     height: 30px;
-    background-image: url(icons/crosshair.svg);
 }
 
 .playing #crosshair {
+    display: block;
+}
+
+.playing #crosshair path {
+    display: none;
+}
+
+.playing #crosshair.aiming path {
     display: block;
 }
 

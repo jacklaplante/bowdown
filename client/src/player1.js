@@ -112,12 +112,19 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             sounds.bowDraw.play();
             player1.playBowAction("drawBow")
             player1.bowState = "drawing"
+            setTimeout(function(){
+                if (player1.bowState == "drawing") {
+                    document.getElementById("crosshair").classList.add("aiming")
+                    player1.bowState = "drawn"
+                }
+            }, 1000);
             camera.zoomIn()
         }
     }
 
     var activeRopeArrow
     player1.onMouseUp = function(event) {
+        document.getElementById("crosshair").classList.remove("aiming")
         if (sounds.bowDraw.isPlaying) {
             sounds.bowDraw.stop()
         }
