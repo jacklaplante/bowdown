@@ -287,7 +287,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (inputDirection.length()) {
                 this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta)) // I'm not sure if this 1/delta is right
             }
-            this.velocity.add(this.getPosition().normalize().multiplyScalar(5))
+            this.velocity.add(this.getPosition().normalize().multiplyScalar(7))
             this.playAction("jumping")
         }
         var positionDeltaFromVelocity = velocityToPositionDelta(delta, inputDirection, cameraDirection)
