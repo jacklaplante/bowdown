@@ -11,13 +11,14 @@ var serverAddress
 if (process.env.NODE_ENV == 'production') {
     serverAddress = 'wss://ws.bowdown.io:18181'
 } else {
-    serverAddress = 'ws://localhost:18181'
+    serverAddress = 'wss://bm3u69xyi4.execute-api.us-east-1.amazonaws.com/test'
 }
 
 const ws = new WebSocket(serverAddress);
 
 ws.onmessage = function onMessage(message) {
     var message = JSON.parse(message.data)
+    if (message.message == "Internal server error" || player1.uuid == message.player) return;
     if (message.players) {
         players.init(message.players);
     }
@@ -57,7 +58,11 @@ ws.onmessage = function onMessage(message) {
 
 function sendMessage(message) {
     if (ws.readyState == 1) {
-        ws.send(JSON.stringify(message))
+        // ws.send(JSON.stringify(message))
+        ws.send(JSON.stringify(
+            {action: "onMessage",
+            message: message}
+        ))
     } else {
         console.error("error connecting to server")
     }
