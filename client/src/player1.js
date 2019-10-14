@@ -70,15 +70,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
         var vect = nextPos.clone().sub(player1.getPosition())
-        // check for collisions at ground level
-        var ray = new Raycaster(player1.getPosition(), vect.clone().normalize(), 0, vect.length())
-        var collisionResults = ray.intersectObjects(collidableEnvironment, true)
-        if (collisionResults.length > 0) {
-            return vect;
-        }
         //check for collisions at hip level
         var ray = new Raycaster(player1.getPosition().add(this.globalVector(new Vector3(0,1,0))), vect.clone().normalize(), 0, vect.length())
-        collisionResults = ray.intersectObjects(collidableEnvironment, true)
+        var collisionResults = ray.intersectObjects(collidableEnvironment, true)
         if (collisionResults.length > 0) {
             return vect;
         }
@@ -239,9 +233,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         if (!falling && scene.loaded) {
+            player1.velocity.set(0,0,0)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
-                player1.velocity.set(0,0,0)
                 nextPos = player1.getPosition()
                 nextPos.add(globalDirection)
                 // for moving up/down slopes
