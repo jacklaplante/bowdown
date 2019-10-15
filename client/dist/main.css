@@ -15,12 +15,15 @@ canvas {
 
 #menu {
     font-family: 'Rubik Mono One', sans-serif;
+    color: #ffdba5;
+}
+
+#menu .centered {
     display: inline;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: #ffdba5;
 }
 
 .playing #menu {
@@ -28,16 +31,17 @@ canvas {
 }
 
 #title {
-    font-size: 15vw;
+    font-size: 12vw;
+    position: relative;
 }
 
 .button {
     margin: 10pt auto;
-    width: 49vw;
+    width: 36vw;
     border-radius: 13pt;
     border: 2pt solid #ffdba5;
-    padding: 8pt;
-    font-size: 8vw;
+    padding: 4pt;
+    font-size: 5vw;
     text-align: center;
 }
 
@@ -45,7 +49,9 @@ canvas {
     display: block;
     color: #134461;
     background: #ffdba5;
-    width: 35vw
+    width: 23vw;
+    content: "dsa";
+    position: relative;
 }
 
 #fullscreen {
@@ -164,4 +170,12 @@ canvas {
     position: absolute;
     color: white;
     font-size: 16pt;
+}
+
+ul {
+    font-family: monospace;
+}
+
+#controls {
+    font-size: 24pt;
 }

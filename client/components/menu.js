@@ -9,7 +9,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 import React from 'react';
 
 import Title from './title';
-import MenuButton from './menuButton';
 
 var Menu = function (_React$Component) {
   _inherits(Menu, _React$Component);
@@ -19,19 +18,162 @@ var Menu = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Menu.__proto__ || Object.getPrototypeOf(Menu)).call(this, props));
 
-    _this.state = { state: props.state };
+    _this.state = { page: "main" };
+    _this.showControls = _this.showControls.bind(_this);
+    _this.showMobileControls = _this.showMobileControls.bind(_this);
+    _this.showDesktopControls = _this.showDesktopControls.bind(_this);
     return _this;
   }
 
   _createClass(Menu, [{
+    key: 'showControls',
+    value: function showControls() {
+      this.setState({ page: "controls" });
+    }
+  }, {
+    key: 'showMobileControls',
+    value: function showMobileControls() {
+      this.setState({ page: "mobile-controls" });
+    }
+  }, {
+    key: 'showDesktopControls',
+    value: function showDesktopControls() {
+      this.setState({ page: "desktop-controls" });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      return React.createElement(
-        'div',
-        null,
-        React.createElement(Title, null),
-        React.createElement(MenuButton, { action: 'loading' })
-      );
+      if (this.state.page == "main") {
+        return React.createElement(
+          'div',
+          { className: 'centered' },
+          React.createElement(Title, { title: 'bowdown' }),
+          React.createElement(
+            'div',
+            { className: 'button', id: 'play' },
+            'loading'
+          ),
+          React.createElement(
+            'div',
+            { className: 'button', onClick: this.showControls },
+            'controls'
+          )
+        );
+      } else if (this.state.page == "controls") {
+        return React.createElement(
+          'div',
+          { className: 'centered' },
+          React.createElement(Title, { title: 'controls' }),
+          React.createElement(
+            'div',
+            { className: 'button', onClick: this.showMobileControls },
+            'mobile'
+          ),
+          React.createElement(
+            'div',
+            { className: 'button', onClick: this.showDesktopControls },
+            'mouse + keyboard'
+          )
+        );
+      } else if (this.state.page == "mobile-controls") {
+        return React.createElement(
+          'div',
+          { id: 'controls' },
+          React.createElement(
+            'p',
+            null,
+            'Mobile controls:'
+          ),
+          React.createElement(
+            'ul',
+            null,
+            React.createElement(
+              'li',
+              null,
+              'Move - Touch movement on left side of screen'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Move Camera - Touch movement on right side of screen'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Draw and Release Arrow - Target button (hold -> release)'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Draw and Release Grapple - Grapple button (hold -> release)'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Jump - Green bar on bottom-right of screen'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'For the best experience, keep your phone in landscape mode, fullscreen (which doesn\'t work on iPhone, don\'t blame me! blame Apple)'
+            )
+          ),
+          React.createElement(
+            'p',
+            null,
+            'refresh this page to play'
+          )
+        );
+      } else if (this.state.page == "desktop-controls") {
+        return React.createElement(
+          'div',
+          { id: 'controls' },
+          React.createElement(
+            'p',
+            null,
+            'Mouse + keyboard:'
+          ),
+          React.createElement(
+            'ul',
+            null,
+            React.createElement(
+              'li',
+              null,
+              'Mouse - move camera'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Left click (hold -> release) - draw and release arrow'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Right click (hold -> release) - draw and release grapple'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'WASD - move'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Space - jump'
+            ),
+            React.createElement(
+              'li',
+              null,
+              'Shift - sprint'
+            )
+          ),
+          React.createElement(
+            'p',
+            null,
+            'refresh this page to play'
+          )
+        );
+      }
     }
   }]);
 

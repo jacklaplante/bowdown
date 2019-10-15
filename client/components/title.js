@@ -23,7 +23,7 @@ var Title = function (_React$Component) {
       return React.createElement(
         "div",
         { id: "title" },
-        "Bowdown"
+        this.props.title
       );
     }
   }]);
