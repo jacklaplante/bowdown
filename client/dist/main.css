@@ -32,7 +32,6 @@ canvas {
 }
 
 .button {
-    display: none;
     margin: 10pt auto;
     width: 49vw;
     border-radius: 13pt;
@@ -42,19 +41,11 @@ canvas {
     text-align: center;
 }
 
-.loading #loading {
-    display: block;
-}
-
-.ready #start {
+.ready #play {
     display: block;
     color: #134461;
     background: #ffdba5;
     width: 35vw
-}
-
-.gameOver #respawn {
-    display: block
 }
 
 #fullscreen {

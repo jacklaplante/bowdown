@@ -145,6 +145,12 @@ function gameOver() {
     document.getElementById("title").innerHTML = "Game over"
     document.body.classList.remove("playing")
     document.body.classList.add("gameOver")
+    var playButton = document.getElementById("play")
+    playButton.innerText = "respawn"
+    playButton.onclick = function() {
+        player1.respawn()
+        play()   
+    }
 }
 
 function onPointerLockChange() {
@@ -314,11 +320,6 @@ function start() {
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     play()
-}
-
-document.getElementById("respawn").onclick = function() {
-    player1.respawn()
-    play()   
 }
 
 export {start, gameOver, setKillCount}

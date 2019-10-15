@@ -20,7 +20,12 @@
     "webpack-obfuscator": "^0.18.3"
   },
   "dependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-preset-react-app": "^3.1.2",
     "hammerjs": "^2.0.8",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2",
     "three": "^0.106.2"
   }
 }

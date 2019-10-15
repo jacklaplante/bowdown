@@ -1,3 +1,8 @@
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import Menu from '../components/menu'
+
 // full screen button
 var fullScreenButton = document.getElementById("fullscreen");
 if (document.body.requestFullscreen || document.body.mozRequestFullScreen || document.body.webkitRequestFullscreen || document.body.msRequestFullscreen) {
@@ -23,7 +28,9 @@ if (document.body.requestFullscreen || document.body.mozRequestFullScreen || doc
 import(/* webpackChunkName: "game" */ './game').then(function(module) {
     document.body.classList.remove("loading")
     document.body.classList.add("ready")
-    document.getElementById("start").onclick = function() {
+    var startButton = document.querySelector("#play.button")
+    startButton.innerText = "start"
+    startButton.onclick = function() {
         if (typeof document.body.requestPointerLock == "function") {
             document.body.requestPointerLock();
         }
@@ -32,7 +39,6 @@ import(/* webpackChunkName: "game" */ './game').then(function(module) {
     }
 })
 
-var song
 import('../audio/Menu_Theme.mp3').then(function(song) {
     song = new Audio(song.default);
     song.addEventListener("load", function() {
@@ -43,3 +49,5 @@ import('../audio/Menu_Theme.mp3').then(function(song) {
     document.body.appendChild(song)
     song.load()
 })
+
+ReactDOM.render(React.createElement(Menu), document.getElementById("menu"))
