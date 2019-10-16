@@ -121,7 +121,7 @@ var Menu = function (_React$Component) {
           React.createElement(
             'p',
             null,
-            'refresh this page to play \xAF\\_(\u30C4)_/\xAF'
+            'refresh this page to play :P'
           )
         );
       } else if (this.state.page == "desktop-controls") {
@@ -170,7 +170,7 @@ var Menu = function (_React$Component) {
           React.createElement(
             'p',
             null,
-            'refresh this page to play \xAF\\_(\u30C4)_/\xAF'
+            'refresh this page to play :P'
           )
         );
       }
