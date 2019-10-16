@@ -3,3 +3,4 @@ server/node_modules/
 npm-debug.log
 client/dist/main.js
 client/dist
+server/numberOfPlayers.txt
