@@ -41,7 +41,7 @@ ws.onmessage = function onMessage(message) {
                 scene.remove(players.get(player).gltf.scene)
                 delete players.get(player)
             } else if (!players.get(player)) {
-                players.add(player, message.position, message.race)
+                players.add(player, message.position, message.race, message.rotation)
             } else if (players.get(player).gltf && message.position && message.rotation!=null) {
                 players.move(player, message.position, message.rotation)
             } else if (players.get(player).gltf && message.playAction) {

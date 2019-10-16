@@ -1,4 +1,4 @@
-import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
+import {AnimationMixer, Vector3, Mesh, BoxGeometry, Euler} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
@@ -18,7 +18,7 @@ players.get = (uuid) => {
     return roster[uuid]
 }
 
-players.add = function(uuid, position, race) {
+players.add = function(uuid, position, race, rotation) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     roster[uuid] = {}
     if (race==null) {
@@ -28,8 +28,11 @@ players.add = function(uuid, position, race) {
     loader.load('./models/benji_'+race+'.gltf', function(gltf) {
         roster[uuid].gltf = gltf;
         init(new AnimationMixer(gltf.scene), roster[uuid]);
+        if (!rotation) {
+            rotation = new Euler()
+        }
         if (position) {
-            players.move(uuid, position, 0)
+            players.move(uuid, position, rotation)
         }
         scene.add( gltf.scene );
 

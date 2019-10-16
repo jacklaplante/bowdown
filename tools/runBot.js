@@ -10,14 +10,13 @@ const ws = new WebSocket(serverAddress);
 var actions = JSON.parse(fs.readFileSync(process.argv[2]));
 
 ws.on('open', (wss) => {
-  actions.forEach(action => {
-    setTimeout(() => {
-      if (action) {
-        action = JSON.stringify(action)
-        ws.send(action)
-      }
-    }, 100)
-  });
+  var i = 0
+  setInterval(() => {
+    if (actions[i]) {
+      ws.send(JSON.stringify(actions[i])) 
+    }
+    i++
+  }, 100)
 })
 
 console.log("attempting to run bot: " + process.argv[2]);
