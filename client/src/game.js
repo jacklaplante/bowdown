@@ -8,6 +8,7 @@ import { camera } from './camera'
 import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
+import { recordBot } from './websocket'
 require.context('../icons/');
 
 var clock = new Clock()
@@ -97,6 +98,9 @@ function onKeyDown(event) {
         newChatMessage(chatTextBox.value)
         chatTextBox.value = ""
         document.getElementById("chat").classList.remove("chatting")
+    }
+    if (event.key == 'r') {
+        recordBot()
     }
     toggleKey(event, true);
 }

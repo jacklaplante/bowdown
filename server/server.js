@@ -1,8 +1,7 @@
 const fs = require('fs');
 const WebSocket = require('ws');
 
-let rawdata = fs.readFileSync('numberOfPlayers.txt');
-let maxCount = JSON.parse(rawdata);
+let maxCount = 0;
 
 var server
 if ( process.argv[2] == 'prod' ) {

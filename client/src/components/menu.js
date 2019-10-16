@@ -54,7 +54,7 @@ class Menu extends React.Component {
             <li>Jump - Green bar on bottom-right of screen</li>
             <li>For the best experience, keep your phone in landscape mode, fullscreen (which doesn't work on iPhone, don't blame me! blame Apple)</li>
           </ul>
-          <p>refresh this page to play :P</p>
+          <p>refresh this page to play</p>
         </div>
       )
     } else if (this.state.page == "desktop-controls") {
@@ -69,7 +69,7 @@ class Menu extends React.Component {
             <li>Space - jump</li>
             <li>Shift - sprint</li>
           </ul>
-          <p>refresh this page to play :P</p>
+          <p>refresh this page to play</p>
         </div>
       )
     }

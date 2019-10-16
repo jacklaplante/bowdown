@@ -1,4 +1,4 @@
-import { Vector3 } from 'three'
+import { Vector3, Clock } from 'three'
 
 import { players } from './players'
 import player1 from './player1'
@@ -8,6 +8,8 @@ import { newChatMessage } from './chat'
 import { setKillCount } from './game'
 
 var serverAddress
+var recordingBot = false
+var log
 if (process.env.NODE_ENV == 'production') {
     serverAddress = 'wss://ws.bowdown.io:18181'
 } else {
@@ -15,6 +17,8 @@ if (process.env.NODE_ENV == 'production') {
 }
 
 const ws = new WebSocket(serverAddress);
+
+var clock = new Clock()
 
 ws.onmessage = function onMessage(message) {
     var message = JSON.parse(message.data)
@@ -55,12 +59,25 @@ ws.onmessage = function onMessage(message) {
     }
 }
 
+function recordBot() {
+    if (process.env.NODE_ENV != 'production' && recordingBot != true) {
+        recordingBot = true
+        log = []
+    } else if (recordingBot) {
+        recordingBot = false
+        console.log(JSON.stringify(log))
+    }
+}
+
 function sendMessage(message) {
     if (ws.readyState == 1) {
+        if (recordingBot) {
+            log[Math.round(clock.getElapsedTime()*100)] = message
+        }
         ws.send(JSON.stringify(message))
     } else {
         console.error("error connecting to server")
     }
 }
 
-export { ws, sendMessage }
+export { ws, sendMessage, recordBot }
