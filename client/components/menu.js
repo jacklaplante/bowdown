@@ -121,7 +121,7 @@ var Menu = function (_React$Component) {
           React.createElement(
             'p',
             null,
-            'refresh this page to play'
+            'refresh this page to play \uD83D\uDE1B'
           )
         );
       } else if (this.state.page == "desktop-controls") {
@@ -170,7 +170,7 @@ var Menu = function (_React$Component) {
           React.createElement(
             'p',
             null,
-            'refresh this page to play'
+            'refresh this page to play \uD83D\uDE1B'
           )
         );
       }
