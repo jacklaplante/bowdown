@@ -1,6 +1,9 @@
 const fs = require('fs');
 const WebSocket = require('ws');
 
+let rawdata = fs.readFileSync('numberOfPlayers.json');
+let maxCount = JSON.parse(rawdata).count;
+
 var server
 if ( process.argv[2] == 'prod' ) {
     server = require('https').createServer({
@@ -28,6 +31,14 @@ wss.on('connection', function connection(ws, req) {
                 players[player] = {
                     hp: 100,
                     kills: 0
+                }
+                var playerCount = Object.keys(players).length;
+                if (playerCount > maxCount) { // this will kepp track of the maximum amount of players the server has
+                    maxCount = playerCount
+                    fs.writeFile('numberOfPlayers.json', maxCount, (err) => {
+                        if (err) throw err
+                        console.log("maxCount of " + maxCount + " saved to file")
+                    })
                 }
             }
             if (!ws.player) {
