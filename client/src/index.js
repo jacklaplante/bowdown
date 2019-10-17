@@ -25,20 +25,6 @@ if (document.body.requestFullscreen || document.body.mozRequestFullScreen || doc
     }
 }
 
-import(/* webpackChunkName: "game" */ './game').then(function(module) {
-    document.body.classList.remove("loading")
-    document.body.classList.add("ready")
-    var startButton = document.querySelector("#play.button")
-    startButton.innerText = "start"
-    startButton.onclick = function() {
-        if (typeof document.body.requestPointerLock == "function") {
-            document.body.requestPointerLock();
-        }
-        document.getElementsByTagName("audio")[0].pause()
-        module.start();
-    }
-})
-
 import('../audio/Menu_Theme.mp3').then(function(song) {
     song = new Audio(song.default);
     song.addEventListener("load", function() {

@@ -25,12 +25,27 @@ class Menu extends React.Component {
     this.setState({page: "desktop-controls"})
   }
 
+  async componentDidMount() {
+    const game = await import(/* webpackChunkName: "game" */ '../src/game')
+    document.body.classList.remove("loading")
+    document.body.classList.add("ready")
+    var startButton = document.querySelector("#play.button")
+    startButton.innerText = "start"
+    this.setState({startGame: function() {
+      if (typeof document.body.requestPointerLock == "function") {
+        document.body.requestPointerLock();
+      }
+      document.getElementsByTagName("audio")[0].pause()
+      game.start();
+    }})
+  }
+
   render() {
     if (this.state.page == "main") {
       return (
         <div className="centered">
           <Title title='bowdown' />
-          <div className="button" id="play">loading</div>
+          <div className="button" onClick={this.state.startGame} id="play">loading</div>
           <div className="button" onClick={this.showControls}>controls</div>
         </div>
       );
@@ -54,7 +69,7 @@ class Menu extends React.Component {
             <li>Jump - Green bar on bottom-right of screen</li>
             <li>For the best experience, keep your phone in landscape mode, fullscreen (which doesn't work on iPhone, don't blame me! blame Apple)</li>
           </ul>
-          <p>refresh this page to play</p>
+          <div className="button" onClick={this.state.startGame} id="play">start</div>
         </div>
       )
     } else if (this.state.page == "desktop-controls") {
@@ -69,7 +84,7 @@ class Menu extends React.Component {
             <li>Space - jump</li>
             <li>Shift - sprint</li>
           </ul>
-          <p>refresh this page to play</p>
+          <div className="button" onClick={this.state.startGame} id="play">start</div>
         </div>
       )
     }

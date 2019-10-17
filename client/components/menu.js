@@ -1,4 +1,8 @@
+import _regeneratorRuntime from 'babel-runtime/regenerator';
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -41,6 +45,48 @@ var Menu = function (_React$Component) {
       this.setState({ page: "desktop-controls" });
     }
   }, {
+    key: 'componentDidMount',
+    value: function () {
+      var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
+        var game, startButton;
+        return _regeneratorRuntime.wrap(function _callee$(_context) {
+          while (1) {
+            switch (_context.prev = _context.next) {
+              case 0:
+                _context.next = 2;
+                return import( /* webpackChunkName: "game" */'../src/game');
+
+              case 2:
+                game = _context.sent;
+
+                document.body.classList.remove("loading");
+                document.body.classList.add("ready");
+                startButton = document.querySelector("#play.button");
+
+                startButton.innerText = "start";
+                this.setState({ startGame: function startGame() {
+                    if (typeof document.body.requestPointerLock == "function") {
+                      document.body.requestPointerLock();
+                    }
+                    document.getElementsByTagName("audio")[0].pause();
+                    game.start();
+                  } });
+
+              case 8:
+              case 'end':
+                return _context.stop();
+            }
+          }
+        }, _callee, this);
+      }));
+
+      function componentDidMount() {
+        return _ref.apply(this, arguments);
+      }
+
+      return componentDidMount;
+    }()
+  }, {
     key: 'render',
     value: function render() {
       if (this.state.page == "main") {
@@ -50,7 +96,7 @@ var Menu = function (_React$Component) {
           React.createElement(Title, { title: 'bowdown' }),
           React.createElement(
             'div',
-            { className: 'button', id: 'play' },
+            { className: 'button', onClick: this.state.startGame, id: 'play' },
             'loading'
           ),
           React.createElement(
@@ -119,9 +165,9 @@ var Menu = function (_React$Component) {
             )
           ),
           React.createElement(
-            'p',
-            null,
-            'refresh this page to play :P'
+            'div',
+            { className: 'button', onClick: this.state.startGame, id: 'play' },
+            'start'
           )
         );
       } else if (this.state.page == "desktop-controls") {
@@ -168,9 +214,9 @@ var Menu = function (_React$Component) {
             )
           ),
           React.createElement(
-            'p',
-            null,
-            'refresh this page to play :P'
+            'div',
+            { className: 'button', onClick: this.state.startGame, id: 'play' },
+            'start'
           )
         );
       }
