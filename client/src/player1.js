@@ -1,7 +1,7 @@
 import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler, PositionalAudio, AudioLoader} from 'three'
 
 import {loader} from './loader'
-import {uuid, addCollisionLine, removeCollisionLines} from './utils'
+import {uuid, removeCollisionLines} from './utils'
 import {scene, collidableEnvironment} from './scene'
 import {camera, cameraTarget} from './camera'
 import {shootArrow, retractRopeArrow} from './arrow'
@@ -66,7 +66,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    const collisionModifier = 0.5
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
         var vect = nextPos.clone().sub(player1.getPosition())
@@ -233,7 +232,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         if (!falling && scene.loaded) {
-            player1.velocity.set(0,0,0)
+            if (!activeRopeArrow) {
+                player1.velocity.set(0,0,0)
+            }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 nextPos = player1.getPosition()
@@ -301,13 +302,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if(!collisionVector) {
                 updatePosition(nextPos, rotation)
             } else {
-                if (falling) {// slide off edge, I'm pretty sure this code is garbage
-                    player1.velocity.copy(collisionVector.clone().negate().normalize().multiplyScalar(10))
-                    nextPos.add(player1.velocity.clone().multiplyScalar(delta))
-                    player1.setPosition(nextPos)
-                } else {
-                    player1.velocity.set(0,0,0)
-                }
+                player1.velocity.set(0,0,0)
             }
             player1.broadcast()
         } else if (rotation) {
@@ -338,21 +333,21 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     function velocityToPositionDelta(delta, inputDirection, cameraDirection) {
-        if (player1.velocity.length() != 0) {
-            if (activeRopeArrow!=null && activeRopeArrow.stopped) {
-                if (inputDirection.length() != 0) {
-                    var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                    player1.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
-                }
-                var arrowToPlayer = activeRopeArrow.position.clone().sub(player1.getPosition())
-                player1.velocity.add(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
-                if (player1.velocity.angleTo(arrowToPlayer) > Math.PI/2) {
-                    player1.velocity.projectOnPlane(arrowToPlayer.clone().normalize())
-                }
-                if (!sounds.grappleReel.isPlaying) {
-                    sounds.grappleReel.play()
-                }
+        if (activeRopeArrow!=null && activeRopeArrow.stopped) {
+            if (inputDirection.length() != 0) {
+                var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+                player1.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
             }
+            var arrowToPlayer = activeRopeArrow.position.clone().sub(player1.getPosition())
+            player1.velocity.add(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
+            if (player1.velocity.angleTo(arrowToPlayer) > Math.PI/2) {
+                player1.velocity.projectOnPlane(arrowToPlayer.clone().normalize())
+            }
+            if (!sounds.grappleReel.isPlaying) {
+                sounds.grappleReel.play()
+            }
+        }
+        if (player1.velocity.length() != 0) {
             return player1.velocity.clone().multiplyScalar(delta)
         }
     }
