@@ -137,6 +137,13 @@ canvas {
     margin: 1pt 0 1pt 2pt;
 }
 
+#chat svg {
+    height: 12pt;
+    position: fixed;
+    bottom: 0;
+    fill: aliceblue;
+}
+
 .playing #chat {
     width: 120pt;
     height: 100pt;
