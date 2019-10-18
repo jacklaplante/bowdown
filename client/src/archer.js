@@ -1,5 +1,7 @@
 import {LoopOnce} from 'three'
 
+import {scene} from './scene'
+
 function getAnimation(archer, name){
     var result;
     archer.gltf.animations.forEach((animation) => {
@@ -28,6 +30,12 @@ function init(mixer, archer) {
         death: mixer.clipAction(getAnimation(archer, "death")).setLoop(LoopOnce)
     }
     archer.anim.drawBow.clampWhenFinished = true
+
+    mixer.addEventListener('finished', (event) => {
+        if (event.action.getClip().name == "death") {
+            scene.remove(archer.gltf.scene)
+        }
+    })
 
     // BOW STATES:
     // unequipped
