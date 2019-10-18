@@ -18,6 +18,8 @@ const wss = new WebSocket.Server({ server });
 
 var players = {}
 
+var kingOfCrownMode = true
+
 wss.on('connection', function connection(ws, req) {
     ws.isAlive = true;
     ws.on('pong', heartbeat);
@@ -44,11 +46,17 @@ wss.on('connection', function connection(ws, req) {
             if (!ws.player) {
                 ws.player = player
             }
+            if (kingOfCrownMode && Object.keys(players).length == 1 && !players[player].kingOfCrown) {
+                setKingOfCrown(player)
+            }
             if (message.position) {
                 players[player].position = message.position
             }
             if (message.race) {
                 players[player].race = message.race
+            }
+            if (message.rotation) {
+                players[player].rotation = message.rotation
             }
             if (message.damage) {
                 players[player].hp -= message.damage
@@ -68,16 +76,33 @@ wss.on('connection', function connection(ws, req) {
           });
     });
     ws.on('close', function onClose(code, req){
-        var player = this.player
-        console.log("player "+player+" disconnected");
-        delete players[this.player];
+        var playerUuid = this.player
+        console.log("player "+playerUuid+" disconnected");
+        var player = players[playerUuid]
+        delete players[playerUuid];
+        var newKing
+        if (player.kingOfCrown && Object.keys(players).length > 0) {
+            setKingOfCrown(Object.keys(players)[0])
+        }
         wss.clients.forEach(function each(client) {
-            sendMessage(client, {player: player,
-            status: 'disconnected'})
+            sendMessage(client, {
+                player: playerUuid,
+                status: 'disconnected'
+            })
         })
     })
     // ws.send('something');
 });
+
+function setKingOfCrown(playerUuid) {
+    players[playerUuid].kingOfCrown = true
+    console.log(playerUuid + " is the new king!")
+    wss.clients.forEach(function each(client) {
+        sendMessage(client, {
+            newKing: playerUuid
+        })
+    })
+}
 
 wss.on('listening', _ => 
     console.log("ws server is up and listening")

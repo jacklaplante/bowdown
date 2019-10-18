@@ -40,10 +40,13 @@ ws.onmessage = function onMessage(message) {
                 // player disconnected, remove
                 scene.remove(players.get(player).gltf.scene)
                 delete players.get(player)
+                if (message.newKing == player1.uuid) {
+                    player1.kingOfCrown == true
+                }
             } else if (!players.get(player)) {
                 players.add(player, message.position, message.race, message.rotation)
             } else if (players.get(player).gltf && message.position && message.rotation!=null) {
-                players.move(player, message.position, message.rotation)
+                players.move(player, message.position, message.rotation, message.kingOfCrown)
             } else if (players.get(player).gltf && message.playAction) {
                 players.playAction(player, message.playAction)
             } else if (players.get(player).gltf && message.stopAction) {
@@ -56,6 +59,8 @@ ws.onmessage = function onMessage(message) {
         } else {
             addOtherPlayerArrow(message.arrow)   
         }
+    } else if (message.newKing == player1.uuid) {
+        player1.kingOfCrown = true
     }
 }
 

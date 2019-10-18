@@ -1,10 +1,10 @@
-import {AnimationMixer, Vector3, Mesh, BoxGeometry, Euler} from 'three'
+import {AnimationMixer, Mesh, BoxGeometry, Euler, Geometry, LineBasicMaterial, Line, Vector3} from 'three'
 
 import {loader} from './loader'
 import {scene} from './scene'
 import {init} from './archer'
 import {sendMessage} from './websocket';
-const models = require.context('../models/');
+import {updateCrown} from './kingOfCrown'
 
 var players = {};
 var roster = {}
@@ -50,14 +50,17 @@ players.init = function(newPlayers) {
         (playerUuid) => {
             players.add(playerUuid,
                 newPlayers[playerUuid].position,
-                newPlayers[playerUuid].race);
+                newPlayers[playerUuid].race,
+                newPlayers[playerUuid].rotation);
         })
 }
 
-players.move = function(playerUuid, pos, rotation) {
+players.move = function(playerUuid, pos, rotation, kingOfCrown) {
     var player = roster[playerUuid]
     player.gltf.scene.position.copy(pos)
     player.gltf.scene.rotation.copy(rotation)
+    player.kingOfCrown = kingOfCrown
+    updateCrown(player)
 }
 
 players.playAction = function(playerUuid, action) {

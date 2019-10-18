@@ -1,4 +1,4 @@
-import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler, PositionalAudio, AudioLoader} from 'three'
+import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler, PositionalAudio, AudioLoader, Geometry, LineBasicMaterial, Line} from 'three'
 
 import {loader} from './loader'
 import {uuid, removeCollisionLines} from './utils'
@@ -9,6 +9,7 @@ import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
 import {loadAudio} from './audio'
+import {updateCrown} from './kingOfCrown'
 
 import audioBowShot from '../audio/effects/Bow Shot.mp3'
 import audioBowDraw from '../audio/effects/Bow Draw.mp3'
@@ -147,7 +148,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 player: player1.uuid,
                 position: player1.getPosition(),
                 rotation: player1.getRotation(),
-                bowState: player1.bowState
+                bowState: player1.bowState,
+                kingOfCrown: player1.kingOfCrown
             }
         )
     }
@@ -314,6 +316,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         updateRotation(nextPos, rotation)
         player1.setPosition(nextPos)
         camera.updateCamera()
+        updateCrown(player1)
     }
 
     function updateRotation(nextPos, rotation) {
