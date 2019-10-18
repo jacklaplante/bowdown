@@ -59,8 +59,12 @@ ws.onmessage = function onMessage(message) {
         } else {
             addOtherPlayerArrow(message.arrow)   
         }
-    } else if (message.newKing == player1.uuid) {
-        player1.kingOfCrown = true
+    } else if (message.newKing) {
+        if (message.newKing == player1.uuid) {
+            player1.kingOfCrown = true
+        } else {
+            player1.kingOfCrown = false
+        }
     }
 }
 

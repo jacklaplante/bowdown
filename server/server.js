@@ -66,6 +66,9 @@ wss.on('connection', function connection(ws, req) {
                         player: ws.player,
                         kills: players[ws.player].kills
                     });
+                    if (players[player].kingOfCrown) {
+                        setKingOfCrown(ws.player)
+                    }
                 }
             }
         }
@@ -80,7 +83,6 @@ wss.on('connection', function connection(ws, req) {
         console.log("player "+playerUuid+" disconnected");
         var player = players[playerUuid]
         delete players[playerUuid];
-        var newKing
         if (player.kingOfCrown && Object.keys(players).length > 0) {
             setKingOfCrown(Object.keys(players)[0])
         }
