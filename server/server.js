@@ -1,11 +1,16 @@
 const fs = require('fs');
 const WebSocket = require('ws');
+const https = require('https');
 
 let maxCount = 0;
 
-var server
-if ( process.argv[2] == 'prod' ) {
-    server = require('https').createServer({
+const prod = process.argv[2] == 'prod'
+var server, serverId, serverIp
+if (prod) {
+    if (process.argv.length < 5) throw "INCLUDE SERVERID AND SERVER IP"
+    serverId = process.argv[3]
+    serverIp = process.argv[4]
+    server = https.createServer({
         port: 18181,
         cert: fs.readFileSync('./certs/cert.pem'),
         key: fs.readFileSync('./certs/privkey.pem')
@@ -35,6 +40,7 @@ wss.on('connection', function connection(ws, req) {
                     kills: 0
                 }
                 var playerCount = Object.keys(players).length;
+                updatePlayerCount(playerCount)
                 if (playerCount > maxCount) { // this will kepp track of the maximum amount of players the server has
                     maxCount = playerCount
                     var now = new Date();
@@ -84,6 +90,7 @@ wss.on('connection', function connection(ws, req) {
         console.log("player "+playerUuid+" disconnected");
         var player = players[playerUuid]
         delete players[playerUuid];
+        updatePlayerCount(Object.keys(players).length)
         if (player && player.kingOfCrown) {
             if(Object.keys(players).length > 1) {
                 setKingOfCrown(Object.keys(players)[0])
@@ -141,3 +148,23 @@ function heartbeat() {
     this.isAlive = true;
 }
 
+const options = {
+    hostname: "rvcv9mh5l1.execute-api.us-east-1.amazonaws.com",
+    path: "/test/pets",
+    method: "POST"
+}
+function updatePlayerCount(count) {
+    if (prod) {
+        console.log("updating player count to " + count)
+        var request = https.request(options)
+        request.on('error', (error) => {
+            console.error(error)
+        })
+        request.write(JSON.stringify({
+            serverId: serverId,
+            serverIp: serverIp,
+            activePlayers: count
+        }))
+        request.end();
+    }
+}
