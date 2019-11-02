@@ -20,7 +20,7 @@ var arrowLength = 0.75
 const localOffset = new Vector3(0, 1.5, 0)
 const arrowTypes = {
     normal: {
-        color: 0x00ff00
+        color: 0xffffff
     },
     rope: {
         color: 0xff7b00
