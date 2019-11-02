@@ -19,6 +19,7 @@ const wss = new WebSocket.Server({ server });
 var players = {}
 
 var kingOfCrownMode = true
+var kingOfCrown
 
 wss.on('connection', function connection(ws, req) {
     ws.isAlive = true;
@@ -46,7 +47,7 @@ wss.on('connection', function connection(ws, req) {
             if (!ws.player) {
                 ws.player = player
             }
-            if (kingOfCrownMode && Object.keys(players).length == 1 && !players[player].kingOfCrown) {
+            if (kingOfCrownMode && Object.keys(players).length == 2 && kingOfCrown == null && !players[player].kingOfCrown) {
                 setKingOfCrown(player)
             }
             if (message.position) {
@@ -83,8 +84,12 @@ wss.on('connection', function connection(ws, req) {
         console.log("player "+playerUuid+" disconnected");
         var player = players[playerUuid]
         delete players[playerUuid];
-        if (player.kingOfCrown && Object.keys(players).length > 0) {
-            setKingOfCrown(Object.keys(players)[0])
+        if (player.kingOfCrown) {
+            if(Object.keys(players).length > 0) {
+                setKingOfCrown(Object.keys(players)[0])
+            } else {
+                kingOfCrown = null
+            }
         }
         wss.clients.forEach(function each(client) {
             sendMessage(client, {
@@ -97,6 +102,7 @@ wss.on('connection', function connection(ws, req) {
 });
 
 function setKingOfCrown(playerUuid) {
+    kingOfCrown = playerUuid
     players[playerUuid].kingOfCrown = true
     console.log(playerUuid + " is the new king!")
     wss.clients.forEach(function each(client) {
