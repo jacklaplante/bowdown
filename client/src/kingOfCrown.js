@@ -19,7 +19,7 @@ function updateCrown(player) {
         var pos = player.gltf.scene.position.clone()
         var lineGeometry = new Geometry();
         var lineMaterial = new LineBasicMaterial({color: 0xff5900, linewidth: 20});
-        lineGeometry.vertices.push(new Vector3(), pos.clone().multiplyScalar(500));
+        lineGeometry.vertices.push(pos.clone().add(pos.clone().normalize().multiplyScalar(2)), pos.clone().multiplyScalar(500));
         var line = new Line(lineGeometry, lineMaterial)
         scene.add(line)
         kingOfCrownLine = line
