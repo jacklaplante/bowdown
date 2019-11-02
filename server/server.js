@@ -85,7 +85,7 @@ wss.on('connection', function connection(ws, req) {
         var player = players[playerUuid]
         delete players[playerUuid];
         if (player.kingOfCrown) {
-            if(Object.keys(players).length > 0) {
+            if(Object.keys(players).length > 1) {
                 setKingOfCrown(Object.keys(players)[0])
             } else {
                 kingOfCrown = null
