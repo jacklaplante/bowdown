@@ -84,7 +84,7 @@ wss.on('connection', function connection(ws, req) {
         console.log("player "+playerUuid+" disconnected");
         var player = players[playerUuid]
         delete players[playerUuid];
-        if (player.kingOfCrown) {
+        if (player && player.kingOfCrown) {
             if(Object.keys(players).length > 1) {
                 setKingOfCrown(Object.keys(players)[0])
             } else {

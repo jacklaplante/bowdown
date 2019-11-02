@@ -1,4 +1,4 @@
-import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, PositionalAudio, AudioLoader} from 'three'
+import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, TextureLoader, SpriteMaterial, Sprite} from 'three'
 
 import {scene, collidableEnvironment} from './scene'
 import {playerHitBoxes, killPlayer} from './players'
@@ -11,6 +11,7 @@ import {loadAudio} from './audio'
 import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
 import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
 import grappleHitAudio from '../audio/effects/Grapple Hit.mp3'
+import spriteMap from '../sprites/circle.png'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
@@ -26,7 +27,8 @@ const arrowTypes = {
     }
 }
 
-var audioLoader = new AudioLoader();
+var textureLoader = new TextureLoader();
+var spriteTexture = textureLoader.load(spriteMap);
 var sounds = {}
 sounds.arrowHitGround = loadAudio(arrowHitGroundAudio)
 sounds.arrowHitPlayer = loadAudio(arrowHitPlayerAudio)
@@ -47,10 +49,9 @@ function createArrow(origin, rotation, type){
     arrow.origin = origin
     arrow.position.copy(origin)
     arrow.rotation.copy(rotation)
-    scene.add(arrow);
-
     arrow.type = type
 
+    scene.add(arrow);
     return arrow
 }
 
@@ -87,6 +88,11 @@ function shootArrow(type){
             timeOfShoot: Date.now()
         }
     })
+
+    var spriteMaterial = new SpriteMaterial({map: spriteTexture, color: 0xffffff});
+    var sprite = new Sprite(spriteMaterial);
+    sprite.name = "sprite"
+    arrow.add(sprite);
 
     return arrow
 }
@@ -134,7 +140,7 @@ function animateArrows(delta) {
                 var collision = collisions.pop()
                 arrow.position.copy(collision.point)
                 sounds.arrowHitPlayer.play()
-                arrow.stopped = true
+                stopPlayer1Arrow(arrow)
                 killPlayer(collision.object.playerUuid)
             }
             // detect collisions with the environment
@@ -146,7 +152,7 @@ function animateArrows(delta) {
                 } else {
                     sounds.arrowHitGround.play()
                 }
-                arrow.stopped = true
+                stopPlayer1Arrow(arrow)
                 sendMessage({
                     arrow: {
                         stopped: true,
@@ -162,6 +168,11 @@ function animateArrows(delta) {
             moveArrow(otherPlayerArrows[arrowUuid], delta)   
         }
     })
+}
+
+function stopPlayer1Arrow(arrow) {
+    arrow.stopped = true
+    arrow.remove(arrow.getChildByName("sprite"))
 }
 
 function retractRopeArrow() {
