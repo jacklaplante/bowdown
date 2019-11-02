@@ -39,7 +39,7 @@ ws.onmessage = function onMessage(message) {
             if (message.status==='disconnected') {
                 // player disconnected, remove
                 scene.remove(players.get(player).gltf.scene)
-                delete players.get(player)
+                players.remove(player)
             } else if (!players.get(player)) {
                 players.add(player, message.position, message.race, message.rotation)
             } else if (players.get(player).gltf && message.position && message.rotation!=null) {

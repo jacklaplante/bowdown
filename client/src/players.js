@@ -45,6 +45,10 @@ players.add = function(uuid, position, race, rotation) {
     });
 }
 
+players.remove = function(uuid) {
+    delete roster[uuid]
+}
+
 players.init = function(newPlayers) {
     Object.keys(newPlayers).forEach(
         (playerUuid) => {
