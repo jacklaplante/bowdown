@@ -22,7 +22,7 @@ var player1 = {uuid: uuid()}
 const movementSpeed = 7
 const sprintModifier = 1.3
 const velocityInfluenceModifier = 15
-const spawnPoint = new Vector3(230,150,80).multiplyScalar(0.75)
+const spawnPoint = new Vector3(10,250,0).multiplyScalar(0.75)
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)

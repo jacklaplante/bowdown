@@ -23,16 +23,26 @@ var cameraTarget = new Vector3();
 var theta = 0
 var phi = 0
 
+var onTop = 1 // for some reason, without this things get real fucky when the player is on the south pole
+function updateOnTop() { // this is essentially a hack, and it's not even a good one
+    if (cameraTarget.y < -20 ) {
+        onTop = -1
+    } else if (cameraTarget.y > 20) {
+        onTop = 1
+    }
+}
+
 camera.nextPosition = function(dist) {
     if (player1!=null) {
+        updateOnTop()
         var nextPos = new Vector3();
         nextPos.x = dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-        nextPos.y = dist * Math.sin(phi * Math.PI / 360);
-        nextPos.z = dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+        nextPos.y = onTop * dist * Math.sin(phi * Math.PI / 360);
+        nextPos.z = onTop * dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
         return cameraTarget.clone().add(
-            nextPos.applyQuaternion(
+            nextPos.applyQuaternion( // the crux of the camera issues (where it used to get fucky at the south pole) lies here. TODO: investigate further
                 new Quaternion().setFromUnitVectors(
-                    new Vector3(0,1,0), cameraTarget.clone().normalize())))
+                    new Vector3(0, onTop, 0), cameraTarget.clone().normalize())))
     }
 }
 
@@ -91,7 +101,7 @@ camera.updateCamera = function() {
         var nextPos = camera.nextPosition(distance)
 
         // this ensures the camera doesn't go behind any meshes
-        var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0, distance);
+        var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0.1, distance);
         var collisions = ray.intersectObjects(collidableEnvironment, true);
         if(collisions.length>0){
             // this is just some voodoo
