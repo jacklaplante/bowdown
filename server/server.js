@@ -5,11 +5,12 @@ const https = require('https');
 let maxCount = 0;
 
 const prod = process.argv[2] == 'prod'
-var server, serverId, serverIp
+var server, serverId, serverIp, apiKey
 if (prod) {
-    if (process.argv.length < 5) throw "INCLUDE SERVERID AND SERVER IP"
+    if (process.argv.length < 6) throw "INCLUDE SERVER ID, SERVER IP, and API KEY"
     serverId = process.argv[3]
     serverIp = process.argv[4]
+    apiKey = process.argv[5]
     server = https.createServer({
         port: 18181,
         cert: fs.readFileSync('./certs/cert.pem'),
@@ -151,7 +152,11 @@ function heartbeat() {
 const options = {
     hostname: "rvcv9mh5l1.execute-api.us-east-1.amazonaws.com",
     path: "/test/pets",
-    method: "POST"
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey
+    }
 }
 function updatePlayerCount(count) {
     if (prod) {

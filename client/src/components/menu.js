@@ -33,7 +33,6 @@ class Menu extends React.Component {
     const game = await import(/* webpackChunkName: "game" */ '../src/game')
     document.body.classList.remove("loading")
     document.body.classList.add("ready")
-    var startButton = document.querySelector("#play.button")
     this.setState({
       readyToRock: true,
       startGame: function() {

@@ -53,7 +53,7 @@ var Menu = function (_React$Component) {
     key: 'componentDidMount',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
-        var game, startButton;
+        var game;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -66,8 +66,6 @@ var Menu = function (_React$Component) {
 
                 document.body.classList.remove("loading");
                 document.body.classList.add("ready");
-                startButton = document.querySelector("#play.button");
-
                 this.setState({
                   readyToRock: true,
                   startGame: function startGame() {
@@ -79,7 +77,7 @@ var Menu = function (_React$Component) {
                   }
                 });
 
-              case 7:
+              case 6:
               case 'end':
                 return _context.stop();
             }
