@@ -1,26 +1,32 @@
-import { Vector3, Clock } from 'three'
+import {Clock} from 'three'
 
-import { players } from './players'
 import player1 from './player1'
+import { players } from './players'
 import { scene } from './scene'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount } from './game'
 
-var serverAddress
+var defaultServerAddress
 var recordingBot = false
 var log
 if (process.env.NODE_ENV == 'production') {
-    serverAddress = 'wss://ws.bowdown.io:18181'
+    defaultServerAddress = 'wss://ws.bowdown.io:18181'
 } else {
-    serverAddress = 'ws://localhost:18181'
+    defaultServerAddress = 'ws://localhost:18181'
 }
 
-const ws = new WebSocket(serverAddress);
-
 var clock = new Clock()
+var ws;
+function connectToServer(serverAddress) {
+    if (ws && (ws.readyState == 0 || ws.readyState == 1)) {
+        ws.close();
+    }
+    ws = new WebSocket(serverAddress);
+    ws.onmessage = onMessage;
+}
 
-ws.onmessage = function onMessage(message) {
+function onMessage(message) {
     var message = JSON.parse(message.data)
     if (message.players) {
         players.init(message.players);
@@ -86,4 +92,6 @@ function sendMessage(message) {
     }
 }
 
-export { ws, sendMessage, recordBot }
+connectToServer(defaultServerAddress)
+
+export {sendMessage, recordBot, connectToServer}

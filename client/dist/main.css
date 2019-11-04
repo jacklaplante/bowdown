@@ -179,10 +179,37 @@ canvas {
     font-size: 16pt;
 }
 
-ul {
+ul, #server-list .server {
     font-family: monospace;
+    height: 27pt;
 }
 
 #controls {
     font-size: 10pt;
+}
+
+#server-list {
+    font-size: 16pt;
+}
+
+#server-list .name {
+    display: inline-block;
+    width: 15vw;
+}
+
+#server-list .activePlayers {
+    display: inline;
+}
+
+#server-list .join {
+    float: right;
+    font-family: 'Rubik Mono One', sans-serif;
+    border-radius: 13pt;
+    border: 2pt solid #ffdba5;
+    padding: 4pt;
+}
+
+#server-list-header div {
+    width: 15vw;
+    display: inline-block;
 }

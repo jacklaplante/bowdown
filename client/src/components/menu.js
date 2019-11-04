@@ -39,7 +39,9 @@ class Menu extends React.Component {
         if (typeof document.body.requestPointerLock == "function") {
           document.body.requestPointerLock();
         }
-        document.getElementsByTagName("audio")[0].pause()
+        if (document.getElementsByTagName("audio").length > 0) {
+          document.getElementsByTagName("audio")[0].pause()
+        }
         game.start();
       }
     })
@@ -59,7 +61,7 @@ class Menu extends React.Component {
       );
     } else if (this.state.page == "servers") {
       return (
-        <Servers mainMenu={this.mainPage} />
+        <Servers mainMenu={this.mainPage} startGame={this.state.startGame} />
       )
     } else if (this.state.page == "controls") {
       return (

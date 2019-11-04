@@ -8,22 +8,115 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 import React from 'react';
 
+import { connectToServer } from '../src/websocket';
+
+var https = require('https');
+
 var Servers = function (_React$Component) {
   _inherits(Servers, _React$Component);
 
-  function Servers() {
+  function Servers(props) {
     _classCallCheck(this, Servers);
 
-    return _possibleConstructorReturn(this, (Servers.__proto__ || Object.getPrototypeOf(Servers)).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, (Servers.__proto__ || Object.getPrototypeOf(Servers)).call(this, props));
+
+    _this.state = { servers: [] };
+    _this.startOnServer = _this.startOnServer.bind(_this);
+    return _this;
   }
 
   _createClass(Servers, [{
-    key: "render",
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      var _this2 = this;
+
+      https.get('https://rvcv9mh5l1.execute-api.us-east-1.amazonaws.com/test/pets', function (res) {
+        res.on('data', function (d) {
+          var response = JSON.parse(d);
+          if (response.Items) {
+            _this2.setState({ servers: response.Items });
+          }
+        });
+      }).on('error', function (e) {
+        console.error(e);
+      });
+    }
+  }, {
+    key: 'startOnServer',
+    value: function startOnServer(event) {
+      connectToServer(event.target.id);
+      this.props.startGame();
+    }
+  }, {
+    key: 'render',
     value: function render() {
+      var _this3 = this;
+
+      var servers = [];
+      this.state.servers.forEach(function (server) {
+        if (server.serverId && server.serverId.S && server.activePlayers && server.activePlayers.S && server.serverIp && server.serverIp.S) {
+          servers.push(React.createElement(
+            'div',
+            { className: 'server', key: server.serverId.S },
+            React.createElement(
+              'div',
+              { className: 'name' },
+              server.serverId.S
+            ),
+            React.createElement(
+              'div',
+              { className: 'activePlayers' },
+              server.activePlayers.S
+            ),
+            React.createElement(
+              'div',
+              { className: 'join', onClick: _this3.startOnServer, id: server.serverIp.S },
+              'Join'
+            )
+          ));
+        } else {
+          console.error("error parsing the server listing response");
+        }
+      });
+
+      var serverList;
+      if (servers.length > 0) {
+        serverList = React.createElement(
+          'div',
+          { id: 'server-list' },
+          React.createElement(
+            'div',
+            { id: 'server-list-header' },
+            React.createElement(
+              'div',
+              null,
+              'Name'
+            ),
+            React.createElement(
+              'div',
+              { id: 'player-count' },
+              'Players'
+            )
+          ),
+          servers
+        );
+      } else {
+        serverList = React.createElement(
+          'div',
+          null,
+          'loading'
+        );
+      }
+
       return React.createElement(
-        "div",
-        { className: "button", onClick: this.props.mainMenu },
-        "back"
+        'div',
+        { className: 'centered' },
+        serverList,
+        React.createElement(
+          'div',
+          { className: 'button', onClick: this.props.mainMenu },
+          'back'
+        )
       );
     }
   }]);
