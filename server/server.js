@@ -13,8 +13,8 @@ if (prod) {
     apiKey = process.argv[5]
     server = https.createServer({
         port: 18181,
-        cert: fs.readFileSync('./certs/cert.pem'),
-        key: fs.readFileSync('./certs/privkey.pem')
+        cert: fs.readFileSync('./certs/' + serverId + '/cert.pem'),
+        key: fs.readFileSync('./certs/' + serverId + '/privkey.pem')
     });
 } else {
     server = require('http').createServer();
