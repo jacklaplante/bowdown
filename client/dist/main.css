@@ -207,6 +207,7 @@ ul, #server-list .server {
     border-radius: 13pt;
     border: 2pt solid #ffdba5;
     padding: 4pt;
+    float:;
 }
 
 #server-list-header div {
