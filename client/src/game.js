@@ -100,7 +100,13 @@ function onKeyDown(event) {
         document.getElementById("chat").classList.remove("chatting")
     }
     if (event.key == 'r') {
-        recordBot()
+        var style = ""
+        if (recordBot()) { // recordBot() starts recording the bot if not in production mode
+            style = "color: red"
+        }
+        if (process.env.NODE_ENV == 'development') {
+            document.getElementById("fps").setAttribute("style", style)
+        }
     }
     toggleKey(event, true);
 }

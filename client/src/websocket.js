@@ -79,6 +79,7 @@ function recordBot() {
         recordingBot = false
         console.log(JSON.stringify(log))
     }
+    return recordingBot
 }
 
 function sendMessage(message) {
