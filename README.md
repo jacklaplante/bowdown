@@ -14,6 +14,10 @@ also here's the command to run bots
 ```
 cd tools
 node runBot.js bots/bot1.json bots/bot2.json
+
+or run all bots with:
+
+node runBot.js all
 ```
 
 and to record a new bot: start recording with 'R', then stop with 'R' again. Then look at the console to copy/paste the bot into a new json file

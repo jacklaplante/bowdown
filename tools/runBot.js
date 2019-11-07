@@ -6,8 +6,16 @@ if (process.argv.length < 3) throw "must specify which bot in tools/bots/ to run
 const serverAddress = 'ws://localhost:18181'
 const ws = new WebSocket(serverAddress);
 
+var botFiles
+if (process.argv[2] == "all") {
+  botFiles = fs.readdirSync("bots")
+  for (var i=0; i< botFiles.length; i++) {
+    botFiles[i] = "bots/" + botFiles[i]
+  }
+} else {
+  botFiles = process.argv.slice(2, process.argv.length) 
+}
 var bots = []
-var botFiles = process.argv.slice(2, process.argv.length)
 botFiles.forEach((file) => {
   if (!fs.existsSync(file)) throw "bot file " + file + " does not exist!"
   bots.push(JSON.parse(fs.readFileSync(file)))
