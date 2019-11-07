@@ -22,7 +22,6 @@ var player1 = {uuid: uuid()}
 const movementSpeed = 7
 const sprintModifier = 1.3
 const velocityInfluenceModifier = 15
-const spawnPoint = new Vector3(10,250,0).multiplyScalar(0.75)
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -378,7 +377,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
-        player1.setPosition(spawnPoint)
+        player1.setPosition(randomSpawn())
     }
 
     player1.sendChat = function(message) {
@@ -452,7 +451,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
     }
 
-    player1.setPosition(spawnPoint)
+    player1.setPosition(randomSpawn())
     player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
     scene.add( player1.gltf.scene );
     // say hi to server
@@ -464,5 +463,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.equipBow()
     player1.idle()
 });
+
+function randomSpawn() {
+    return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(140)
+}
 
 export default player1
