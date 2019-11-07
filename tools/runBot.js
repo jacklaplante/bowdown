@@ -2,24 +2,31 @@ const fs = require('fs');
 const WebSocket = require('ws');
 
 if (process.argv.length < 3) throw "must specify which bot in tools/bots/ to run"
-if (!fs.existsSync(process.argv[2])) throw "bot " + process.argv[2] + " does not exist!"
 
 const serverAddress = 'ws://localhost:18181'
 const ws = new WebSocket(serverAddress);
 
-var actions = JSON.parse(fs.readFileSync(process.argv[2]));
+var bots = []
+var botFiles = process.argv.slice(2, process.argv.length)
+botFiles.forEach((file) => {
+  if (!fs.existsSync(file)) throw "bot file " + file + " does not exist!"
+  bots.push(JSON.parse(fs.readFileSync(file)))
+})
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-ws.on('open', async function(wss) {
+async function runBot(actions) {
+  console.log("running bot")
   var action
   for (let i = 0; i < actions.length; i++) {
     action = actions[i]
     await sleep(action.elapsedTime * 1000)
     ws.send(JSON.stringify(action.message))
   }
-})
+}
 
-console.log("attempting to run bot: " + process.argv[2]);
+ws.on('open', async function(wss) {
+  bots.forEach((bot) => runBot(bot))
+})
