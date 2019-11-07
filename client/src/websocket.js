@@ -84,7 +84,10 @@ function recordBot() {
 function sendMessage(message) {
     if (ws.readyState == 1) {
         if (recordingBot) {
-            log[Math.round(clock.getElapsedTime()*100)] = message
+            log.push({
+                elapsedTime: clock.getDelta(),
+                message: message
+            })
         }
         ws.send(JSON.stringify(message))
     } else {

@@ -9,14 +9,17 @@ const ws = new WebSocket(serverAddress);
 
 var actions = JSON.parse(fs.readFileSync(process.argv[2]));
 
-ws.on('open', (wss) => {
-  var i = 0
-  setInterval(() => {
-    if (actions[i]) {
-      ws.send(JSON.stringify(actions[i])) 
-    }
-    i++
-  }, 100)
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+ws.on('open', async function(wss) {
+  var action
+  for (let i = 0; i < actions.length; i++) {
+    action = actions[i]
+    await sleep(action.elapsedTime * 1000)
+    ws.send(JSON.stringify(action.message))
+  }
 })
 
 console.log("attempting to run bot: " + process.argv[2]);
