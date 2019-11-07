@@ -24,6 +24,7 @@ async function runBot(actions) {
     action = actions[i]
     await sleep(action.elapsedTime * 1000)
     ws.send(JSON.stringify(action.message))
+    if (i == actions.length-1) i = 0 // loop forever
   }
 }
 
