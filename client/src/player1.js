@@ -23,6 +23,7 @@ const movementSpeed = 7
 const sprintModifier = 1.3
 const velocityInfluenceModifier = 30
 const inputInfluenceVelocityModifier = 5
+const gravityAcceleration = 10
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -270,11 +271,11 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                 }
             }
-        } else {
+        } else if (scene.loaded) {
+            var grav = gravityAcceleration
             // if the player is falling
-            var gravityAcceleration = 10 // this should be a constant
             if (player1.doubleJumped && player1.isFiring()) {
-                gravityAcceleration = 5
+                grav *= 0.5 //slow fall
             }
             player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(gravityAcceleration*delta))
         }
