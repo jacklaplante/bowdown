@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Bowdown bot runner</title>
+<body>
+<input type="file" id="files" name="files[]" multiple />
+<button id="run">Run bots</button>
+<output id="list"></output>
+
+<script>
+
+  const serverAddress = 'wss://ws.bowdown.io:18181'
+  const ws = new WebSocket(serverAddress);
+
+  var files
+  function handleFileSelect(evt) {
+    files = evt.target.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function runBot(actions) {
+    console.log("running bot")
+    var action
+    for (let i = 0; i < actions.length; i++) {
+      action = actions[i]
+      await sleep(action.elapsedTime * 1000)
+      ws.send(JSON.stringify(action.message))
+      if (i == actions.length-1) i = 0 // loop forever
+    }
+  }
+
+  function runBots() {
+    for (var i = 0, f; f = files[i]; i++) {
+      var reader = new FileReader();
+      reader.onload = (function (theFile) {
+        return function (e) {
+          console.log('e readAsText = ', e);
+          console.log('e readAsText target = ', e.target);
+          try {
+            json = JSON.parse(e.target.result);
+            runBot(json)
+          } catch (ex) {
+            alert('ex when trying to parse json = ' + ex);
+          }
+        }
+      })(f);
+      reader.readAsText(f);
+    }
+  }
+
+  document.getElementById('run').addEventListener('click', runBots, false);
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+</script>
+</body>
