@@ -74,7 +74,7 @@ wss.on('connection', function connection(ws, req) {
                         player: ws.player,
                         kills: players[ws.player].kills
                     });
-                    if (players[player].kingOfCrown) {
+                    if (kingOfCrownMode && players[player].kingOfCrown) {
                         setKingOfCrown(ws.player)
                     }
                 }
@@ -92,7 +92,7 @@ wss.on('connection', function connection(ws, req) {
         var player = players[playerUuid]
         delete players[playerUuid];
         updatePlayerCount(Object.keys(players).length)
-        if (player && player.kingOfCrown) {
+        if (player && player.kingOfCrown && kingOfCrownMode) {
             if(Object.keys(players).length > 1) {
                 setKingOfCrown(Object.keys(players)[0])
             } else {
