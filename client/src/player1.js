@@ -21,7 +21,8 @@ const models = require.context('../models/');
 var player1 = {uuid: uuid()}
 const movementSpeed = 7
 const sprintModifier = 1.3
-const velocityInfluenceModifier = 15
+const velocityInfluenceModifier = 30
+const inputInfluenceVelocityModifier = 5
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -338,7 +339,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (activeRopeArrow!=null && activeRopeArrow.stopped) {
             if (inputDirection.length() != 0) {
                 var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                player1.velocity.add(velocityInfluence.multiplyScalar(velocityInfluenceModifier*delta))
+                player1.velocity.add(velocityInfluence.multiplyScalar(inputInfluenceVelocityModifier*delta))
             }
             var arrowToPlayer = activeRopeArrow.position.clone().sub(player1.getPosition())
             player1.velocity.add(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))

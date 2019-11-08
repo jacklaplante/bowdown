@@ -74,7 +74,7 @@ function shootArrow(type){
         camera.getWorldDirection(direction)
     }
 
-    arrow.velocity = direction.normalize().multiplyScalar(60)
+    arrow.velocity = direction.normalize().multiplyScalar(getArrowVelocity(type))
     player1Arrows.push(arrow)
 
     sendMessage({
@@ -186,6 +186,13 @@ function retractRopeArrow() {
 
 function getGlobalOffset() {
     return player1.globalVector(localOffset)
+}
+
+function getArrowVelocity(type) {
+    if (type == 'rope') {
+        return 30
+    }
+    return 60
 }
 
 function stopOtherPlayerArrow(stoppedArrow) {
