@@ -1,6 +1,6 @@
 import {Geometry, LineBasicMaterial, Line, OctahedronGeometry, MeshBasicMaterial, Mesh, Vector3} from 'three'
 
-import {scene} from './scene'
+import scene from './scene'
 
 var kingOfCrownLine, kingOfCrownCube
 

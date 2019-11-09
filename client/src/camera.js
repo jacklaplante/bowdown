@@ -1,5 +1,5 @@
 import {PerspectiveCamera, Vector3, Raycaster, Quaternion, AudioListener} from 'three'
-import {collidableEnvironment} from './scene'
+import scene from './scene'
 import player1 from './player1'
 
 var distance = 3.5;
@@ -102,7 +102,7 @@ camera.updateCamera = function() {
 
         // this ensures the camera doesn't go behind any meshes
         var ray = new Raycaster(cameraTarget, nextPos.clone().sub(cameraTarget).normalize(), 0.1, distance);
-        var collisions = ray.intersectObjects(collidableEnvironment, true);
+        var collisions = ray.intersectObjects(scene.getCollidableEnvironment([cameraTarget, nextPos]), true);
         if(collisions.length>0){
             // this is just some voodoo
             nextPos = collisions[0].point.clone().sub(nextPos.clone().sub(collisions[0].point).normalize().multiplyScalar(0.1))

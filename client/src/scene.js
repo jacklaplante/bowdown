@@ -46,6 +46,13 @@ scene.animate = function(delta) {
     skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
 }
 
+scene.getCollidableEnvironment = function(positions) {
+    if (positions) {
+        var test
+    }
+    return collidableEnvironment
+}
+
 function getHemisphereLight() {
     var hemiLight = new HemisphereLight( 0xffffff, 0x9bc9a7 );
     hemiLight.color.setHSL( 0.6, 1, 0.8 );
@@ -73,4 +80,4 @@ function getDirectionalLight() {
     return dirLight;
 }
 
-export { scene, collidableEnvironment }
+export default scene

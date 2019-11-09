@@ -2,7 +2,7 @@ import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler, Position
 
 import {loader} from './loader'
 import {uuid, removeCollisionLines} from './utils'
-import {scene, collidableEnvironment} from './scene'
+import scene from './scene'
 import {camera, cameraTarget} from './camera'
 import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
@@ -24,6 +24,7 @@ const sprintModifier = 1.3
 const velocityInfluenceModifier = 30
 const inputInfluenceVelocityModifier = 5
 const gravityAcceleration = 10
+const godMode = false // don't you fucking dare change this unless you change it back
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -59,7 +60,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             var origin = player1.getPosition().add(player1.velocity.clone().multiplyScalar(delta)).sub(this.globalVector(new Vector3(0, 0.1, 0)));
             var dir = this.globalVector(new Vector3(0, 1, 0));
             var ray = new Raycaster(origin, dir, 0, 0.2 + player1.velocity.length() * delta);
-            var collisionResults = ray.intersectObjects(collidableEnvironment, true);
+            var collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin]), true);
             if ( collisionResults.length > 0) {
                 player1.doubleJumped = false
                 return false
@@ -72,8 +73,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         removeCollisionLines(player1)
         var vect = nextPos.clone().sub(player1.getPosition())
         //check for collisions at hip level
-        var ray = new Raycaster(player1.getPosition().add(this.globalVector(new Vector3(0,1,0))), vect.clone().normalize(), 0, vect.length())
-        var collisionResults = ray.intersectObjects(collidableEnvironment, true)
+        var origin = player1.getPosition().add(this.globalVector(new Vector3(0,1,0)))
+        var ray = new Raycaster(origin, vect.clone().normalize(), 0, vect.length())
+        var collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true)
         if (collisionResults.length > 0) {
             return vect;
         }
@@ -159,7 +161,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (input.keyboard.shift) {
             if (player1.isRunning()) {
                 player1.anim[player1.activeMovement].timeScale = sprintModifier
-            }   
+            }
+            if (godMode) {
+                return movementSpeed*sprintModifier*30
+            }
             return movementSpeed*sprintModifier
         } else {
             if (player1.anim[player1.activeMovement]) {
@@ -234,7 +239,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        if (!falling && scene.loaded) {
+        if (godMode || (!falling && scene.loaded)) {
             if (!activeRopeArrow) {
                 player1.velocity.set(0,0,0)
             }
@@ -247,7 +252,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                 var origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.5, 0))
                 )
                 var slopeRay = new Raycaster(origin, this.globalVector(new Vector3(0, -1, 0)), 0, 1)
-                var top = slopeRay.intersectObjects(collidableEnvironment, true);
+                var top = slopeRay.intersectObjects(scene.getCollidableEnvironment([origin]), true);
                 if (top.length>0){
                     // the 0.01 is kinda hacky tbh
                     nextPos = top[0].point.add(this.globalVector(new Vector3(0, 0.01, 0)))
@@ -271,13 +276,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                 }
             }
-        } else if (scene.loaded) {
+        } else if (!godMode && scene.loaded) {
             var grav = gravityAcceleration
             // if the player is falling
             if (player1.doubleJumped && player1.isFiring()) {
                 grav *= 0.5 //slow fall
             }
-            player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(gravityAcceleration*delta))
+            player1.velocity.sub(player1.getPosition().normalize().multiplyScalar(grav*delta))
         }
         if (player1.isFiring()) {
             rotation = Math.atan2(forwardDirection.x, forwardDirection.y)
@@ -302,7 +307,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
         if (nextPos) {
             var collisionVector = player1.collisionDetected(nextPos)
-            if(!collisionVector) {
+            if(godMode || !collisionVector) {
                 updatePosition(nextPos, rotation)
             } else {
                 player1.velocity.set(0,0,0)
@@ -467,7 +472,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 });
 
 function randomSpawn() {
-    return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(140)
+    return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }
 
 export default player1

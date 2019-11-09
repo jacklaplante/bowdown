@@ -1,6 +1,6 @@
 import {LoopOnce} from 'three'
 
-import {scene} from './scene'
+import scene from './scene'
 
 function getAnimation(archer, name){
     var result;

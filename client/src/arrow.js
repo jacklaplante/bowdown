@@ -1,6 +1,6 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, TextureLoader, SpriteMaterial, Sprite} from 'three'
 
-import {scene, collidableEnvironment} from './scene'
+import scene from './scene'
 import {playerHitBoxes, killPlayer} from './players'
 import player1 from './player1'
 import {camera} from './camera'
@@ -65,7 +65,7 @@ function shootArrow(type){
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
     raycaster.setFromCamera({x: 0, y: 0}, camera) // the {x: 0, y: 0} means the center of the screen; there may eventually be issues with this not actually lining up with the html reticle
-    var collisions = raycaster.intersectObjects(collidableEnvironment.concat(playerHitBoxes), true)
+    var collisions = raycaster.intersectObjects(scene.getCollidableEnvironment().concat(playerHitBoxes), true)
     var direction;
     if (collisions.length > 0) {
         direction = collisions[0].point.sub(origin)
@@ -144,7 +144,7 @@ function animateArrows(delta) {
                 killPlayer(collision.object.playerUuid)
             }
             // detect collisions with the environment
-            collisions = ray.intersectObjects(collidableEnvironment, true)
+            collisions = ray.intersectObjects(scene.getCollidableEnvironment([arrow.origin, arrow.position]), true)
             if (collisions.length > 0) {
                 arrow.position.copy(collisions.pop().point)
                 if (arrow.type=="rope") {

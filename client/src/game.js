@@ -2,7 +2,7 @@ import { Clock } from 'three'
 import Hammer from 'hammerjs'
 
 import player1 from './player1'
-import { scene } from './scene'
+import scene from './scene'
 import { renderer } from './renderer'
 import { camera } from './camera'
 import { animateArrows } from './arrow'

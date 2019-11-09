@@ -2,7 +2,7 @@ import {Clock} from 'three'
 
 import player1 from './player1'
 import { players } from './players'
-import { scene } from './scene'
+import scene from './scene'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount } from './game'
