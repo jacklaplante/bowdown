@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Bowdown bot runner</title>
+<body>
+<input type="file" id="files" name="files[]" multiple />
+<button id="runBots">Run bots</button>
+<button id="runIndexer">Run Spatial Indexer</button>
+<a id="downloadAnchorElem">Download Index</a>
+<output id="list"></output>
+<script src="http://threejs.org/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r92/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+
+  const serverAddress = 'wss://ws.bowdown.io:18181'
+  const ws = new WebSocket(serverAddress);
+
+  var files
+  function handleFileSelect(evt) {
+    files = evt.target.files; // FileList object
+
+    // files is a FileList of File objects. List some properties.
+    var output = [];
+    for (var i = 0, f; f = files[i]; i++) {
+      output.push('<li id=' + f.name + '><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                  f.size, ' bytes, last modified: ',
+                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                  '</li>');
+    }
+    document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+  }
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async function runBot(actions) {
+    console.log("running bot")
+    var action
+    for (let i = 0; i < actions.length; i++) {
+      action = actions[i]
+      await sleep(action.elapsedTime * 1000)
+      ws.send(JSON.stringify(action.message))
+      if (i == actions.length-1) i = 0 // loop forever
+    }
+  }
+
+  function runBots() {
+    for (var i = 0, f; f = files[i]; i++) {
+      var reader = new FileReader();
+      document.getElementById(f.name).setAttribute("style", "color: green")
+      reader.onload = (function (theFile) {
+        return function (e) {
+          console.log('e readAsText = ', e);
+          console.log('e readAsText target = ', e.target);
+          try {
+            json = JSON.parse(e.target.result);
+            runBot(json)
+          } catch (ex) {
+            alert('ex when trying to parse json = ' + ex);
+          }
+        }
+      })(f);
+      reader.readAsText(f);
+    }
+  }
+
+  const colors = ["aqua", "green", "blue", "chartreuse"]
+
+  const indexMod = 5 // if you change this you need to change it on the indexer too
+  function createSpatialIndex() {
+    var reader = new FileReader();
+    var f = files[0]
+    document.getElementById(f.name).setAttribute("style", "color: blue")
+    var scene = new THREE.Scene();
+    var loader = new THREE.GLTFLoader();
+    reader.onload = (function (theFile) {
+      return function (e) {
+        console.log('e readAsText = ', e);
+        console.log('e readAsText target = ', e.target);
+        var spatialIndex = []
+        loader.load(e.target.result, function (gltf) {
+          var mesh = gltf.scene;
+          mesh.position.y -=10
+          scene.add(mesh);
+          for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
+            spatialIndex[x] = []
+            for (var y=0; y < indexMod*2; y++) {
+              spatialIndex[x][y] = []
+              for (var z=0; z < indexMod*2; z++) {
+                var dir = new THREE.Vector3(x-indexMod, y-indexMod, z-indexMod).normalize()
+                var ray = new THREE.Raycaster(new THREE.Vector3(), dir)
+                var collidable = ray.intersectObject(mesh, true)
+                spatialIndex[x][y][z] = collidable
+                document.getElementById(f.name).setAttribute("style", "color: " + colors[Math.floor(Math.random()*colors.length)])
+                console.log("indexed x: " + x + ", y: " + y + ", z: " + z)
+              }
+            }
+          }
+          document.getElementById(f.name).setAttribute("style", "color: green")
+          try {
+            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spatialIndex));
+          } catch (ex) {
+            alert('ex when trying to parse json = ' + ex);
+          }
+          var dlAnchorElem = document.getElementById('downloadAnchorElem');
+          dlAnchorElem.setAttribute("href",     dataStr     );
+          dlAnchorElem.setAttribute("download", "scene.json");
+        })
+      }
+    })(f);
+    reader.readAsDataURL(f)
+  }
+
+  document.getElementById('runBots').addEventListener('click', runBots, false);
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+  document.getElementById('runIndexer').addEventListener('click', createSpatialIndex, false);
+</script>
+</body>

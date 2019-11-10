@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Euler, Quaternion, Vector3 } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, Raycaster } from 'three'
 
 import { loader } from './loader'
 import env from '../models/lowild.glb'
@@ -11,12 +11,27 @@ import heather_lf from '../skybox/yellowcloud_lf.jpg'
 
 var scene = new Scene();
 scene.loaded = false
+var spatialIndex = []
 var collidableEnvironment = []
+const indexMod = 5 // if you change this you need to change it on the indexer too
 
 loader.load(env, function (gltf) {
     var mesh = gltf.scene;
-    mesh.position.y -=10
+    mesh.position.y -=10 // if you change this you need to change it on the indexer too
     scene.add(mesh);
+    for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
+        spatialIndex[x] = []
+        for (var y=0; y < indexMod*2; y++) {
+            spatialIndex[x][y] = []
+            for (var z=0; z < indexMod*2; z++) {
+                var dir = new Vector3(x-indexMod, y-indexMod, z-indexMod).normalize()
+                var ray = new Raycaster(new Vector3(), dir)
+                var collidable = ray.intersectObject(mesh, true)
+                // spatialIndex[x][y].push(collidable)
+                spatialIndex[x][y][z].push(collidable)
+            }
+        }
+    }
     collidableEnvironment.push(mesh)
     scene.loaded = true
 });
@@ -48,7 +63,15 @@ scene.animate = function(delta) {
 
 scene.getCollidableEnvironment = function(positions) {
     if (positions) {
-        var test
+        var collidable = []
+        positions.forEach((position) => {
+            var pos = position.clone().normalize().multiplyScalar(indexMod)
+            var collisions = spatialIndex[Math.floor(pos.x)+indexMod][Math.floor(pos.y)+indexMod][Math.floor(pos.z)+indexMod]
+            collisions.forEach((collision) => {
+                collidable.push(collision.object)
+            })
+        })
+        return collidable
     }
     return collidableEnvironment
 }
