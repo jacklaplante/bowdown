@@ -2,36 +2,29 @@ import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, Textu
 
 import { loader } from './loader'
 import env from '../models/lowild.glb'
-import heather_ft from '../skybox/yellowcloud_ft.jpg'
-import heather_bk from '../skybox/yellowcloud_bk.jpg'
-import heather_up from '../skybox/yellowcloud_up.jpg'
-import heather_dn from '../skybox/yellowcloud_dn.jpg'
-import heather_rt from '../skybox/yellowcloud_rt.jpg'
-import heather_lf from '../skybox/yellowcloud_lf.jpg'
+import heather_ft from '../skybox/bluecloud_ft.jpg'
+import heather_bk from '../skybox/bluecloud_bk.jpg'
+import heather_up from '../skybox/bluecloud_up.jpg'
+import heather_dn from '../skybox/bluecloud_dn.jpg'
+import heather_rt from '../skybox/bluecloud_rt.jpg'
+import heather_lf from '../skybox/bluecloud_lf.jpg'
+import spatialIndex from '../spatialIndex.json'
 
 var scene = new Scene();
 scene.loaded = false
-var spatialIndex = []
 var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
+var objects
 
 loader.load(env, function (gltf) {
     var mesh = gltf.scene;
+    objects = {}
+    mesh.children.forEach((child) => {
+    if (objects[child.name]) throw "all object names bust be unique"
+        objects[child.name] = child
+    })
     mesh.position.y -=10 // if you change this you need to change it on the indexer too
     scene.add(mesh);
-    for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
-        spatialIndex[x] = []
-        for (var y=0; y < indexMod*2; y++) {
-            spatialIndex[x][y] = []
-            for (var z=0; z < indexMod*2; z++) {
-                var dir = new Vector3(x-indexMod, y-indexMod, z-indexMod).normalize()
-                var ray = new Raycaster(new Vector3(), dir)
-                var collidable = ray.intersectObject(mesh, true)
-                // spatialIndex[x][y].push(collidable)
-                spatialIndex[x][y][z].push(collidable)
-            }
-        }
-    }
     collidableEnvironment.push(mesh)
     scene.loaded = true
 });
@@ -68,7 +61,7 @@ scene.getCollidableEnvironment = function(positions) {
             var pos = position.clone().normalize().multiplyScalar(indexMod)
             var collisions = spatialIndex[Math.floor(pos.x)+indexMod][Math.floor(pos.y)+indexMod][Math.floor(pos.z)+indexMod]
             collisions.forEach((collision) => {
-                collidable.push(collision.object)
+                collidable.push(objects[collision])
             })
         })
         return collidable

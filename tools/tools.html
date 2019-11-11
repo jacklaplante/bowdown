@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Bowdown bot runner</title>
+<title>Bowdown tools</title>
 <body>
 <input type="file" id="files" name="files[]" multiple />
 <button id="runBots">Run bots</button>
 <button id="runIndexer">Run Spatial Indexer</button>
-<a id="downloadAnchorElem">Download Index</a>
+<a id="downloadAnchorElem" style="display:none"></a>
+<p id="index"></p>
 <output id="list"></output>
 <script src="http://threejs.org/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r92/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 
-  const serverAddress = 'wss://ws.bowdown.io:18181'
+  const serverAddress = 'ws://localhost:18181'
   const ws = new WebSocket(serverAddress);
 
   var files
@@ -40,7 +41,7 @@
     for (let i = 0; i < actions.length; i++) {
       action = actions[i]
       await sleep(action.elapsedTime * 1000)
-      ws.send(JSON.stringify(action.message))
+      sendMessage(action.message)
       if (i == actions.length-1) i = 0 // loop forever
     }
   }
@@ -65,9 +66,9 @@
     }
   }
 
-  const colors = ["aqua", "green", "blue", "chartreuse"]
+  const colors = ["aqua", "blue", "chartreuse"]
 
-  const indexMod = 5 // if you change this you need to change it on the indexer too
+  const indexMod = 5 // if you change this you need to change it in scene.js too
   function createSpatialIndex() {
     var reader = new FileReader();
     var f = files[0]
@@ -78,38 +79,46 @@
       return function (e) {
         console.log('e readAsText = ', e);
         console.log('e readAsText target = ', e.target);
-        var spatialIndex = []
         loader.load(e.target.result, function (gltf) {
           var mesh = gltf.scene;
           mesh.position.y -=10
           scene.add(mesh);
+          var spatialIndex = []
           for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
             spatialIndex[x] = []
             for (var y=0; y < indexMod*2; y++) {
               spatialIndex[x][y] = []
               for (var z=0; z < indexMod*2; z++) {
-                var dir = new THREE.Vector3(x-indexMod, y-indexMod, z-indexMod).normalize()
-                var ray = new THREE.Raycaster(new THREE.Vector3(), dir)
-                var collidable = ray.intersectObject(mesh, true)
-                spatialIndex[x][y][z] = collidable
+                spatialIndex[x][y][z] = []
+                for (var w=0; w < 300; w++) {
+                  var dir = new THREE.Vector3(x-indexMod+1/w, y-indexMod+1/w, z-indexMod+1/w).normalize()
+                  var ray = new THREE.Raycaster(new THREE.Vector3(), dir)
+                  var collisions = ray.intersectObject(mesh, true)
+                  collisions.forEach((collision) => {
+                    if (!spatialIndex[x][y][z].includes(collision.object.name)) {
+                      spatialIndex[x][y][z].push(collision.object.name)
+                    }
+                  })
+                }
                 document.getElementById(f.name).setAttribute("style", "color: " + colors[Math.floor(Math.random()*colors.length)])
                 console.log("indexed x: " + x + ", y: " + y + ", z: " + z)
               }
             }
           }
-          document.getElementById(f.name).setAttribute("style", "color: green")
-          try {
-            var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spatialIndex));
-          } catch (ex) {
-            alert('ex when trying to parse json = ' + ex);
-          }
+          var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spatialIndex));
           var dlAnchorElem = document.getElementById('downloadAnchorElem');
-          dlAnchorElem.setAttribute("href",     dataStr     );
-          dlAnchorElem.setAttribute("download", "scene.json");
+          dlAnchorElem.setAttribute("href", dataStr);
+          dlAnchorElem.setAttribute("download", "spatialIndex.json");
+          dlAnchorElem.click();
+          document.getElementById(f.name).setAttribute("style", "color: green")
         })
       }
     })(f);
     reader.readAsDataURL(f)
+  }
+
+  function sendMessage(message) {
+    ws.send(JSON.stringify(message))
   }
 
   document.getElementById('runBots').addEventListener('click', runBots, false);

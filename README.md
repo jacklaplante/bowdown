@@ -9,16 +9,7 @@ you might need this when changing react components in client/src/components (run
 npx babel --watch src/components --out-dir components/ --presets react-app/prod
 ```
 
-also here's the command to run bots
-
-```
-cd tools
-node runBot.js bots/bot1.json bots/bot2.json
-
-or run all bots with:
-
-node runBot.js all
-```
+use `tools/tools.html` to run bots or run the spatial indexer. Select the bot files or gltf/glb file. Indexer can take a very long time to finish. The page can become unresponsive for hours.
 
 and to record a new bot: start recording with 'R', then stop with 'R' again. Then look at the console to copy/paste the bot into a new json file
 
