@@ -31,4 +31,22 @@ function removeCollisionLines(player1) {
     }
 }
 
-export {uuid, addCollisionLine, removeCollisionLines}
+function showSpatialIndexLines(scene) { // if you use this make sure it's up to date with the tool.html
+    var indexMod = 5;
+    for (var x=0; x < indexMod*2; x++) {
+        for (var y=0; y < indexMod*2; y++) {
+          for (var z=0; z < indexMod*2; z++) {
+            // for (var w=0; w < 10000; w++) {
+                var geometry = new Geometry();
+                // geometry.vertices.push(new Vector3(), new Vector3(x-indexMod+1/w, y-indexMod+1/w, z-indexMod+1/w).normalize().multiplyScalar(500));
+                geometry.vertices.push(new Vector3(), new Vector3(x-indexMod, y-indexMod, z-indexMod).normalize().multiplyScalar(500));
+                var material = new LineBasicMaterial({color: 0xff0000});
+                var line = new Line( geometry, material )
+                scene.add(line)
+            // }
+          }
+        }
+      }
+}
+
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines}
