@@ -81,7 +81,6 @@
         console.log('e readAsText target = ', e.target);
         loader.load(e.target.result, function (gltf) {
           var mesh = gltf.scene;
-          mesh.position.y -=10
           scene.add(mesh);
           var spatialIndex = []
           for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
@@ -90,10 +89,11 @@
               spatialIndex[x][y] = []
               for (var z=0; z < indexMod*2; z++) {
                 spatialIndex[x][y][z] = []
-                for (var w=0; w < 300; w++) {
-                  var dir = new THREE.Vector3(x-indexMod+1/w, y-indexMod+1/w, z-indexMod+1/w).normalize()
-                  var ray = new THREE.Raycaster(new THREE.Vector3(), dir)
-                  var collisions = ray.intersectObject(mesh, true)
+                var dir, ray, collisions;
+                for (var w=0; w < 10000; w++) {
+                  dir = new THREE.Vector3(x-indexMod+1/w, y-indexMod+1/w, z-indexMod+1/w).normalize()
+                  ray = new THREE.Raycaster(new THREE.Vector3(), dir)
+                  collisions = ray.intersectObject(mesh, true)
                   collisions.forEach((collision) => {
                     if (!spatialIndex[x][y][z].includes(collision.object.name)) {
                       spatialIndex[x][y][z].push(collision.object.name)

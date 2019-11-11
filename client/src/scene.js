@@ -14,16 +14,14 @@ var scene = new Scene();
 scene.loaded = false
 var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
-var objects
+var objects = {}
 
 loader.load(env, function (gltf) {
     var mesh = gltf.scene;
-    objects = {}
     mesh.children.forEach((child) => {
     if (objects[child.name]) throw "all object names bust be unique"
         objects[child.name] = child
     })
-    mesh.position.y -=10 // if you change this you need to change it on the indexer too
     scene.add(mesh);
     collidableEnvironment.push(mesh)
     scene.loaded = true
@@ -66,6 +64,7 @@ scene.getCollidableEnvironment = function(positions) {
         })
         return collidable
     }
+    console.error("detecting collisions against the entire world")
     return collidableEnvironment
 }
 
