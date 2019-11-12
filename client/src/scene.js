@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, Raycaster } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper } from 'three'
 
 import { loader } from './loader'
 import env from '../models/lowild.glb'
@@ -19,7 +19,7 @@ var objects = {}
 loader.load(env, function (gltf) {
     var mesh = gltf.scene;
     mesh.children.forEach((child) => {
-    if (objects[child.name]) throw "all object names bust be unique"
+        if (objects[child.name]) throw "all object names bust be unique"
         objects[child.name] = child
     })
     scene.add(mesh);
@@ -43,8 +43,10 @@ scene.add( skybox );
 scene.add(getHemisphereLight());
 var directionalLight = getDirectionalLight();
 if (process.env.NODE_ENV == 'development') {
-    var helper = new DirectionalLightHelper(directionalLight)
-    scene.add(helper)
+    var lightHelper = new DirectionalLightHelper(directionalLight)
+    scene.add(lightHelper)
+    var axesHelper = new AxesHelper(5);
+    scene.add(axesHelper)
 }
 scene.add(getDirectionalLight());
 
@@ -53,19 +55,25 @@ scene.animate = function(delta) {
 }
 
 scene.getCollidableEnvironment = function(positions) {
+    var collidable = []
     if (positions) {
-        var collidable = []
         positions.forEach((position) => {
             var pos = position.clone().normalize().multiplyScalar(indexMod)
             var collisions = spatialIndex[Math.floor(pos.x)+indexMod][Math.floor(pos.y)+indexMod][Math.floor(pos.z)+indexMod]
             collisions.forEach((collision) => {
-                collidable.push(objects[collision])
+                if (objects[collision]) {
+                    collidable.push(objects[collision])
+                } else {
+                    console.error("spatialIndex does not contain: " + collision + ", you need to recreate the spatialIndex")
+                }
             })
         })
-        return collidable
     }
-    console.error("detecting collisions against the entire world")
-    return collidableEnvironment
+    if (collidable.length == 0) {
+        console.warn("detecting collisions against the entire world")
+        collidable = collidableEnvironment
+    }
+    return collidable
 }
 
 function getHemisphereLight() {

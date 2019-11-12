@@ -144,22 +144,25 @@ function animateArrows(delta) {
                 killPlayer(collision.object.playerUuid)
             }
             // detect collisions with the environment
-            collisions = ray.intersectObjects(scene.getCollidableEnvironment([arrow.origin, arrow.position]), true)
-            if (collisions.length > 0) {
-                arrow.position.copy(collisions.pop().point)
-                if (arrow.type=="rope") {
-                    sounds.grappleHit.play()
-                } else {
-                    sounds.arrowHitGround.play()
-                }
-                stopPlayer1Arrow(arrow)
-                sendMessage({
-                    arrow: {
-                        stopped: true,
-                        position: arrow.position,
-                        uuid: arrow.uuid
+            var collidable = scene.getCollidableEnvironment([arrow.origin, arrow.position])
+            if (collidable) {
+                collisions = ray.intersectObjects(collidable, true)
+                if (collisions.length > 0) {
+                    arrow.position.copy(collisions.pop().point)
+                    if (arrow.type=="rope") {
+                        sounds.grappleHit.play()
+                    } else {
+                        sounds.arrowHitGround.play()
                     }
-                })
+                    stopPlayer1Arrow(arrow)
+                    sendMessage({
+                        arrow: {
+                            stopped: true,
+                            position: arrow.position,
+                            uuid: arrow.uuid
+                        }
+                    })
+                }
             }
         }
     })
@@ -172,7 +175,7 @@ function animateArrows(delta) {
 
 function stopPlayer1Arrow(arrow) {
     arrow.stopped = true
-    arrow.remove(arrow.getChildByName("sprite"))
+    arrow.remove(arrow.getObjectByName("sprite"))
 }
 
 function retractRopeArrow() {
