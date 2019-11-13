@@ -69,7 +69,7 @@
   const colors = ["aqua", "blue", "chartreuse"]
 
   const indexMod = 5 // if you change this you need to change it in scene.js too
-  const dots = 5
+  const dots = 5 // this is (how many rays)^(1/3) get created within the index block
   function createSpatialIndex() {
     var reader = new FileReader();
     var f = files[0]
