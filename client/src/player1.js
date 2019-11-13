@@ -24,7 +24,7 @@ const sprintModifier = 1.3
 const velocityInfluenceModifier = 30
 const inputInfluenceVelocityModifier = 5
 const gravityAcceleration = 10
-const godMode = false // don't you fucking dare change this unless you change it back
+const godMode = false // don't you dare change this unless you change it back
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -240,7 +240,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         if (godMode || (!falling && scene.loaded)) {
-            if (!activeRopeArrow) {
+            if (!grappling()) {
                 player1.velocity.set(0,0,0)
             }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
@@ -294,9 +294,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (falling) {
                 player1.doubleJumped = true
             }
-            if (inputDirection.length()) {
-                this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta)) // I'm not sure if this 1/delta is right
-            }
             this.velocity.add(this.getPosition().normalize().multiplyScalar(7))
             this.playAction("jumping")
         }
@@ -308,6 +305,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         if (nextPos) {
             var collisionVector = player1.collisionDetected(nextPos)
             if(godMode || !collisionVector) {
+                this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
             } else {
                 player1.velocity.set(0,0,0)
@@ -342,10 +340,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     function velocityToPositionDelta(delta, inputDirection, cameraDirection) {
-        if (activeRopeArrow!=null && activeRopeArrow.stopped) {
+        if (grappling()) {
             if (inputDirection.length() != 0) {
                 var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                player1.velocity.add(velocityInfluence.multiplyScalar(inputInfluenceVelocityModifier*delta))
+                player1.velocity.add(velocityInfluence.multiplyScalar(delta))
             }
             var arrowToPlayer = activeRopeArrow.position.clone().sub(player1.getPosition())
             player1.velocity.add(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
@@ -456,6 +454,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         } else {
             console.error("action: " + action + " does not exist!");
         }
+    }
+
+    function grappling() {
+        return activeRopeArrow!=null && activeRopeArrow.stopped
     }
 
     player1.setPosition(randomSpawn())
