@@ -69,6 +69,7 @@
   const colors = ["aqua", "blue", "chartreuse"]
 
   const indexMod = 5 // if you change this you need to change it in scene.js too
+  const dots = 5
   function createSpatialIndex() {
     var reader = new FileReader();
     var f = files[0]
@@ -90,15 +91,19 @@
               for (var z=0; z < indexMod*2; z++) {
                 spatialIndex[x][y][z] = []
                 var dir, ray, collisions;
-                for (var w=0; w < 1000; w++) {
-                  dir = new THREE.Vector3(x-indexMod+w/1000, y-indexMod+w/1000, z-indexMod+w/1000).normalize()
-                  ray = new THREE.Raycaster(new THREE.Vector3(), dir)
-                  collisions = ray.intersectObject(mesh, true)
-                  collisions.forEach((collision) => {
-                    if (!spatialIndex[x][y][z].includes(collision.object.name)) {
-                      spatialIndex[x][y][z].push(collision.object.name)
+                for (var a=0; a<dots; a++) {
+                  for (var b=0; b<dots; b++) {
+                    for (var c=0; c<dots; c++) {
+                      dir = new THREE.Vector3(x-indexMod+a/dots, y-indexMod+b/dots, z-indexMod+c/dots).normalize()
+                      ray = new THREE.Raycaster(new THREE.Vector3(), dir)
+                      collisions = ray.intersectObject(mesh, true)
+                      collisions.forEach((collision) => {
+                        if (!spatialIndex[x][y][z].includes(collision.object.name)) {
+                          spatialIndex[x][y][z].push(collision.object.name)
+                        }
+                      })
                     }
-                  })
+                  }
                 }
                 document.getElementById(f.name).setAttribute("style", "color: " + colors[Math.floor(Math.random()*colors.length)])
                 console.log("indexed x: " + x + ", y: " + y + ", z: " + z)
