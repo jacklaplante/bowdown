@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper } from 'three'
+import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper} from 'three'
 
 import { loader } from './loader'
 import env from '../models/lowild.glb'
@@ -64,7 +64,7 @@ scene.getCollidableEnvironment = function(positions) {
                 if (objects[collision]) {
                     collidable.push(objects[collision])
                 } else {
-                    console.error("spatialIndex does not contain: " + collision + ", you need to recreate the spatialIndex")
+                    console.error(collision + "not found in objects, you need to recreate the spatialIndex")
                 }
             })
         })
