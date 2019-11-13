@@ -90,8 +90,8 @@
               for (var z=0; z < indexMod*2; z++) {
                 spatialIndex[x][y][z] = []
                 var dir, ray, collisions;
-                for (var w=0; w < 10000; w++) {
-                  dir = new THREE.Vector3(x-indexMod+1/w, y-indexMod+1/w, z-indexMod+1/w).normalize()
+                for (var w=0; w < 100; w++) {
+                  dir = new THREE.Vector3(x-indexMod+w/100, y-indexMod+w/100, z-indexMod+w/100).normalize()
                   ray = new THREE.Raycaster(new THREE.Vector3(), dir)
                   collisions = ray.intersectObject(mesh, true)
                   collisions.forEach((collision) => {
