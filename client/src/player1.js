@@ -240,18 +240,15 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         if (godMode || (!falling && scene.loaded)) {
-            if (!grappling()) {
-                player1.velocity.set(0,0,0)
-            }
+            player1.velocity.set(0,0,0)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 nextPos = player1.getPosition()
                 nextPos.add(globalDirection)
                 // for moving up/down slopes
                 // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
-                var origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.5, 0))
-                )
-                var slopeRay = new Raycaster(origin, this.globalVector(new Vector3(0, -1, 0)), 0, 1)
+                var origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.25, 0)))
+                var slopeRay = new Raycaster(origin, this.globalVector(new Vector3(0, -1, 0)), 0, 0.5)
                 var top = slopeRay.intersectObjects(scene.getCollidableEnvironment([origin]), true);
                 if (top.length>0){
                     // the 0.01 is kinda hacky tbh
@@ -293,6 +290,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             input.jump = null
             if (falling) {
                 player1.doubleJumped = true
+                if (inputDirection.length()) {
+                    this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta))
+                }
             }
             this.velocity.add(this.getPosition().normalize().multiplyScalar(7))
             this.playAction("jumping")
