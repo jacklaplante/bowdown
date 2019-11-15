@@ -5,7 +5,7 @@ import { players } from './players'
 import scene from './scene'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
-import { setKillCount } from './game'
+import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
 
 var defaultServerAddress
@@ -77,6 +77,9 @@ function onMessage(message) {
         } else {
             console.warn("newKing: " + message.newKing + " does not exist")
         }
+    }
+    if (message.kingOfCrownStartTime) {
+        setKingOfCrownStartTime(message.kingOfCrownStartTime)
     }
 }
 

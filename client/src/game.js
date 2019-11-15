@@ -13,6 +13,7 @@ require.context('../icons/');
 
 var clock = new Clock()
 var killCount = 0
+var kingOfCrownStartTime = 0
 
 window.addEventListener('resize', resize);
 var input = {
@@ -147,6 +148,10 @@ function play() {
 function setKillCount(count) {
     killCount = count
     document.getElementById("kill-count").innerHTML += 'X'
+}
+
+function setKingOfCrownStartTime(time) {
+    kingOfCrownStartTime = time
 }
 
 function gameOver() {
@@ -332,4 +337,4 @@ function start() {
     play()
 }
 
-export {start, gameOver, setKillCount}
+export {start, gameOver, setKillCount, setKingOfCrownStartTime}

@@ -26,11 +26,15 @@ var players = {}
 
 var kingOfCrownMode = true
 var kingOfCrown
+var kingOfCrownStartTime
 
 wss.on('connection', function connection(ws, req) {
     ws.isAlive = true;
     ws.on('pong', heartbeat);
     sendMessage(ws, {players: players})
+    if (kingOfCrownMode && kingOfCrownStartTime) {
+        sendMessage(ws, {kingOfCrownStartTime: kingOfCrownStartTime})
+    }
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
         if(message.player){
@@ -111,11 +115,14 @@ wss.on('connection', function connection(ws, req) {
 
 function setKingOfCrown(playerUuid) {
     kingOfCrown = playerUuid
+    kingOfCrownStartTime = Date.now()
     players[playerUuid].kingOfCrown = true
+    players[playerUuid].kingOfCrownStartTime = kingOfCrownStartTime
     console.log(playerUuid + " is the new king!")
     wss.clients.forEach(function each(client) {
         sendMessage(client, {
-            newKing: playerUuid
+            newKing: playerUuid,
+            kingOfCrownStartTime: kingOfCrownStartTime
         })
     })
 }
