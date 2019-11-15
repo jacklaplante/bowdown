@@ -64,7 +64,9 @@ players.move = function(playerUuid, pos, rotation, kingOfCrown) {
     player.gltf.scene.position.copy(pos)
     player.gltf.scene.rotation.copy(rotation)
     player.kingOfCrown = kingOfCrown
-    updateCrown(player)
+    if (player.kingOfCrown) {
+        updateCrown(player)
+    }
 }
 
 players.playAction = function(playerUuid, action) {

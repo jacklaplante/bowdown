@@ -6,6 +6,7 @@ import scene from './scene'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount } from './game'
+import { newKing } from './kingOfCrown'
 
 var defaultServerAddress
 var recordingBot = false
@@ -46,7 +47,7 @@ function onMessage(message) {
                 // player disconnected, remove
                 scene.remove(players.get(player).gltf.scene)
                 players.remove(player)
-            } else if (!players.get(player)) {
+            } else if (!players.get(player) || message.status==='respawn') {
                 players.add(player, message.position, message.race, message.rotation)
             } else if (players.get(player).gltf && message.position && message.rotation!=null) {
                 players.move(player, message.position, message.rotation, message.kingOfCrown)
@@ -63,10 +64,18 @@ function onMessage(message) {
             addOtherPlayerArrow(message.arrow)   
         }
     } else if (message.newKing) {
+        var king
         if (message.newKing == player1.uuid) {
             player1.kingOfCrown = true
+            king = player1
         } else {
             player1.kingOfCrown = false
+            king = players.get(message.newKing)
+        }
+        if (king) {
+            newKing(king)
+        } else {
+            console.warn("newKing: " + message.newKing + " does not exist")
         }
     }
 }

@@ -45,8 +45,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
             player1.bowState = "drawn"
-        } else if (event.action.getClip().name == "death") {
-            scene.remove(player1.gltf.scene)
         } else {
             if (event.action.getClip().name == "Fire bow") {
                 player1.bowState = "equipped"
@@ -320,7 +318,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         updateRotation(nextPos, rotation)
         player1.setPosition(nextPos)
         camera.updateCamera()
-        updateCrown(player1)
+        if (player1.kingOfCrown) {
+            updateCrown(player1)   
+        }
     }
 
     function updateRotation(nextPos, rotation) {
@@ -383,6 +383,16 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
         player1.setPosition(randomSpawn())
+        player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
+        // say hi to server
+        sendMessage({
+            player: player1.uuid,
+            position: player1.getPosition(),
+            race: player1.race,
+            status: 'respawn'
+        })
+        player1.equipBow()
+        player1.idle()
     }
 
     player1.sendChat = function(message) {
@@ -460,17 +470,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         return activeRopeArrow!=null && activeRopeArrow.stopped
     }
 
-    player1.setPosition(randomSpawn())
-    player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
-    scene.add( player1.gltf.scene );
-    // say hi to server
-    sendMessage({
-        player: player1.uuid,
-        position: player1.getPosition(),
-        race: player1.race
-    })
-    player1.equipBow()
-    player1.idle()
+    player1.respawn()
 });
 
 function randomSpawn() {
