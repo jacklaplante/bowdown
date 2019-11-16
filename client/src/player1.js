@@ -70,12 +70,12 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     player1.collisionDetected = function(nextPos){
         removeCollisionLines(player1)
         var vect = nextPos.clone().sub(player1.getPosition())
-        //check for collisions at hip level
-        var origin = player1.getPosition().add(this.globalVector(new Vector3(0,1,0)))
+        //check for collisions at foot level
+        var origin = player1.getPosition()
         var ray = new Raycaster(origin, vect.clone().normalize(), 0, vect.length())
         var collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true)
         if (collisionResults.length > 0) {
-            return vect;
+            return true;
         }
         return false;
     }
@@ -301,8 +301,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             nextPos.add(player1.velocity.clone().multiplyScalar(delta))
         }
         if (nextPos) {
-            var collisionVector = player1.collisionDetected(nextPos)
-            if(godMode || !collisionVector) {
+            var collision = player1.collisionDetected(nextPos)
+            if(godMode || !collision) {
                 this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
             } else {
