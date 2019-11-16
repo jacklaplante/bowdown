@@ -1,19 +1,19 @@
-FROM ubuntu:18.04
+FROM node:10
 
-# Install dependencies
-RUN apt-get update && \
- apt-get -y install nodejs
+# Create app directory
+WORKDIR /usr/src/app
 
-# Install apache and write hello world message
-RUN echo 'Hello World!' > /var/www/html/index.html
+# Install app dependencies
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
 
-# Configure apache
-RUN echo '. /etc/apache2/envvars' > /root/run_apache.sh && \
- echo 'mkdir -p /var/run/apache2' >> /root/run_apache.sh && \
- echo 'mkdir -p /var/lock/apache2' >> /root/run_apache.sh && \ 
- echo '/usr/sbin/apache2 -D FOREGROUND' >> /root/run_apache.sh && \ 
- chmod 755 /root/run_apache.sh
+RUN npm install
+# If you are building your code for production
+# RUN npm ci --only=production
 
-EXPOSE 80
+# Bundle app source
+COPY . .
 
-CMD /root/run_apache.sh
+EXPOSE 18181
+CMD [ "node", "server.js" ]
