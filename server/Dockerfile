@@ -2,7 +2,6 @@ FROM ubuntu:18.04
 
 # Install dependencies
 RUN apt-get update && \
-#  apt-get -y install git && \ we need to figure out how the container can grab the server script without using my git username and password
  apt-get -y install nodejs
 
 # Install apache and write hello world message
