@@ -36,6 +36,14 @@ canvas {
     fill: #ffdba5;
 }
 
+#title svg .cls-1 {
+    fill:#754c29;
+}
+
+svg .cls-2{
+    fill:#a7a9ac;
+}.cls-3{fill:#bcbec0;}.cls-4{fill:none;}.cls-5{fill:#231f20;}.cls-6{fill:#f1f2f2;}
+
 .button {
     margin: 10pt auto;
     width: 36vw;
