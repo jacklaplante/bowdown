@@ -9,7 +9,7 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
-require.context('../icons/');
+require.context('../images/');
 
 var clock = new Clock()
 var killCount = 0

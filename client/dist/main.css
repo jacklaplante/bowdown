@@ -24,15 +24,16 @@ canvas {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    width: 100%;
+    padding: 2%;
 }
 
 .playing #menu {
     display: none
 }
 
-#title {
-    font-size: 12vw;
-    position: relative;
+#title svg {
+    fill: #ffdba5;
 }
 
 .button {
@@ -62,7 +63,7 @@ canvas {
     transform: translate(-50%, -50%);
     width: 20pt;
     height: 20pt;
-    background-image: url(icons/fullscreen.svg);
+    background-image: url(images/fullscreen.svg);
 }
 
 #crosshair {
@@ -94,7 +95,7 @@ canvas {
     left: 85%;
     width: 70pt;
     height: 70pt;
-    background-image: url(icons/dot-and-circle.svg);
+    background-image: url(images/dot-and-circle.svg);
 }
 
 #rope-button {
@@ -104,7 +105,7 @@ canvas {
     left: 70%;
     width: 70pt;
     height: 70pt;
-    background-image: url(icons/rope.svg);
+    background-image: url(images/rope.svg);
 }
 
 #jump-button {
