@@ -11,10 +11,22 @@ if (prod) {
     serverId = process.argv[3]
     serverIp = process.argv[4]
     apiKey = process.argv[5]
+    var cert
+    if (process.argv[6]) {
+        cert = process.argv[6]
+    } else {
+        cert = './certs/' + serverId + '/cert.pem'
+    }
+    var key
+    if (process.argv[7]) {
+        key = process.argv[7]
+    } else {
+        key = './certs/' + serverId + '/privkey.pem'
+    }
     server = https.createServer({
         port: 18181,
-        cert: fs.readFileSync('./certs/' + serverId + '/cert.pem'),
-        key: fs.readFileSync('./certs/' + serverId + '/privkey.pem')
+        cert: fs.readFileSync(cert),
+        key: fs.readFileSync(key)
     });
 } else {
     server = require('http').createServer();

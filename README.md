@@ -19,6 +19,12 @@ nohup node server.js prod [SERVER NAME] [PUBLIC SERVER IP] [API KEY] > output.lo
 ```
 
 DOCKER:
+to build the image:
+```
+docker build -t bowdown-server:<tag name>  .
+docker run 
+```
+
 make sure you have the aws cli installed, with correct account configuration
 ```
 aws2 ecr get-login
