@@ -382,12 +382,13 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
-        player1.setPosition(randomSpawn())
-        player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), player1.getPosition().normalize()))
+        var pos = randomSpawn()
+        player1.setPosition(pos)
+        player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
         // say hi to server
         sendMessage({
             player: player1.uuid,
-            position: player1.getPosition(),
+            position: pos,
             race: player1.race,
             status: 'respawn'
         })
@@ -469,13 +470,12 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     function grappling() {
         return activeRopeArrow!=null && activeRopeArrow.stopped
     }
-
-    player1.respawn()
 }, (bytes) => {
     console.log("player1 " + Math.round((bytes.loaded / bytes.total)*100) + "% loaded")
 });
 
 function randomSpawn() {
+    return new Vector3(75, 75, 75)
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }
 

@@ -167,15 +167,18 @@ function updateKingOfCrownTime() {
 function gameOver() {
     state = "gameOver"
     document.body.classList.remove("playing")
-    document.getElementById("title").innerHTML = "Game over"
     document.body.classList.remove("playing")
     document.body.classList.add("gameOver")
-    var playButton = document.getElementById("play")
-    playButton.innerText = "respawn"
-    playButton.onclick = function() {
+    var respawnButton = document.createElement('div');
+    respawnButton.classList.add("button")
+    respawnButton.innerText = "respawn"
+    respawnButton.onclick = function() {
         player1.respawn()
         play()   
     }
+    document.getElementById("server-list").remove()
+    var menu = document.querySelector("#menu .centered")
+    menu.append(respawnButton)
 }
 
 function onPointerLockChange() {

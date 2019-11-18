@@ -8,14 +8,8 @@ import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
 
-var defaultServerAddress
 var recordingBot = false
 var log
-if (process.env.NODE_ENV == 'production') {
-    defaultServerAddress = 'wss://ws.bowdown.io:18181'
-} else {
-    defaultServerAddress = 'ws://localhost:18181'
-}
 
 var clock = new Clock()
 var ws;
@@ -25,6 +19,11 @@ function connectToServer(serverAddress) {
     }
     ws = new WebSocket(serverAddress);
     ws.onmessage = onMessage;
+    ws.onopen = onConnect;
+}
+
+function onConnect(){
+    player1.respawn()
 }
 
 function onMessage(message) {
@@ -107,7 +106,5 @@ function sendMessage(message) {
         console.error("error connecting to server")
     }
 }
-
-connectToServer(defaultServerAddress)
 
 export {sendMessage, recordBot, connectToServer}
