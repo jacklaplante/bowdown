@@ -2,11 +2,12 @@ const fs = require('fs');
 const WebSocket = require('ws');
 const https = require('https');
 
-const playerLimit = 30
+const playerLimit = 20
+const prod = process.argv[2] == 'prod'
 
 let maxCount = 0;
 
-const prod = process.argv[2] == 'prod'
+
 var server, serverId, serverIp, apiKey
 if (prod) {
     if (process.argv.length < 6) throw "INCLUDE SERVER ID, SERVER IP, and API KEY"

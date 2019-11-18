@@ -233,6 +233,10 @@ ul, #server-list .server {
     padding: 4pt;
 }
 
+#server-list .join.full {
+    border: 0;
+}
+
 #server-list-header div {
     width: 15vw;
     display: inline-block;

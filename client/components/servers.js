@@ -11,6 +11,7 @@ import React from 'react';
 import { connectToServer } from '../src/websocket';
 
 var https = require('https');
+var playerLimit = 20;
 
 var Servers = function (_React$Component) {
   _inherits(Servers, _React$Component);
@@ -62,25 +63,47 @@ var Servers = function (_React$Component) {
       var servers = [];
       this.state.servers.forEach(function (server) {
         if (server.serverId && server.serverId.S && server.activePlayers && server.activePlayers.S && server.serverIp && server.serverIp.S) {
-          servers.push(React.createElement(
-            'div',
-            { className: 'server', key: server.serverId.S },
-            React.createElement(
+          if (server.activePlayers.S < playerLimit) {
+            servers.push(React.createElement(
               'div',
-              { className: 'name' },
-              server.serverId.S
-            ),
-            React.createElement(
+              { className: 'server', key: server.serverId.S },
+              React.createElement(
+                'div',
+                { className: 'name' },
+                server.serverId.S
+              ),
+              React.createElement(
+                'div',
+                { className: 'activePlayers' },
+                server.activePlayers.S + "/" + playerLimit
+              ),
+              React.createElement(
+                'div',
+                { className: 'join', onClick: _this3.startOnServer, id: server.serverIp.S },
+                'Join'
+              )
+            ));
+          } else {
+            servers.push(React.createElement(
               'div',
-              { className: 'activePlayers' },
-              server.activePlayers.S
-            ),
-            React.createElement(
-              'div',
-              { className: 'join', onClick: _this3.startOnServer, id: server.serverIp.S },
-              'Join'
-            )
-          ));
+              { className: 'server', key: server.serverId.S },
+              React.createElement(
+                'div',
+                { className: 'name' },
+                server.serverId.S
+              ),
+              React.createElement(
+                'div',
+                { className: 'activePlayers' },
+                server.activePlayers.S + "/" + playerLimit
+              ),
+              React.createElement(
+                'div',
+                { className: 'join full', id: server.serverIp.S },
+                'Full'
+              )
+            ));
+          }
         } else {
           console.error("error parsing the server listing response");
         }

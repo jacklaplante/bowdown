@@ -3,6 +3,7 @@ import React from 'react'
 import {connectToServer} from '../src/websocket'
 
 const https = require('https');
+const playerLimit = 20
 
 class Servers extends React.Component {
 
@@ -42,13 +43,23 @@ class Servers extends React.Component {
     const servers = []
     this.state.servers.forEach((server) => {
       if (server.serverId && server.serverId.S && server.activePlayers && server.activePlayers.S && server.serverIp && server.serverIp.S) {
-        servers.push(
-          <div className="server" key={server.serverId.S}>
-            <div className="name">{server.serverId.S}</div>
-            <div className="activePlayers">{server.activePlayers.S}</div>
-            <div className="join" onClick={this.startOnServer} id={server.serverIp.S}>Join</div>
-          </div>
-        )
+        if (server.activePlayers.S < playerLimit) {
+          servers.push(
+            <div className="server" key={server.serverId.S}>
+              <div className="name">{server.serverId.S}</div>
+              <div className="activePlayers">{server.activePlayers.S + "/" + playerLimit}</div>
+              <div className="join" onClick={this.startOnServer} id={server.serverIp.S}>Join</div>
+            </div>
+          )
+        } else {
+          servers.push(
+            <div className="server" key={server.serverId.S}>
+              <div className="name">{server.serverId.S}</div>
+              <div className="activePlayers">{server.activePlayers.S + "/" + playerLimit}</div>
+              <div className="join full" id={server.serverIp.S}>Full</div>
+            </div>
+          )
+        }
       } else {
         console.error("error parsing the server listing response")
       }
