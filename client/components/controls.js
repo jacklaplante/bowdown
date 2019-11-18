@@ -49,7 +49,7 @@ var Controls = function (_React$Component) {
           ),
           React.createElement(
             'div',
-            { className: 'button', onClick: this.showDesktopControls },
+            { className: 'button', onClick: this.showDesktopControls, id: 'mouse-and-keyboard-button' },
             'mouse + keyboard'
           ),
           React.createElement(
@@ -61,44 +61,48 @@ var Controls = function (_React$Component) {
       } else if (this.state.page == "mobile") {
         return React.createElement(
           'div',
-          { id: 'controls' },
+          null,
           React.createElement(
-            'p',
-            null,
-            'Mobile controls:'
-          ),
-          React.createElement(
-            'ul',
-            null,
+            'div',
+            { id: 'controls' },
             React.createElement(
-              'li',
+              'p',
               null,
-              'Move - Touch movement on left side of screen'
+              'Mobile controls:'
             ),
             React.createElement(
-              'li',
+              'ul',
               null,
-              'Move Camera - Touch movement on right side of screen'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'Draw and Release Arrow - Target button (hold -> release)'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'Draw and Release Grapple - Grapple button (hold -> release)'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'Jump - Green bar on bottom-right of screen'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'For the best experience, keep your phone in landscape mode, fullscreen (which doesn\'t work on iPhone, don\'t blame me! blame Apple)'
+              React.createElement(
+                'li',
+                null,
+                'Move - Touch movement on left side of screen'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Move Camera - Touch movement on right side of screen'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Draw and Release Arrow - Target button (hold -> release)'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Draw and Release Grapple - Grapple button (hold -> release)'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Jump - Green bar on bottom-right of screen'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'For the best experience, keep your phone in landscape mode, fullscreen (which doesn\'t always work on iPhone, don\'t blame me! blame Apple)'
+              )
             )
           ),
           React.createElement(
@@ -110,44 +114,48 @@ var Controls = function (_React$Component) {
       } else if (this.state.page == "desktop") {
         return React.createElement(
           'div',
-          { id: 'controls' },
+          null,
           React.createElement(
-            'p',
-            null,
-            'Mouse + keyboard:'
-          ),
-          React.createElement(
-            'ul',
-            null,
+            'div',
+            { id: 'controls' },
             React.createElement(
-              'li',
+              'p',
               null,
-              'Mouse - move camera'
+              'Mouse + keyboard:'
             ),
             React.createElement(
-              'li',
+              'ul',
               null,
-              'Left click (hold -> release) - draw and release arrow'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'Right click (hold -> release) - draw and release grapple'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'WASD - move'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'Space - jump'
-            ),
-            React.createElement(
-              'li',
-              null,
-              'Shift - sprint'
+              React.createElement(
+                'li',
+                null,
+                'Mouse - move camera'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Left click (hold -> release) - draw and release arrow'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Right click (hold -> release) - draw and release grapple'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'WASD - move'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Space - jump'
+              ),
+              React.createElement(
+                'li',
+                null,
+                'Shift - sprint'
+              )
             )
           ),
           React.createElement(

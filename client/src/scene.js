@@ -25,6 +25,8 @@ loader.load(env, function (gltf) {
     scene.add(mesh);
     collidableEnvironment.push(mesh)
     scene.loaded = true
+}, function(bytes) {
+    console.log("scene " + Math.round((bytes.loaded / bytes.total)*100) + "% loaded")
 });
 
 let materialArray = [];  

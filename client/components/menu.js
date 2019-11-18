@@ -103,18 +103,18 @@ var Menu = function (_React$Component) {
           React.createElement(Title, { title: 'bowdown' }),
           React.createElement(
             'div',
-            { className: 'button', onClick: this.state.startGame, id: 'play' },
-            this.state.readyToRock ? 'start' : 'loading'
+            { className: 'button', onClick: this.listServers, id: 'servers' },
+            this.state.readyToRock ? 'servers' : 'loading'
           ),
           React.createElement(
             'div',
-            { className: 'button', onClick: this.listServers },
-            'servers'
-          ),
-          React.createElement(
-            'div',
-            { className: 'button', onClick: this.showControls },
+            { className: 'button', onClick: this.showControls, id: 'controls-button' },
             'controls'
+          ),
+          React.createElement(
+            'div',
+            { id: 'menu-info' },
+            window.innerWidth < window.innerHeight ? 'put phone in landscape mode for best experience' : ''
           )
         );
       } else if (this.state.page == "servers") {

@@ -52,11 +52,13 @@ class Menu extends React.Component {
       return (
         <div className="centered">
           <Title title='bowdown' />
-          <div className="button" onClick={this.state.startGame} id="play">
-            {this.state.readyToRock ? 'start' : 'loading'}
+          <div className="button" onClick={this.listServers} id="servers">
+            {this.state.readyToRock ? 'servers' : 'loading'}
           </div>
-          <div className="button" onClick={this.listServers}>servers</div>
-          <div className="button" onClick={this.showControls}>controls</div>
+          <div className="button" onClick={this.showControls} id="controls-button">controls</div>
+          <div id="menu-info">
+            {(window.innerWidth < window.innerHeight) ? 'put phone in landscape mode for best experience' : ''}
+          </div>
         </div>
       );
     } else if (this.state.page == "servers") {

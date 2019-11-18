@@ -46,7 +46,7 @@ svg .cls-2{
 
 .button {
     margin: 10pt auto;
-    width: 36vw;
+    width: 46vw;
     border-radius: 13pt;
     border: 2pt solid #ffdba5;
     padding: 4pt;
@@ -54,12 +54,25 @@ svg .cls-2{
     text-align: center;
 }
 
-.ready #play {
+#controls-button {
+    width: 36vw;
+}
+
+#mouse-and-keyboard-button {
+    width: 72vw;
+}
+
+#menu-info {
+    font-size: 2vh;
+    padding: 1vh;
+    text-align: center;
+}
+
+.ready #servers {
     display: block;
     color: #134461;
     background: #ffdba5;
-    width: 23vw;
-    content: "dsa";
+    width: 31vw;
     position: relative;
 }
 
@@ -188,25 +201,19 @@ svg .cls-2{
     font-size: 16pt;
 }
 
-#kill-count {
-    
-}
-
-#bow-king {
-    
-}
-
 ul, #server-list .server {
     font-family: monospace;
-    height: 27pt;
+    height: 11vh;
 }
 
 #controls {
-    font-size: 10pt;
+    font-size: 16pt;
+    display: inline-block;
 }
 
 #server-list {
-    font-size: 16pt;
+    font-size: 2vw;
+    padding: 0 7vw;
 }
 
 #server-list .name {
@@ -224,7 +231,6 @@ ul, #server-list .server {
     border-radius: 13pt;
     border: 2pt solid #ffdba5;
     padding: 4pt;
-    float:;
 }
 
 #server-list-header div {

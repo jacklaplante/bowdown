@@ -471,6 +471,8 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
     }
 
     player1.respawn()
+}, (bytes) => {
+    console.log("player1 " + Math.round((bytes.loaded / bytes.total)*100) + "% loaded")
 });
 
 function randomSpawn() {
