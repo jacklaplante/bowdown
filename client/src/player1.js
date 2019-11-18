@@ -24,7 +24,7 @@ const sprintModifier = 1.3
 const velocityInfluenceModifier = 30
 const inputInfluenceVelocityModifier = 5
 const gravityAcceleration = 10
-const godMode = false // don't you dare change this unless you change it back
+const godMode = false
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -155,12 +155,16 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         )
     }
 
+    function godMode() {
+        return godMode && process.env.NODE_ENV == 'development'
+    }
+
     function runOrSprint(input) {
         if (input.keyboard.shift) {
             if (player1.isRunning()) {
                 player1.anim[player1.activeMovement].timeScale = sprintModifier
             }
-            if (godMode) {
+            if (godMode()) {
                 return movementSpeed*sprintModifier*30
             }
             return movementSpeed*sprintModifier
@@ -237,7 +241,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        if (godMode || (!falling && scene.loaded)) {
+        if (godMode() || (!falling && scene.loaded)) {
             player1.velocity.set(0,0,0)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
@@ -271,7 +275,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                 }
             }
-        } else if (!godMode && scene.loaded) {
+        } else if (!godMode() && scene.loaded) {
             var grav = gravityAcceleration
             // if the player is falling
             if (player1.doubleJumped && player1.isFiring()) {
@@ -302,7 +306,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
         if (nextPos) {
             var collision = player1.collisionDetected(nextPos)
-            if(godMode || !collision) {
+            if(godMode() || !collision) {
                 this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
             } else {
