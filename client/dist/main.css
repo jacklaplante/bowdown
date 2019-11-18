@@ -85,6 +85,7 @@ svg .cls-2{
     width: 20pt;
     height: 20pt;
     background-image: url(images/fullscreen.svg);
+    z-index: 1;
 }
 
 #crosshair {
