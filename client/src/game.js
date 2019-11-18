@@ -60,6 +60,7 @@ function animate() {
     if (process.env.NODE_ENV == 'development') {
         document.getElementById("fps").innerHTML = Math.round(1/delta)
     }
+    updateKingOfCrownTime();
     renderer.render(scene, camera);
 }
 
@@ -152,6 +153,15 @@ function setKillCount(count) {
 
 function setKingOfCrownStartTime(time) {
     kingOfCrownStartTime = time
+}
+
+function updateKingOfCrownTime() {
+    if (kingOfCrownStartTime) {
+        var totalSeconds = Math.round((Date.now()-kingOfCrownStartTime)/1000)
+        var minutes = Math.floor(totalSeconds/60)
+        var seconds = totalSeconds-minutes*60
+        document.getElementById("bow-king").innerHTML = minutes+":"+seconds
+    }
 }
 
 function gameOver() {

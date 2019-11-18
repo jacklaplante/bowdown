@@ -6,7 +6,7 @@ var kingOfCrownLine, kingOfCrownCube
 
 function updateCrown(player) {
     if (!player.kingOfCrown) {
-        throw "player: " + player.uuid + " is not king of crown. updateCrown should not be called"
+        console.error("player: " + player.uuid + " is not king of crown. updateCrown should not be called")
     }
     if (kingOfCrownLine) {
         scene.remove(kingOfCrownLine)
