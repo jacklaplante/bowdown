@@ -104,6 +104,10 @@ function sendMessage(message) {
         ws.send(JSON.stringify(message))
     } else {
         console.error("error connecting to server")
+        var message = document.createElement("p")
+        message.id = "disconnect-message"
+        message.innerText = "Disconnected from server, please refresh the page"
+        document.body.append(message)
     }
 }
 

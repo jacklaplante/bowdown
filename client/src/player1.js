@@ -475,7 +475,6 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 });
 
 function randomSpawn() {
-    return new Vector3(75, 75, 75)
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }
 

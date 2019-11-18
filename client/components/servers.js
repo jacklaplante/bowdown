@@ -33,6 +33,13 @@ var Servers = function (_React$Component) {
       https.get('https://rvcv9mh5l1.execute-api.us-east-1.amazonaws.com/test/pets', function (res) {
         res.on('data', function (d) {
           var response = JSON.parse(d);
+          if (process.env.NODE_ENV == 'development') {
+            response.Items.push({
+              activePlayers: { S: "0" },
+              serverId: { S: "local" },
+              serverIp: { S: "ws://localhost:18181" }
+            });
+          }
           if (response.Items) {
             _this2.setState({ servers: response.Items });
           }

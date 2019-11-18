@@ -16,6 +16,13 @@ class Servers extends React.Component {
     https.get('https://rvcv9mh5l1.execute-api.us-east-1.amazonaws.com/test/pets', (res) => {
       res.on('data', (d) => {
         var response = JSON.parse(d);
+        if (process.env.NODE_ENV == 'development') {
+          response.Items.push({
+            activePlayers: {S: "0"},
+            serverId: {S: "local"},
+            serverIp: {S: "ws://localhost:18181"}
+          })
+        }
         if (response.Items) {
           this.setState({servers: response.Items});
         }

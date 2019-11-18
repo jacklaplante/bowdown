@@ -49,6 +49,7 @@ wss.on('connection', function connection(ws, req) {
     }
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
+        ws.lastMessage = Date.now()
         if(message.player){
             var player = message.player
             if (!players[player]) {
@@ -151,7 +152,9 @@ function noop() {}
 
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws) {
-    if (ws.isAlive === false) {
+    var timeSincelastMessage = Date.now()-ws.lastMessage
+    if (ws.isAlive === false || timeSincelastMessage>10000) { //timeSincelastMessage>300000
+        console.log("connection terminated")
         return ws.terminate();
     }
     ws.isAlive = false;
