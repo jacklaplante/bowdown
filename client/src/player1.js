@@ -155,7 +155,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         )
     }
 
-    function godMode() {
+    function godModeOn() {
         return godMode && process.env.NODE_ENV == 'development'
     }
 
@@ -164,7 +164,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
             if (player1.isRunning()) {
                 player1.anim[player1.activeMovement].timeScale = sprintModifier
             }
-            if (godMode()) {
+            if (godModeOn()) {
                 return movementSpeed*sprintModifier*30
             }
             return movementSpeed*sprintModifier
@@ -241,7 +241,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
         var falling = player1.falling(delta)
-        if (godMode() || (!falling && scene.loaded)) {
+        if (godModeOn() || (!falling && scene.loaded)) {
             player1.velocity.set(0,0,0)
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
@@ -275,7 +275,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
                     }
                 }
             }
-        } else if (!godMode() && scene.loaded) {
+        } else if (!godModeOn() && scene.loaded) {
             var grav = gravityAcceleration
             // if the player is falling
             if (player1.doubleJumped && player1.isFiring()) {
@@ -306,7 +306,7 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         }
         if (nextPos) {
             var collision = player1.collisionDetected(nextPos)
-            if(godMode() || !collision) {
+            if(godModeOn() || !collision) {
                 this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
             } else {
@@ -386,6 +386,10 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
+        if (player1.activeActions && player1.activeActions.includes("death")) {
+            this.activeActions = this.activeActions.filter(e => e != "death")
+            this.anim["death"].stop()
+        }
         var pos = randomSpawn()
         player1.setPosition(pos)
         player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
@@ -479,6 +483,9 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
 });
 
 function randomSpawn() {
+    // if (process.env.NODE_ENV == 'development') {
+    //     return new Vector3(70,70,70)
+    // }
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }
 

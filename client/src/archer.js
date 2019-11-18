@@ -32,7 +32,7 @@ function init(mixer, archer) {
     archer.anim.drawBow.clampWhenFinished = true
 
     mixer.addEventListener('finished', (event) => {
-        if (event.action.getClip().name == "death" && !archer.activeActions.includes("equipBow")) { // archer.activeActions.includes("equipBow") is such a shitty bandaid it hurts. but it's late
+        if (event.action.getClip().name == "death") {
             scene.remove(archer.gltf.scene)
         }
     })
