@@ -2,6 +2,8 @@ const fs = require('fs');
 const WebSocket = require('ws');
 const https = require('https');
 
+const playerLimit = 30
+
 let maxCount = 0;
 
 const prod = process.argv[2] == 'prod'
@@ -39,6 +41,13 @@ var players = {}
 var kingOfCrownMode = true
 var kingOfCrown
 var kingOfCrownStartTime
+
+wss.shouldHandle = function(request) {
+    if (Object.keys(players).length > playerLimit) {
+        return false
+    }
+    return true
+}
 
 wss.on('connection', function connection(ws, req) {
     ws.isAlive = true;
@@ -153,7 +162,7 @@ function noop() {}
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws) {
     var timeSincelastMessage = Date.now()-ws.lastMessage
-    if (ws.isAlive === false || timeSincelastMessage>10000) { //timeSincelastMessage>300000
+    if (ws.isAlive === false || timeSincelastMessage>300000) {
         console.log("connection terminated")
         return ws.terminate();
     }
