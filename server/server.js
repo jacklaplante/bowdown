@@ -192,3 +192,4 @@ function updatePlayerCount(count) {
         request.end();
     }
 }
+updatePlayerCount(0);
