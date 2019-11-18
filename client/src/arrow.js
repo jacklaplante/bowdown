@@ -1,4 +1,4 @@
-import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, TextureLoader, SpriteMaterial, Sprite} from 'three'
+import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, TextureLoader} from 'three'
 
 import scene from './scene'
 import {playerHitBoxes, killPlayer} from './players'
@@ -11,7 +11,6 @@ import {loadAudio} from './audio'
 import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
 import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
 import grappleHitAudio from '../audio/effects/Grapple Hit.mp3'
-import spriteMap from '../sprites/circle.png'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
@@ -20,7 +19,7 @@ var arrowLength = 0.75
 const localOffset = new Vector3(0, 1.5, 0)
 const arrowTypes = {
     normal: {
-        color: 0xffffff
+        color: 0x00ff62
     },
     rope: {
         color: 0xff7b00
@@ -28,7 +27,6 @@ const arrowTypes = {
 }
 
 var textureLoader = new TextureLoader();
-var spriteTexture = textureLoader.load(spriteMap);
 var sounds = {}
 sounds.arrowHitGround = loadAudio(arrowHitGroundAudio)
 sounds.arrowHitPlayer = loadAudio(arrowHitPlayerAudio)
@@ -88,11 +86,6 @@ function shootArrow(type){
             timeOfShoot: Date.now()
         }
     })
-
-    var spriteMaterial = new SpriteMaterial({map: spriteTexture, color: 0xffffff});
-    var sprite = new Sprite(spriteMaterial);
-    sprite.name = "sprite"
-    arrow.add(sprite);
 
     return arrow
 }
@@ -175,7 +168,6 @@ function animateArrows(delta) {
 
 function stopPlayer1Arrow(arrow) {
     arrow.stopped = true
-    arrow.remove(arrow.getObjectByName("sprite"))
 }
 
 function retractRopeArrow() {
