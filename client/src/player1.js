@@ -379,23 +379,27 @@ loader.load(models('./benji_'+player1.race+'.gltf'),
         player1.bowState = "unequipped";
     }
 
-    player1.takeDamage = function() {
+    player1.takeDamage = function(damage) {
+        this.hp -= damage
         this.playAction("death")
         gameOver()
     }
 
     player1.respawn = function() {
         scene.add(player1.gltf.scene)
+        player1.gltf.scene.visible = true
         if (player1.activeActions && player1.activeActions.includes("death")) {
             this.activeActions = this.activeActions.filter(e => e != "death")
             this.anim["death"].stop()
         }
         var pos = randomSpawn()
         player1.setPosition(pos)
+        player1.hp = 100
         player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
         // say hi to server
         sendMessage({
             player: player1.uuid,
+            hp: player1.hp,
             position: pos,
             race: player1.race,
             status: 'respawn'
