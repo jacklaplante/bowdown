@@ -81,7 +81,7 @@ var Title = function (_React$Component) {
           "Like the game? ",
           React.createElement(
             "a",
-            { href: "https://www.kickstarter.com/projects/698520615/bowdown", target: "_blank" },
+            { href: "https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", target: "_blank" },
             "Checkout the Kickstarter!"
           )
         )
