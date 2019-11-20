@@ -74,6 +74,16 @@ var Title = function (_React$Component) {
               React.createElement("path", { className: "cls-5", d: "M600.14,89.42h-.26c-3.4-7.49,6.46-21.7,6.51-37.1l-24.09.08-1.94,4.51c0,4.12-4.31,9-5.78,12.74-2.67,6.77-11.84,15.35-13.87,19.62h-.5c-3.4-7.46,6.4-21.47,6.5-36.82l-24.15.08-1.88,4.38c-4.8,22.79-10.47,43.68-.49,60.59h33a102,102,0,0,0,6.7-14.11h.38c2.15,5,4.55,10,6.7,14.11h25.77C623.4,97.14,637.76,78.88,649,56l1.68-3.85-27.74.09C616.39,66.41,603.67,81.78,600.14,89.42Z" })
             )
           )
+        ),
+        React.createElement(
+          "p",
+          { id: "kickstarter" },
+          "Like the game? ",
+          React.createElement(
+            "a",
+            { href: "https://www.kickstarter.com/projects/698520615/bowdown", target: "_blank" },
+            "Checkout the Kickstarter!"
+          )
         )
       );
     }
