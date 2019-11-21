@@ -18,9 +18,24 @@ players.get = (uuid) => {
     return roster[uuid]
 }
 
-players.add = function(uuid, position, race, rotation) {
+players.respawn = function(uuid, position, rotation, race) {
+    if (roster[uuid]) {
+        roster[uuid].gltf.scene.visible = true
+        roster[uuid].hp = 100
+        if (!rotation) {
+            rotation = new Euler()
+        }
+        if (position) {
+            players.move(uuid, position, rotation)
+        }
+    } else {
+        players.add(uuid, position, rotation, race)
+    }
+}
+
+players.add = function(uuid, position, rotation, race) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
-    roster[uuid] = {}
+    roster[uuid] = {hp: 100}
     if (race==null) {
         console.error("race is undefined")
         race = 'brown'
@@ -54,8 +69,8 @@ players.init = function(newPlayers) {
         (playerUuid) => {
             players.add(playerUuid,
                 newPlayers[playerUuid].position,
-                newPlayers[playerUuid].race,
-                newPlayers[playerUuid].rotation);
+                newPlayers[playerUuid].rotation,
+                newPlayers[playerUuid].race);
         })
 }
 
@@ -79,6 +94,11 @@ players.stopAction = function(playerUuid, action) {
     player.anim[action].stop()
 }
 
+players.takeDamage = function(playerUuid, damage) {
+    var player = roster[playerUuid]
+    player.hp -= damage
+}
+
 function animatePlayers(delta) {
     Object.keys(roster).forEach(
         (playerUuid) => {
@@ -89,9 +109,11 @@ function animatePlayers(delta) {
 }
 
 function killPlayer(playerUuid) {
+    var damage = 100
+    players.takeDamage(playerUuid, damage)
     sendMessage({
         player: playerUuid,
-        damage: 100
+        damage: damage
     })
 }
 

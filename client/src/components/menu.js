@@ -59,6 +59,10 @@ class Menu extends React.Component {
           <div id="menu-info">
             {(window.innerWidth < window.innerHeight) ? 'put phone in landscape mode for best experience' : ''}
           </div>
+          <div className="footer">
+            <p>A game by Snubber - <a href="https://twitter.com/bowdownIO" target="_blank">twitter</a></p>
+            <p>Feedback? Send to bowdown.feedback@gmail.com</p>
+          </div>
         </div>
       );
     } else if (this.state.page == "servers") {

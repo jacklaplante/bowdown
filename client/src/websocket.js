@@ -42,12 +42,14 @@ function onMessage(message) {
         } else if (message.chatMessage) {
             newChatMessage(message.chatMessage)
         } else {
-            if (message.status==='disconnected') {
+            if (message.damage) {
+                players.takeDamage(player, message.damage)
+            } else if (message.status==='disconnected') {
                 // player disconnected, remove
                 scene.remove(players.get(player).gltf.scene)
                 players.remove(player)
             } else if (!players.get(player) || message.status==='respawn') {
-                players.add(player, message.position, message.race, message.rotation)
+                players.respawn(player, message.position, message.rotation, message.race)
             } else if (players.get(player).gltf && message.position && message.rotation!=null) {
                 players.move(player, message.position, message.rotation, message.kingOfCrown)
             } else if (players.get(player).gltf && message.playAction) {

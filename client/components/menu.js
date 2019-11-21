@@ -115,6 +115,25 @@ var Menu = function (_React$Component) {
             'div',
             { id: 'menu-info' },
             window.innerWidth < window.innerHeight ? 'put phone in landscape mode for best experience' : ''
+          ),
+          React.createElement(
+            'div',
+            { className: 'footer' },
+            React.createElement(
+              'p',
+              null,
+              'A game by Snubber - ',
+              React.createElement(
+                'a',
+                { href: 'https://twitter.com/bowdownIO', target: '_blank' },
+                'twitter'
+              )
+            ),
+            React.createElement(
+              'p',
+              null,
+              'Feedback? Send to bowdown.feedback@gmail.com'
+            )
           )
         );
       } else if (this.state.page == "servers") {

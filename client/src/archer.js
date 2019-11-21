@@ -32,8 +32,8 @@ function init(mixer, archer) {
     archer.anim.drawBow.clampWhenFinished = true
 
     mixer.addEventListener('finished', (event) => {
-        if (event.action.getClip().name == "death") {
-            scene.remove(archer.gltf.scene)
+        if (event.action.getClip().name == "death" && archer.hp <= 0) {
+            archer.gltf.scene.visible = false
         }
     })
 
