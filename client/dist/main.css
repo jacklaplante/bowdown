@@ -221,6 +221,7 @@ ul, #server-list .server, .footer {
     bottom: 0;
     right: 0;
     margin: 0 7vw 0 0;
+    font-size: 1vw;
 }
 
 a {
