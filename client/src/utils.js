@@ -7,6 +7,13 @@ function uuid() {
     });
 }
 
+function localVector(v, pos, gravityDirection) {
+    if (gravityDirection=="down") {
+        return v
+    } else {
+        return pos.normalize().multiplyScalar(v.y)
+    }
+}
 
 const displayCollisionLines = false
 
@@ -49,4 +56,4 @@ function showSpatialIndexLines(scene) { // if you use this make sure it's up to 
       }
 }
 
-export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines}
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector}

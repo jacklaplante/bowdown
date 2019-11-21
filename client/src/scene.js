@@ -16,18 +16,23 @@ var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
 var objects = {}
 
-loader.load(env, function (gltf) {
-    var mesh = gltf.scene;
-    mesh.children.forEach((child) => {
-        if (objects[child.name]) throw "all object names bust be unique"
-        objects[child.name] = child
-    })
-    scene.add(mesh);
-    collidableEnvironment.push(mesh)
-    scene.loaded = true
-}, function(bytes) {
-    console.log("scene " + Math.round((bytes.loaded / bytes.total)*100) + "% loaded")
-});
+scene.gravityDirection = "center"
+
+scene.loadMap = function(map) {
+    loader.load(env, function (gltf) {
+        document.getElementById("loading-indicator").remove()
+        var mesh = gltf.scene;
+        mesh.children.forEach((child) => {
+            if (objects[child.name]) throw "all object names bust be unique"
+            objects[child.name] = child
+        })
+        scene.add(mesh);
+        collidableEnvironment.push(mesh)
+        scene.loaded = true
+    }, function(bytes) {
+        document.getElementById("loading-indicator").innerText = Math.round((bytes.loaded / bytes.total)*100) + "%"
+    });
+}
 
 let materialArray = [];  
 materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_ft) }));
@@ -57,6 +62,9 @@ scene.animate = function(delta) {
 }
 
 scene.getCollidableEnvironment = function(positions) {
+    if (this.gravityDirection == "down") { // create spatial index for garden
+        return collidableEnvironment
+    }
     var collidable = []
     if (positions) {
         positions.forEach((position) => {

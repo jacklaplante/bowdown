@@ -224,6 +224,16 @@ ul, #server-list .server, .footer {
     font-size: 1vw;
 }
 
+#loading-indicator {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 30vh;
+    font-size: 3vh;
+    color: wheat;
+    font-family: monospace;
+}
+
 a {
     color: white;
 }

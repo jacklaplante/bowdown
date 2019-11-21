@@ -1,7 +1,5 @@
 import {LoopOnce} from 'three'
 
-import scene from './scene'
-
 function getAnimation(archer, name){
     var result;
     archer.gltf.animations.forEach((animation) => {

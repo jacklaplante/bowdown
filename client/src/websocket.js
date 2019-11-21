@@ -20,6 +20,12 @@ function connectToServer(serverAddress) {
     ws = new WebSocket(serverAddress);
     ws.onmessage = onMessage;
     ws.onopen = onConnect;
+    document.getElementById("server-list").remove();
+    var loadingIndicator = document.createElement("p")
+    loadingIndicator.innerText = "loading map"
+    loadingIndicator.id = "loading-indicator"
+    document.body.append(loadingIndicator);
+    scene.loadMap();
 }
 
 function onConnect(){

@@ -25,6 +25,9 @@ var phi = 0
 
 var onTop = 1 // for some reason, without this things get real fucky when the player is on the south pole
 function updateOnTop() { // this is essentially a hack, and it's not even a good one
+    if (scene.gravityDirection == "down") {
+        return 1
+    }
     if (cameraTarget.y < -20 ) {
         onTop = -1
     } else if (cameraTarget.y > 20) {
@@ -39,6 +42,9 @@ camera.nextPosition = function(dist) {
         nextPos.x = dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
         nextPos.y = onTop * dist * Math.sin(phi * Math.PI / 360);
         nextPos.z = onTop * dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+        if (scene.gravityDirection == "down") {
+            return cameraTarget.clone().add(nextPos)
+        }
         return cameraTarget.clone().add(
             nextPos.applyQuaternion( // the crux of the camera issues (where it used to get fucky at the south pole) lies here. TODO: investigate further
                 new Quaternion().setFromUnitVectors(
@@ -94,9 +100,14 @@ camera.setPosition = function(nextPos) {
 
 camera.updateCamera = function() {
     if (player1!=null) {
-        var v = player1.getPosition().sub(camera.position.clone())
-        var v2 = player1.getPosition().normalize().cross(v).normalize().multiplyScalar(-0.5)
-        cameraTarget.copy(player1.getPosition().add(v2).add(player1.getPosition().normalize().multiplyScalar(1.8)))
+        var v = player1.getPosition().clone().sub(camera.position.clone())
+        if (scene.gravityDirection == "down") {
+            var v2 = new Vector3(-v.z, v.y, v.x).normalize().multiplyScalar(0.5)
+            cameraTarget.copy(player1.getPosition().clone().add(v2)).setY(player1.getPosition().y+1.8)
+        } else {
+            var v2 = player1.getPosition().normalize().cross(v).normalize().multiplyScalar(-0.5)
+            cameraTarget.copy(player1.getPosition().add(v2).add(player1.getPosition().normalize().multiplyScalar(1.8)))
+        }
         
         var nextPos = camera.nextPosition(distance)
 
@@ -111,7 +122,9 @@ camera.updateCamera = function() {
         }
         camera.setPosition(nextPos)
     }
-    camera.up.copy(player1.getPosition().normalize())
+    if (scene.gravityDirection == "center") {
+        camera.up.copy(player1.getPosition().normalize())
+    }
     camera.lookAt(cameraTarget);
     camera.updateMatrix();
 }

@@ -100,7 +100,11 @@ function addOtherPlayerArrow(newArrow) {
 }
 
 function moveArrow(arrow, delta) {
-    arrow.velocity.sub(arrow.position.clone().normalize().multiplyScalar(9*delta))
+    if (scene.gravityDirection=="down") {
+        arrow.velocity.sub(new Vector3(0, 9*delta, 0))
+    } else {
+        arrow.velocity.sub(arrow.position.clone().normalize().multiplyScalar(9*delta))
+    }
     arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
 }
 

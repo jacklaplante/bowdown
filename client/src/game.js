@@ -176,7 +176,6 @@ function gameOver() {
         player1.respawn()
         play()   
     }
-    document.getElementById("server-list").remove()
     var menu = document.querySelector("#menu .centered")
     menu.append(respawnButton)
 }
