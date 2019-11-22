@@ -171,6 +171,7 @@ function updateKingOfCrownTime() {
     }
 }
 
+var kickstarterOpened = false
 function gameOver() {
     state = "gameOver"
     document.body.classList.remove("playing")
@@ -181,7 +182,10 @@ function gameOver() {
     respawnButton.innerText = "respawn"
     respawnButton.onclick = function() {
         player1.respawn()
-        window.open("https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", "_blank");
+        if (!kickstarterOpened) {
+            window.open("https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", "_blank");
+            kickstarterOpened = true
+        }
         play()
         respawnButton.remove()
     }
