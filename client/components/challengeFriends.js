@@ -34,7 +34,8 @@ var ChallengeFriends = function (_React$Component) {
     key: 'startOnServer',
     value: function startOnServer(event) {
       if (this.state.gameName) {
-        connectToServer("ws://localhost:18181/" + this.state.gameName);
+        // MAKE SURE THE URL ENDS WITH A / 
+        connectToServer("wss://virginia.bowdown.io:18181/" + this.state.gameName);
         document.getElementById("challenge-friends-form").remove();
         this.props.startGame();
       }
