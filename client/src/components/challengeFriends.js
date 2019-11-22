@@ -12,7 +12,7 @@ class ChallengeFriends extends React.Component {
   }
 
   handleChange(event) {
-    var name = event.target.value.replace(/[^a-z]/gi, '')
+    var name = event.target.value.replace(/[^a-z]/gi, '').toLowerCase()
     this.setState({gameName: name});
   }
 

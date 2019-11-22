@@ -27,7 +27,7 @@ var ChallengeFriends = function (_React$Component) {
   _createClass(ChallengeFriends, [{
     key: 'handleChange',
     value: function handleChange(event) {
-      var name = event.target.value.replace(/[^a-z]/gi, '');
+      var name = event.target.value.replace(/[^a-z]/gi, '').toLowerCase();
       this.setState({ gameName: name });
     }
   }, {
