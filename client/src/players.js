@@ -5,6 +5,7 @@ import scene from './scene'
 import {init} from './archer'
 import {sendMessage} from './websocket';
 import {updateCrown} from './kingOfCrown'
+import player1 from './player1';
 
 var players = {};
 var roster = {}
@@ -61,6 +62,7 @@ players.add = function(uuid, position, rotation, race) {
 }
 
 players.remove = function(uuid) {
+    scene.remove(players.get(uuid).gltf.scene)
     delete roster[uuid]
 }
 
@@ -112,8 +114,9 @@ function killPlayer(playerUuid) {
     var damage = 100
     players.takeDamage(playerUuid, damage)
     sendMessage({
-        player: playerUuid,
-        damage: damage
+        player: player1.uuid,
+        damage: damage,
+        to: playerUuid
     })
 }
 

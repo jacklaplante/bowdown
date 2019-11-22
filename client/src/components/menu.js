@@ -3,6 +3,9 @@ import React from 'react'
 import Title from './title'
 import Controls from './controls'
 import Servers from './servers'
+import ChallengeFriends from './challengeFriends'
+
+import scene from '../src/scene'
 
 class Menu extends React.Component {
 
@@ -14,6 +17,7 @@ class Menu extends React.Component {
     };
     this.showControls = this.showControls.bind(this);
     this.listServers = this.listServers.bind(this);
+    this.challengeFriends = this.challengeFriends.bind(this);
     this.mainPage = this.mainPage.bind(this);
   }
 
@@ -27,7 +31,14 @@ class Menu extends React.Component {
 
   listServers() {
     this.setState({page: "servers"})
+    scene.loadMap("./lowild.glb", "center");
   }
+
+  challengeFriends() {
+    this.setState({page: "challengeFriends"})
+    scene.loadMap("./garden.glb", "down");
+  }
+  
 
   async componentDidMount() {
     const game = await import(/* webpackChunkName: "game" */ '../src/game')
@@ -53,7 +64,10 @@ class Menu extends React.Component {
         <div className="centered">
           <Title title='bowdown' />
           <div className="button" onClick={this.listServers} id="servers">
-            {this.state.readyToRock ? 'servers' : 'loading'}
+            {this.state.readyToRock ? 'face the world' : 'loading'}
+          </div>
+          <div className="button" onClick={this.challengeFriends} id="challenge-friends">
+            {this.state.readyToRock ? 'challenge your friends' : 'loading'}
           </div>
           <div className="button" onClick={this.showControls} id="controls-button">controls</div>
           <div id="menu-info">
@@ -68,6 +82,10 @@ class Menu extends React.Component {
     } else if (this.state.page == "servers") {
       return (
         <Servers mainMenu={this.mainPage} startGame={this.state.startGame} />
+      )
+    } else if (this.state.page == "challengeFriends") {
+      return (
+        <ChallengeFriends mainMenu={this.mainPage} startGame={this.state.startGame} />
       )
     } else if (this.state.page == "controls") {
       return (

@@ -2,7 +2,6 @@ import {Clock} from 'three'
 
 import player1 from './player1'
 import { players } from './players'
-import scene from './scene'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
@@ -20,12 +19,6 @@ function connectToServer(serverAddress) {
     ws = new WebSocket(serverAddress);
     ws.onmessage = onMessage;
     ws.onopen = onConnect;
-    document.getElementById("server-list").remove();
-    var loadingIndicator = document.createElement("p")
-    loadingIndicator.innerText = "loading map"
-    loadingIndicator.id = "loading-indicator"
-    document.body.append(loadingIndicator);
-    scene.loadMap();
 }
 
 function onConnect(){
@@ -40,19 +33,20 @@ function onMessage(message) {
     if (message.player) {
         var player = message.player;
         if (player == player1.uuid) {
-            if (message.damage) {
-                player1.takeDamage(message.damage)
-            } else if (message.kills) {
+            if (message.kills) {
                 setKillCount(message.kills)
             }
         } else if (message.chatMessage) {
             newChatMessage(message.chatMessage)
         } else {
-            if (message.damage) {
-                players.takeDamage(player, message.damage)
+            if (message.damage && message.to) {
+                if (message.to == player1.uuid) {
+                    player1.takeDamage(message.damage)
+                } else {
+                    players.takeDamage(message.to, message.damage)
+                }
             } else if (message.status==='disconnected') {
                 // player disconnected, remove
-                scene.remove(players.get(player).gltf.scene)
                 players.remove(player)
             } else if (!players.get(player) || message.status==='respawn') {
                 players.respawn(player, message.position, message.rotation, message.race)

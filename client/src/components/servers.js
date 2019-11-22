@@ -36,6 +36,7 @@ class Servers extends React.Component {
   startOnServer(event) {
     connectToServer(event.target.id)
     this.props.startGame();
+    document.getElementById("server-list").remove();
   } 
 
   render() {

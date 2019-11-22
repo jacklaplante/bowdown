@@ -16,7 +16,7 @@ import audioBowDraw from '../audio/effects/Bow Draw.mp3'
 import audioGrappleShot from '../audio/effects/Grapple Shot.mp3'
 import audioGrappleReel from '../audio/effects/Grapple Reel Loop.mp3'
 
-const models = require.context('../models/');
+const benji = require.context('../models/benji');
 
 var player1 = {uuid: uuid()}
 const movementSpeed = 7
@@ -33,7 +33,7 @@ sounds.grappleShot = loadAudio(audioGrappleShot)
 sounds.grappleReel = loadAudio(audioGrappleReel)
 
 player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
-loader.load(models('./benji_'+player1.race+'.gltf'),
+loader.load(benji('./benji_'+player1.race+'.gltf'),
   ( gltf ) => {
     player1.gltf = gltf;
     Object.keys(sounds).forEach((sound) => player1.gltf.scene.add(sounds[sound]))
@@ -509,9 +509,9 @@ function randomSpawn() {
     if (scene.gravityDirection == "down") {
         return new Vector3(10, 10, 10)
     }
-    // if (process.env.NODE_ENV == 'development') {
-    //     return new Vector3(70,70,70)
-    // }
+    if (process.env.NODE_ENV == 'development') {
+        return new Vector3(70,70,70)
+    }
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }
 

@@ -15,6 +15,9 @@ import React from 'react';
 import Title from './title';
 import Controls from './controls';
 import Servers from './servers';
+import ChallengeFriends from './challengeFriends';
+
+import scene from '../src/scene';
 
 var Menu = function (_React$Component) {
   _inherits(Menu, _React$Component);
@@ -30,6 +33,7 @@ var Menu = function (_React$Component) {
     };
     _this.showControls = _this.showControls.bind(_this);
     _this.listServers = _this.listServers.bind(_this);
+    _this.challengeFriends = _this.challengeFriends.bind(_this);
     _this.mainPage = _this.mainPage.bind(_this);
     return _this;
   }
@@ -48,6 +52,13 @@ var Menu = function (_React$Component) {
     key: 'listServers',
     value: function listServers() {
       this.setState({ page: "servers" });
+      scene.loadMap("./lowild.glb", "center");
+    }
+  }, {
+    key: 'challengeFriends',
+    value: function challengeFriends() {
+      this.setState({ page: "challengeFriends" });
+      scene.loadMap("./garden.glb", "down");
     }
   }, {
     key: 'componentDidMount',
@@ -104,7 +115,12 @@ var Menu = function (_React$Component) {
           React.createElement(
             'div',
             { className: 'button', onClick: this.listServers, id: 'servers' },
-            this.state.readyToRock ? 'servers' : 'loading'
+            this.state.readyToRock ? 'face the world' : 'loading'
+          ),
+          React.createElement(
+            'div',
+            { className: 'button', onClick: this.challengeFriends, id: 'challenge-friends' },
+            this.state.readyToRock ? 'challenge your friends' : 'loading'
           ),
           React.createElement(
             'div',
@@ -138,6 +154,8 @@ var Menu = function (_React$Component) {
         );
       } else if (this.state.page == "servers") {
         return React.createElement(Servers, { mainMenu: this.mainPage, startGame: this.state.startGame });
+      } else if (this.state.page == "challengeFriends") {
+        return React.createElement(ChallengeFriends, { mainMenu: this.mainPage, startGame: this.state.startGame });
       } else if (this.state.page == "controls") {
         return React.createElement(Controls, { mainMenu: this.mainPage });
       }

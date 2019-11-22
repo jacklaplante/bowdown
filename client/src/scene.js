@@ -1,7 +1,6 @@
 import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper} from 'three'
 
 import { loader } from './loader'
-import env from '../models/lowild.glb'
 import heather_ft from '../skybox/bluecloud_ft.jpg'
 import heather_bk from '../skybox/bluecloud_bk.jpg'
 import heather_up from '../skybox/bluecloud_up.jpg'
@@ -10,17 +9,19 @@ import heather_rt from '../skybox/bluecloud_rt.jpg'
 import heather_lf from '../skybox/bluecloud_lf.jpg'
 import spatialIndex from '../spatialIndex.json'
 
+const maps = require.context('../models/maps');
+
 var scene = new Scene();
 scene.loaded = false
 var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
 var objects = {}
 
-scene.gravityDirection = "center"
-
-scene.loadMap = function(map) {
-    loader.load(env, function (gltf) {
-        document.getElementById("loading-indicator").remove()
+scene.loadMap = function(map, gravityDirection) {
+    scene.gravityDirection = gravityDirection
+    loadingIndicator.add()
+    loader.load(maps(map), function (gltf) {
+        loadingIndicator.remove()
         var mesh = gltf.scene;
         mesh.children.forEach((child) => {
             if (objects[child.name]) throw "all object names bust be unique"
@@ -30,8 +31,29 @@ scene.loadMap = function(map) {
         collidableEnvironment.push(mesh)
         scene.loaded = true
     }, function(bytes) {
-        document.getElementById("loading-indicator").innerText = Math.round((bytes.loaded / bytes.total)*100) + "%"
+        loadingIndicator.update(Math.round((bytes.loaded / bytes.total)*100) + "%")
     });
+}
+
+const loadingIndicator = {
+    add: function() {
+        var indicator = document.createElement("p")
+        indicator.innerText = "loading map"
+        indicator.id = "loading-indicator"
+        document.body.append(indicator);
+    },
+    remove: function() {
+        var indicator = document.getElementById("loading-indicator")
+        if (indicator) {
+            document.getElementById("loading-indicator").remove()
+        }
+    },
+    update: function(percentString) {
+        var indicator = document.getElementById("loading-indicator")
+        if (indicator) {
+            indicator.innerText = percentString
+        }
+    }
 }
 
 let materialArray = [];  

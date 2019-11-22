@@ -174,7 +174,8 @@ function gameOver() {
     respawnButton.innerText = "respawn"
     respawnButton.onclick = function() {
         player1.respawn()
-        play()   
+        play()
+        respawnButton.remove()
     }
     var menu = document.querySelector("#menu .centered")
     menu.append(respawnButton)

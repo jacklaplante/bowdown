@@ -76,6 +76,7 @@ function shootArrow(type){
     player1Arrows.push(arrow)
 
     sendMessage({
+        player: player1.uuid,
         arrow: {
             type: type,
             origin: arrow.position,

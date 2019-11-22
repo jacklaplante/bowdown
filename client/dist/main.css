@@ -59,7 +59,8 @@ svg .cls-2{
 }
 
 #controls-button {
-    width: 36vw;
+    width: 22vw;
+    font-size: 3vw;
 }
 
 #mouse-and-keyboard-button {
@@ -76,8 +77,34 @@ svg .cls-2{
     display: block;
     color: #134461;
     background: #ffdba5;
-    width: 31vw;
+    width: 66vw;
     position: relative;
+}
+
+.ready #challenge-friends {
+    display: block;
+    color: #134461;
+    background: #ffdba5;
+    width: 94vw;
+    position: relative;
+}
+
+#challenge-friends-form {
+    width: 70vw;
+    margin: 0 15vw;
+}
+
+#challenge-friends-form p {
+    font-family: monospace;
+}
+
+#challenge-friends-form p.join {
+    padding: 1vw;
+    border-radius: 7pt;
+    border: 2pt solid #ffdba5;
+    margin: 1vw;
+    font-size: 1vw;
+    display: inline-block;
 }
 
 #fullscreen {

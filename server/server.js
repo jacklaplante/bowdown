@@ -7,7 +7,6 @@ const prod = process.argv[2] == 'prod'
 
 let maxCount = 0;
 
-
 var server, serverId, serverIp, apiKey
 if (prod) {
     if (process.argv.length < 6) throw "INCLUDE SERVER ID, SERVER IP, and API KEY"
@@ -36,26 +35,53 @@ if (prod) {
 }
 
 const wss = new WebSocket.Server({ server });
+const games = {}
+var defaultGame = initGame('default')
+defaultGame.kingOfCrownMode = true
+defaultGame.kingOfCrown
+defaultGame.kingOfCrownStartTime
 
-var players = {}
+function initGame(game) {
+    console.log("Starting game: " + game)
+    games[game] = {}
+    games[game].players = {}
+    return games[game]
+}
 
-var kingOfCrownMode = true
-var kingOfCrown
-var kingOfCrownStartTime
+function getGame(url) {
+    var gameName = alphaOnly(url)
+    if (gameName) {
+        if (games[gameName]) {
+            return games[gameName]
+        } else {
+            return initGame(gameName)
+        }
+    } else {
+        return games.default
+    }
+}
+
+function stopGame(game) {
+    delete game
+    console.log("Stopping game: " + game)
+}
 
 wss.shouldHandle = function(request) {
-    if (Object.keys(players).length > playerLimit) {
+    var game = getGame(request.url)
+    if (Object.keys(game.players).length > playerLimit) {
         return false
     }
     return true
 }
 
 wss.on('connection', function connection(ws, req) {
+    var game = getGame(req.url)
+    var players = game.players
     ws.isAlive = true;
     ws.on('pong', heartbeat);
     sendMessage(ws, {players: players})
-    if (kingOfCrownMode && kingOfCrownStartTime) {
-        sendMessage(ws, {kingOfCrownStartTime: kingOfCrownStartTime})
+    if (game.kingOfCrownMode && game.kingOfCrownStartTime) {
+        sendMessage(ws, {kingOfCrownStartTime: game.kingOfCrownStartTime})
     }
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
@@ -65,7 +91,8 @@ wss.on('connection', function connection(ws, req) {
             if (!players[player]) {
                 players[player] = {
                     hp: 100,
-                    kills: 0
+                    kills: 0,
+                    ws: ws
                 }
                 var playerCount = Object.keys(players).length;
                 updatePlayerCount(playerCount)
@@ -81,8 +108,8 @@ wss.on('connection', function connection(ws, req) {
             if (!ws.player) {
                 ws.player = player
             }
-            if (kingOfCrownMode && Object.keys(players).length == 2 && kingOfCrown == null && !players[player].kingOfCrown) {
-                setKingOfCrown(player)
+            if (game.kingOfCrownMode && Object.keys(players).length == 2 && game.kingOfCrown == null && !players[player].kingOfCrown) {
+                setKingOfCrown(game, player)
             }
             if (message.position) {
                 players[player].position = message.position
@@ -93,25 +120,21 @@ wss.on('connection', function connection(ws, req) {
             if (message.rotation) {
                 players[player].rotation = message.rotation
             }
-            if (message.damage) {
-                players[player].hp -= message.damage
-                if (players[player].hp <= 0) {
-                    players[ws.player].kills += 1
+            if (message.damage && message.to) {
+                players[message.to].hp -= message.damage
+                if (players[message.to].hp <= 0) {
+                    players[player].kills += 1
                     sendMessage(ws, {
-                        player: ws.player,
-                        kills: players[ws.player].kills
+                        player: player,
+                        kills: players[player].kills
                     });
-                    if (kingOfCrownMode && players[player].kingOfCrown) {
-                        setKingOfCrown(ws.player)
+                    if (game.kingOfCrownMode && players[message.to].kingOfCrown) {
+                        setKingOfCrown(game, ws.player)
                     }
                 }
             }
         }
-        wss.clients.forEach(function each(client) {
-            if (client !== ws && client.readyState === WebSocket.OPEN) {
-                sendMessage(client, message);
-            }
-          });
+        sendMessageToAll(game, message, player)
     });
     ws.on('close', function onClose(code, req){
         var playerUuid = this.player
@@ -119,34 +142,49 @@ wss.on('connection', function connection(ws, req) {
         var player = players[playerUuid]
         delete players[playerUuid];
         updatePlayerCount(Object.keys(players).length)
-        if (player && player.kingOfCrown && kingOfCrownMode) {
+        if (player && player.kingOfCrown && game.kingOfCrownMode) {
             if(Object.keys(players).length > 1) {
-                setKingOfCrown(Object.keys(players)[0])
+                setKingOfCrown(game, Object.keys(players)[0])
             } else {
-                kingOfCrown = null
+                game.kingOfCrown = null
             }
         }
-        wss.clients.forEach(function each(client) {
-            sendMessage(client, {
+        if (game != games.default && Object.keys(players).length == 0) {
+            stopGame(game)
+        } else {
+            sendMessageToAll(game, {
                 player: playerUuid,
                 status: 'disconnected'
             })
-        })
+        }
     })
     // ws.send('something');
 });
 
-function setKingOfCrown(playerUuid) {
-    kingOfCrown = playerUuid
-    kingOfCrownStartTime = Date.now()
-    players[playerUuid].kingOfCrown = true
-    players[playerUuid].kingOfCrownStartTime = kingOfCrownStartTime
+function sendMessageToAll(game, message, except) {
+    Object.keys(game.players).forEach((player) => {
+        if (player !== except) {
+            sendMessage(game.players[player].ws, message)
+        }
+    })
+}
+
+function sendMessage(client, message) {
+    if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(message));
+        console.log('sending: %s', JSON.stringify(message));   
+    }
+}
+
+function setKingOfCrown(game, playerUuid) {
+    game.kingOfCrown = playerUuid
+    game.kingOfCrownStartTime = Date.now()
+    game.players[playerUuid].kingOfCrown = true
+    game.players[playerUuid].kingOfCrownStartTime = game.kingOfCrownStartTime
     console.log(playerUuid + " is the new king!")
-    wss.clients.forEach(function each(client) {
-        sendMessage(client, {
-            newKing: playerUuid,
-            kingOfCrownStartTime: kingOfCrownStartTime
-        })
+    sendMessageToAll(game, {
+        newKing: playerUuid,
+        kingOfCrownStartTime: game.kingOfCrownStartTime
     })
 }
 
@@ -172,11 +210,6 @@ const interval = setInterval(function ping() {
   });
 }, 10000);
 
-function sendMessage(client, message) {
-    client.send(JSON.stringify(message));
-    console.log('sending: %s', JSON.stringify(message));
-}
-
 function heartbeat() {
     this.isAlive = true;
 }
@@ -190,6 +223,7 @@ const options = {
         "x-api-key": apiKey
     }
 }
+
 function updatePlayerCount(count) {
     if (prod) {
         console.log("updating player count to " + count)
@@ -205,4 +239,11 @@ function updatePlayerCount(count) {
         request.end();
     }
 }
+
+function alphaOnly(a) {
+    if (a) {
+        return a.replace(/[^a-z]/gi, '');
+    }
+}
+
 updatePlayerCount(0);
