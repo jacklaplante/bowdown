@@ -174,6 +174,7 @@ function gameOver() {
     respawnButton.innerText = "respawn"
     respawnButton.onclick = function() {
         player1.respawn()
+        window.open("https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", "_blank");
         play()
         respawnButton.remove()
     }
