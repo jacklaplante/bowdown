@@ -22,6 +22,7 @@ function connectToServer(serverAddress) {
 }
 
 function onConnect(){
+    player1.init()
     player1.respawn()
 }
 

@@ -402,9 +402,11 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         gameOver()
     }
 
-    player1.respawn = function() {
+    player1.init = function() {
         scene.add(player1.gltf.scene)
-        player1.gltf.scene.visible = true
+    }
+
+    player1.respawn = function() {
         if (player1.activeActions && player1.activeActions.includes("death")) {
             this.activeActions = this.activeActions.filter(e => e != "death")
             this.anim["death"].stop()
@@ -412,6 +414,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         var pos = randomSpawn()
         player1.setPosition(pos)
         player1.hp = 100
+        player1.gltf.scene.visible = true
         if (scene.gravityDirection == "center") {
             player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
         }

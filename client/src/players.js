@@ -21,8 +21,8 @@ players.get = (uuid) => {
 
 players.respawn = function(uuid, position, rotation, race) {
     if (roster[uuid]) {
-        roster[uuid].gltf.scene.visible = true
         roster[uuid].hp = 100
+        roster[uuid].gltf.scene.visible = true
         if (!rotation) {
             rotation = new Euler()
         }
