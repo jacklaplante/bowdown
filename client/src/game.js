@@ -116,6 +116,12 @@ function onKeyUp(event) {
     toggleKey(event, false);
 }
 
+function lockPointer() {
+    if (document.body.requestPointerLock) {
+        document.body.requestPointerLock();
+    }
+}
+
 function onMouseDown() {
     if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
         document.getElementById("chat").classList.add("chatting")
@@ -123,13 +129,14 @@ function onMouseDown() {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
             if (state == "paused") {
-                if (document.body.requestPointerLock) {
-                    document.body.requestPointerLock();
-                }
+                lockPointer()
                 play()
             }
         }
         if (state == "playing") {
+            if (document.pointerLockElement == null) {
+                lockPointer()
+            }
             player1.onMouseDown()
         }
     }
