@@ -344,13 +344,9 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
             }
             if (rotation) {
                 player1.getRotation().copy(new Euler(0,rotation,0))
-                quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), quatVert)   
-            quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), quatVert)   
-                quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), quatVert)   
+                quat = new Quaternion().setFromUnitVectors(new Vector3(0,1,0), quatVert)
             } else if (nextPos) {
-                quat = new Quaternion().setFromUnitVectors(player1.getPosition().normalize(), quatVert)   
-            quat = new Quaternion().setFromUnitVectors(player1.getPosition().normalize(), quatVert)   
-                quat = new Quaternion().setFromUnitVectors(player1.getPosition().normalize(), quatVert)   
+                quat = new Quaternion().setFromUnitVectors(player1.getPosition().normalize(), quatVert)
             }
             if (quat) player1.gltf.scene.applyQuaternion(quat)
         }

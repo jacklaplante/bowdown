@@ -1,4 +1,4 @@
-import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, TextureLoader} from 'three'
+import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion} from 'three'
 
 import scene from './scene'
 import {playerHitBoxes, killPlayer} from './players'
@@ -26,7 +26,6 @@ const arrowTypes = {
     }
 }
 
-var textureLoader = new TextureLoader();
 var sounds = {}
 sounds.arrowHitGround = loadAudio(arrowHitGroundAudio)
 sounds.arrowHitPlayer = loadAudio(arrowHitPlayerAudio)
@@ -105,6 +104,9 @@ function moveArrow(arrow, delta) {
         arrow.velocity.sub(new Vector3(0, 9*delta, 0))
     } else {
         arrow.velocity.sub(arrow.position.clone().normalize().multiplyScalar(9*delta))
+        var nextPos = arrow.position.clone().add(arrow.velocity.clone().multiplyScalar(delta))
+        var quat = new Quaternion().setFromUnitVectors(arrow.position.clone().normalize(), nextPos.clone().normalize())
+        arrow.applyQuaternion(quat)
     }
     arrow.position.add(arrow.velocity.clone().multiplyScalar(delta))
 }
