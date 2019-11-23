@@ -46,8 +46,9 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && player1.mixer) {
-        if (state != "gameOver") {
-            player1.animate(delta, input);   
+        if (state != "gameOver" && player1.hp > 0) {
+            player1.animate(delta, input);
+            camera.animate(delta);
         }
         player1.mixer.update( delta );
     }
@@ -55,7 +56,6 @@ function animate() {
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)
     }
-    camera.animate(delta);
     scene.animate(delta);
     if (process.env.NODE_ENV == 'development') {
         document.getElementById("fps").innerHTML = Math.round(1/delta)
