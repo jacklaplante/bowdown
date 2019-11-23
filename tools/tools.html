@@ -2,11 +2,27 @@
 <meta charset="utf-8">
 <title>Bowdown tools</title>
 <body>
-<input type="file" id="files" name="files[]" multiple />
-<button id="runBots">Run bots</button>
-<button id="runIndexer">Run Spatial Indexer</button>
-<a id="downloadAnchorElem" style="display:none"></a>
-<p id="index"></p>
+<div>
+  <input type="file" id="files" name="files[]" multiple />
+</div>
+<hr />
+<div>
+    <button id="runBots">Run bots</button>
+</div>
+<hr />
+<div>
+    <button id="runIndexer">Run Spatial Indexer</button>
+    <input type="radio" name="gravity" value="center"> Center<br>
+    <input type="radio" name="gravity" id="down" onclick="document.getElementById('map-bounds').setAttribute('style', '')" value="down"> Down<br>
+    <div id="map-bounds"  style="display:none">
+        x min <input type="text" name="x-min" id="x-min" />
+        x max <input type="text" name="x-max" id="x-max" />
+        z min <input type="text" name="z-min" id="z-min" />
+        z max <input type="text" name="z-max" id="z-max" />
+    </div>
+    <a id="downloadAnchorElem" style="display:none"></a>
+    <p id="index"></p>
+</div>
 <output id="list"></output>
 <script src="http://threejs.org/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/gh/mrdoob/three.js@r92/examples/js/loaders/GLTFLoader.js"></script>
@@ -83,33 +99,44 @@
         loader.load(e.target.result, function (gltf) {
           var mesh = gltf.scene;
           scene.add(mesh);
-          var spatialIndex = []
-          for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
-            spatialIndex[x] = []
-            for (var y=0; y < indexMod*2; y++) {
-              spatialIndex[x][y] = []
-              for (var z=0; z < indexMod*2; z++) {
-                spatialIndex[x][y][z] = []
-                var dir, ray, collisions;
-                for (var a=0; a<dots; a++) {
-                  for (var b=0; b<dots; b++) {
-                    for (var c=0; c<dots; c++) {
-                      dir = new THREE.Vector3(x-indexMod+a/dots, y-indexMod+b/dots, z-indexMod+c/dots).normalize()
-                      ray = new THREE.Raycaster(new THREE.Vector3(), dir)
-                      collisions = ray.intersectObject(mesh, true)
-                      collisions.forEach((collision) => {
-                        if (!spatialIndex[x][y][z].includes(collision.object.name)) {
-                          spatialIndex[x][y][z].push(collision.object.name)
-                        }
-                      })
+
+          if (document.getElementById("down").checked) {
+            var xMin = parseInt(document.getElementById("x-min").value)
+            var xMax = parseInt(document.getElementById("x-max").value)
+            var zMin = parseInt(document.getElementById("z-min").value)
+            var zMax = parseInt(document.getElementById("z-max").value)
+             // left off here
+
+          } else {
+            var spatialIndex = []
+            for (var x=0; x < indexMod*2; x++) { // THERE WILL BE OVERLAP
+              spatialIndex[x] = []
+              for (var y=0; y < indexMod*2; y++) {
+                spatialIndex[x][y] = []
+                for (var z=0; z < indexMod*2; z++) {
+                  spatialIndex[x][y][z] = []
+                  var dir, ray, collisions;
+                  for (var a=0; a<dots; a++) {
+                    for (var b=0; b<dots; b++) {
+                      for (var c=0; c<dots; c++) {
+                        dir = new THREE.Vector3(x-indexMod+a/dots, y-indexMod+b/dots, z-indexMod+c/dots).normalize()
+                        ray = new THREE.Raycaster(new THREE.Vector3(), dir)
+                        collisions = ray.intersectObject(mesh, true)
+                        collisions.forEach((collision) => {
+                          if (!spatialIndex[x][y][z].includes(collision.object.name)) {
+                            spatialIndex[x][y][z].push(collision.object.name)
+                          }
+                        })
+                      }
                     }
                   }
+                  document.getElementById(f.name).setAttribute("style", "color: " + colors[Math.floor(Math.random()*colors.length)])
+                  console.log("indexed x: " + x + ", y: " + y + ", z: " + z)
                 }
-                document.getElementById(f.name).setAttribute("style", "color: " + colors[Math.floor(Math.random()*colors.length)])
-                console.log("indexed x: " + x + ", y: " + y + ", z: " + z)
               }
             }
           }
+
           var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(spatialIndex));
           var dlAnchorElem = document.getElementById('downloadAnchorElem');
           dlAnchorElem.setAttribute("href", dataStr);
