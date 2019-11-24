@@ -96,6 +96,13 @@ svg .cls-2{
 
 #challenge-friends-form p {
     font-family: monospace;
+    font-size: 2vw;
+}
+
+#challenge-friends-form input {
+    width: 16vw;
+    height: 4vh;
+    font-size: 2vw;
 }
 
 #challenge-friends-form p.join {
@@ -103,7 +110,7 @@ svg .cls-2{
     border-radius: 7pt;
     border: 2pt solid #ffdba5;
     margin: 1vw;
-    font-size: 1vw;
+    font-size: 2vw;
     display: inline-block;
 }
 
