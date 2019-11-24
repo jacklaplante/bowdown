@@ -122,6 +122,12 @@ function lockPointer() {
     }
 }
 
+function unlockPointer() {
+    if (document.exitPointerLock) {
+        document.exitPointerLock()
+    }
+}
+
 function onMouseDown() {
     if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
         document.getElementById("chat").classList.add("chatting")
@@ -180,6 +186,7 @@ function gameOver() {
     var respawnButton = document.createElement('div');
     respawnButton.classList.add("button")
     respawnButton.innerText = "respawn"
+    unlockPointer()
     respawnButton.onclick = function() {
         player1.respawn()
         if (!kickstarterOpened) {
