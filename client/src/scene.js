@@ -7,7 +7,8 @@ import heather_up from '../skybox/bluecloud_up.jpg'
 import heather_dn from '../skybox/bluecloud_dn.jpg'
 import heather_rt from '../skybox/bluecloud_rt.jpg'
 import heather_lf from '../skybox/bluecloud_lf.jpg'
-import spatialIndex from '../spatialIndex.json'
+import lowildSpatialIndex from '../lowildSpatialIndex.json'
+import gardenSpatialIndex from '../gardenSpatialIndex.json'
 
 const maps = require.context('../models/maps');
 
@@ -16,10 +17,16 @@ scene.loaded = false
 var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
 var objects = {}
+let spatialIndex
 
 scene.loadMap = function(map, gravityDirection) {
     scene.gravityDirection = gravityDirection
     loadingIndicator.add()
+    if (map.includes("garden")) {
+        spatialIndex = gardenSpatialIndex
+    } else {
+        spatialIndex = lowildSpatialIndex
+    }
     loader.load(maps(map), function (gltf) {
         loadingIndicator.remove()
         var mesh = gltf.scene;
@@ -84,14 +91,16 @@ scene.animate = function(delta) {
 }
 
 scene.getCollidableEnvironment = function(positions) {
-    if (this.gravityDirection == "down") { // create spatial index for garden
-        return collidableEnvironment
-    }
     var collidable = []
     if (positions) {
         positions.forEach((position) => {
             var pos = position.clone().normalize().multiplyScalar(indexMod)
-            var collisions = spatialIndex[Math.floor(pos.x)+indexMod][Math.floor(pos.y)+indexMod][Math.floor(pos.z)+indexMod]
+            var collisions
+            if (this.gravityDirection == "down") {
+                collisions = spatialIndex[Math.floor((pos.x+200)*(50/400))][Math.floor((pos.z+200)*(50/400))]
+            } else {
+                collisions = spatialIndex[Math.floor(pos.x)+indexMod][Math.floor(pos.y)+indexMod][Math.floor(pos.z)+indexMod]
+            }
             collisions.forEach((collision) => {
                 if (objects[collision]) {
                     collidable.push(objects[collision])
