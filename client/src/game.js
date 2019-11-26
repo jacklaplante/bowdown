@@ -134,7 +134,7 @@ function onMouseDown() {
     } else {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
-            if (state == "paused") {
+            if (state == "paused" && player1.hp > 0) {
                 lockPointer()
                 play()
             }
