@@ -38,7 +38,8 @@ const cameraTouchSensitivity = 4
 const touchElements = [
     document.getElementById("shoot-button"),
     document.getElementById("rope-button"),
-    document.getElementById("jump-button")
+    document.getElementById("jump-button"),
+    document.getElementById("menu-button")
 ]
 var rotated
 
@@ -131,7 +132,7 @@ function unlockPointer() {
 function onMouseDown() {
     if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
         document.getElementById("chat").classList.add("chatting")
-    } else {
+    } else if (event.target.innerText != "respawn") {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
             if (state == "paused" && player1.hp > 0) {
@@ -156,7 +157,16 @@ function onMouseUp(event) {
 function play() {
     document.body.classList.remove("ready")
     document.body.classList.add('playing')
+    removeMenuElement()
     state = "playing"
+}
+
+function removeMenuElement() {
+    getMenuElement().innerHTML = ""
+}
+
+function getMenuElement() {
+    return document.querySelector("#menu .centered")
 }
 
 function setKillCount(count) {
@@ -183,10 +193,20 @@ function gameOver() {
     document.body.classList.remove("playing")
     document.body.classList.remove("playing")
     document.body.classList.add("gameOver")
-    var respawnButton = document.createElement('div');
-    respawnButton.classList.add("button")
-    respawnButton.innerText = "respawn"
     unlockPointer()
+    addRespawnButton()
+}
+
+function addMenuButton(text) {
+    var button = document.createElement('div');
+    button.classList.add("button")
+    button.innerText = text
+    getMenuElement().append(button)
+    return button
+}
+
+function addRespawnButton() {
+    var respawnButton = addMenuButton("respawn")
     respawnButton.onclick = function() {
         player1.respawn()
         if (!kickstarterOpened) {
@@ -196,22 +216,27 @@ function gameOver() {
         play()
         respawnButton.remove()
     }
-    var menu = document.querySelector("#menu .centered")
-    menu.append(respawnButton)
 }
 
 function onPointerLockChange() {
-    if (!document.pointerLockElement) {
-        state = "paused"
-    } else {
-        state = "playing"
+    if (document.pointerLockElement) {
+        play()
+    } else if (!usingTouchControls) {
+        pause()
     }
+}
+
+function pause() {
+    state = "paused"
+    addRespawnButton()
 }
 
 function touchControls(bool) {
     if (bool!=usingTouchControls) {
         if (bool) {
+            removeMenuElement()
             touchElements.forEach((elem) => elem.setAttribute("style", "display: block;"))
+            document.getElementById("fullscreen").setAttribute("style", "top: 8vw")
         } else {
             touchElements.forEach((elem) => elem.setAttribute("style", "display: none;"))
         }
@@ -330,7 +355,15 @@ function rotate() {
 }
 
 function initTouchElements(elements) {
-    elements.forEach((element) => new Hammer.Manager(element, {recognizers:[[Hammer.Pinch, { enable: true }]]}))
+    elements.forEach((element) => {
+        var mc = new Hammer.Manager(element, {recognizers:[[Hammer.Pinch, { enable: true }]]})
+        if (element.id == "menu-button") {
+            mc.add(new Hammer.Tap());
+            mc.on("tap", function() {
+                pause()
+            });
+        }
+    })
 }
 
 function start() {

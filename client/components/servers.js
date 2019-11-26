@@ -54,7 +54,6 @@ var Servers = function (_React$Component) {
     value: function startOnServer(event) {
       connectToServer(event.target.id);
       this.props.startGame();
-      document.getElementById("server-list").remove();
     }
   }, {
     key: 'render',
