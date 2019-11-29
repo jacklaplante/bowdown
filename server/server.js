@@ -2,6 +2,8 @@ const fs = require('fs');
 const WebSocket = require('ws');
 const https = require('https');
 
+const entities = require('./entities')
+
 const playerLimit = 20
 const prod = process.argv[2] == 'prod'
 
@@ -41,11 +43,13 @@ defaultGame.kingOfCrownMode = true
 defaultGame.kingOfCrown
 defaultGame.kingOfCrownStartTime
 
-function initGame(game) {
-    console.log("Starting game: " + game)
-    games[game] = {}
-    games[game].players = {}
-    return games[game]
+function initGame(gameName) {
+    console.log("Starting game: " + gameName)
+    games[gameName] = {}
+    let game = games[gameName]
+    game.players = {}
+    entities.init(game)
+    return game
 }
 
 function getGame(url) {
