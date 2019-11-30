@@ -38,6 +38,7 @@ if (prod) {
 
 const wss = new WebSocket.Server({ server });
 const games = {}
+const connections = {}
 var defaultGame = initGame('default')
 defaultGame.kingOfCrownMode = true
 defaultGame.kingOfCrown
@@ -83,20 +84,21 @@ wss.on('connection', function connection(ws, req) {
     var players = game.players
     ws.isAlive = true;
     ws.on('pong', heartbeat);
-    sendMessage(ws, {players: players})
-    if (game.kingOfCrownMode && game.kingOfCrownStartTime) {
-        sendMessage(ws, {kingOfCrownStartTime: game.kingOfCrownStartTime})
-    }
+    broadcastGameState(game)
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
         ws.lastMessage = Date.now()
         if(message.player){
             var player = message.player
             if (!players[player]) {
+                // init player in server
                 players[player] = {
                     hp: 100,
-                    kills: 0,
-                    ws: ws
+                    kills: 0
+                }
+                connections[player] = {
+                    ws: ws,
+                    knownState: {}
                 }
                 var playerCount = Object.keys(players).length;
                 updatePlayerCount(playerCount)
@@ -128,25 +130,18 @@ wss.on('connection', function connection(ws, req) {
                 players[message.to].hp -= message.damage
                 if (players[message.to].hp <= 0) {
                     players[player].kills += 1
-                    sendMessage(ws, {
-                        player: player,
-                        kills: players[player].kills
-                    });
                     if (game.kingOfCrownMode && players[message.to].kingOfCrown) {
                         setKingOfCrown(game, ws.player)
                     }
                 }
             }
         }
-        sendMessageToAll(game, message, player)
+        broadcastGameState(game)
     });
     ws.on('close', function onClose(code, req){
-        var playerUuid = this.player
-        console.log("player "+playerUuid+" disconnected");
-        var player = players[playerUuid]
-        delete players[playerUuid];
-        updatePlayerCount(Object.keys(players).length)
-        if (player && player.kingOfCrown && game.kingOfCrownMode) {
+        removeConnection(this.player)
+        removePlayer(game, this.player)
+        if (this.player && this.player.kingOfCrown && game.kingOfCrownMode) {
             if(Object.keys(players).length > 1) {
                 setKingOfCrown(game, Object.keys(players)[0])
             } else {
@@ -155,30 +150,60 @@ wss.on('connection', function connection(ws, req) {
         }
         if (game != games.default && Object.keys(players).length == 0) {
             stopGame(game)
-        } else {
-            sendMessageToAll(game, {
-                player: playerUuid,
-                status: 'disconnected'
-            })
         }
     })
-    // ws.send('something');
 });
 
-function sendMessageToAll(game, message, except) {
-    Object.keys(game.players).forEach((player) => {
-        if (player !== except) {
-            sendMessage(game.players[player].ws, message)
+function removeConnection(playerUuid) {
+    delete connections[playerUuid]
+}
+
+function removePlayer(game, playerUuid) {
+    console.log("player "+playerUuid+" disconnected");
+    delete game.players[playerUuid];
+    updatePlayerCount(Object.keys(game.players).length)
+}
+
+function broadcastGameState(game) {
+    Object.keys(game.players).forEach((playerUuid) => {
+        let connection = connections[playerUuid]
+        if (connection.ws.readyState === WebSocket.OPEN) {
+            var stateDelta = getDelta(game, connection.knownState)
+            if (Object.entries(stateDelta).length > 0) {
+                var message = JSON.stringify(stateDelta)
+                console.log('sending: %s', message);
+                connection.ws.send(message);
+//                 Object.assign(connection.knownState, game)
+            }
         }
     })
 }
 
-function sendMessage(client, message) {
-    if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(message));
-        console.log('sending: %s', JSON.stringify(message));   
+function getDelta(game, known) {
+    var delta = {}
+    for (var i=0; i<Object.keys(game).length; i++) {
+        var key = Object.keys(game)[i]
+        if (typeof game[key] == "object") {
+            if (!known[key]) known[key] = {}
+            delta[key] = getDelta(game[key], known[key])
+        } else {
+            if (game[key] != known[key]) {
+                delta[key] = game[key].valueOf()
+            }
+            known[key] = game[key].valueOf()
+        }
     }
+    return delta
 }
+
+
+
+// function sendMessage(client, message) {
+//     if (client.readyState === WebSocket.OPEN) {
+//         client.send(JSON.stringify(message));
+//         console.log('sending: %s', JSON.stringify(message));   
+//     }
+// }
 
 function setKingOfCrown(game, playerUuid) {
     game.kingOfCrown = playerUuid
@@ -186,10 +211,6 @@ function setKingOfCrown(game, playerUuid) {
     game.players[playerUuid].kingOfCrown = true
     game.players[playerUuid].kingOfCrownStartTime = game.kingOfCrownStartTime
     console.log(playerUuid + " is the new king!")
-    sendMessageToAll(game, {
-        newKing: playerUuid,
-        kingOfCrownStartTime: game.kingOfCrownStartTime
-    })
 }
 
 wss.on('listening', _ => 
@@ -217,6 +238,7 @@ const interval = setInterval(function ping() {
 function heartbeat() {
     this.isAlive = true;
 }
+    
 
 const options = {
     hostname: "rvcv9mh5l1.execute-api.us-east-1.amazonaws.com",

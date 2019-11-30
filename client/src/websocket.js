@@ -29,7 +29,7 @@ function onConnect(){
 function onMessage(message) {
     var message = JSON.parse(message.data)
     if (message.players) {
-        players.init(message.players);
+        players.update(message.players);
     }
     if (message.player) {
         var player = message.player;

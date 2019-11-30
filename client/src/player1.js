@@ -148,6 +148,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
             {
                 player: player1.uuid,
                 position: player1.getPosition(),
+                velocity: player1.getVelocity(),
                 rotation: player1.getRotation(),
                 bowState: player1.bowState,
                 kingOfCrown: player1.kingOfCrown

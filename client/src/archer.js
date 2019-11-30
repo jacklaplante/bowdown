@@ -80,6 +80,17 @@ function init(mixer, archer) {
         }
     }
 
+    archer.getVelocity = function() {
+        if (archer.velocity) {
+            return archer.velocity
+        }
+        console.warn("archer.getVelocity() was called but aracher.velocity is null")
+    }
+
+    archer.setVelocity = function(velocity) {
+        archer.velocity = velocity
+    }
+
     archer.getRotation = function() {
         if (archer.gltf) {
             return archer.gltf.scene.rotation
