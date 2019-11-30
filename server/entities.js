@@ -3,7 +3,7 @@ const YUKA = require('yuka');
 const entities = {};
 let entityManager
 
-entities.init = function(game) {
+entities.init = function(games, payloads, gameName) {
     entityManager = new YUKA.EntityManager();
 
     let vehicle = new YUKA.Vehicle();
@@ -14,7 +14,12 @@ entities.init = function(game) {
     entityManager.add( vehicle );
     followPathBehavior.path.add(new YUKA.Vector3(100,100,100))
 
-    game.entities['vehicle'] = {
+    games[gameName].entities.vehicle = {
+        position: vehicle.position,
+        velocity: vehicle.velocity,
+        rotation: vehicle.rotation
+    }
+    payloads[gameName].entities = {
         position: vehicle.position,
         velocity: vehicle.velocity,
         rotation: vehicle.rotation
@@ -22,8 +27,17 @@ entities.init = function(game) {
 
     setInterval( () => {
         entityManager.update(1);
-        // entityManager.update( delta );
-        // console.log( 'New position:', game.entities["vehicle"].position );
+        if (!payloads[gameName].entities) payloads[gameName].entities = {}
+        payloads[gameName].entities.vehicle = {
+            position: vehicle.position,
+            velocity: vehicle.velocity,
+            rotation: vehicle.rotation
+        }
+        games[gameName].entities.vehicle = {
+            position: vehicle.position,
+            velocity: vehicle.velocity,
+            rotation: vehicle.rotation
+        }
     }, 1000 );
 }
 

@@ -50,7 +50,7 @@ function initGame(gameName) {
     let game = games[gameName]
     game.players = {}
     game.entities = {}
-    entities.init(game)
+    entities.init(games, payloads, gameName)
     return game
 }
 
@@ -64,6 +64,12 @@ function getGame(gameName) {
     } else {
         return games.default
     }
+}
+
+function getGameName(url) {
+    var name = alphaOnly(url)
+    if (name) return name
+    return 'default'
 }
 
 function stopGame(game) {
@@ -80,15 +86,12 @@ wss.shouldHandle = function(request) {
 }
 
 wss.on('connection', function connection(ws, req) {
-    let gameName = alphaOnly(req.url)
+    let gameName = getGameName(req.url)
     var game = getGame(gameName)
     var players = game.players
     ws.isAlive = true;
     ws.on('pong', heartbeat);
     broadcastGameState(game)
-    setInterval( () => {
-        dumpPayload(gameName)
-    }, 50);
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
         ws.lastMessage = Date.now()
@@ -146,6 +149,12 @@ wss.on('connection', function connection(ws, req) {
         }
     })
 });
+
+setInterval( () => {
+    Object.keys(games).forEach((gameName) => {
+        dumpPayload(gameName)  
+    })
+}, 50);
 
 function removeConnection(playerUuid) {
     delete connections[playerUuid]
