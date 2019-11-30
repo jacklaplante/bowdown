@@ -4,7 +4,6 @@ const entities = {};
 let entityManager
 
 entities.init = function(game) {
-    game.entities = {}
     entityManager = new YUKA.EntityManager();
 
     let vehicle = new YUKA.Vehicle();

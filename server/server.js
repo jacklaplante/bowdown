@@ -7,8 +7,6 @@ const entities = require('./entities')
 const playerLimit = 20
 const prod = process.argv[2] == 'prod'
 
-let maxCount = 0;
-
 var server, serverId, serverIp, apiKey
 if (prod) {
     if (process.argv.length < 6) throw "INCLUDE SERVER ID, SERVER IP, and API KEY"
@@ -38,6 +36,7 @@ if (prod) {
 
 const wss = new WebSocket.Server({ server });
 const games = {}
+const payloads = {}
 const connections = {}
 var defaultGame = initGame('default')
 defaultGame.kingOfCrownMode = true
@@ -47,14 +46,15 @@ defaultGame.kingOfCrownStartTime
 function initGame(gameName) {
     console.log("Starting game: " + gameName)
     games[gameName] = {}
+    payloads[gameName] = {}
     let game = games[gameName]
     game.players = {}
+    game.entities = {}
     entities.init(game)
     return game
 }
 
-function getGame(url) {
-    var gameName = alphaOnly(url)
+function getGame(gameName) {
     if (gameName) {
         if (games[gameName]) {
             return games[gameName]
@@ -72,7 +72,7 @@ function stopGame(game) {
 }
 
 wss.shouldHandle = function(request) {
-    var game = getGame(request.url)
+    var game = getGame(alphaOnly(request.url))
     if (Object.keys(game.players).length > playerLimit) {
         return false
     }
@@ -80,63 +80,56 @@ wss.shouldHandle = function(request) {
 }
 
 wss.on('connection', function connection(ws, req) {
-    var game = getGame(req.url)
+    let gameName = alphaOnly(req.url)
+    var game = getGame(gameName)
     var players = game.players
     ws.isAlive = true;
     ws.on('pong', heartbeat);
     broadcastGameState(game)
+    setInterval( () => {
+        dumpPayload(gameName)
+    }, 50);
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
         ws.lastMessage = Date.now()
         if(message.player){
-            var player = message.player
-            if (!players[player]) {
+            var playerUuid = message.player
+            if (!players[playerUuid]) {
                 // init player in server
-                players[player] = {
+                players[playerUuid] = {
                     hp: 100,
                     kills: 0
                 }
-                connections[player] = {
-                    ws: ws,
-                    knownState: {}
-                }
-                var playerCount = Object.keys(players).length;
-                updatePlayerCount(playerCount)
-                if (playerCount > maxCount) { // this will kepp track of the maximum amount of players the server has
-                    maxCount = playerCount
-                    var now = new Date();
-                    fs.writeFile('numberOfPlayers.txt', maxCount + " - " + now, (err) => {
-                        if (err) throw err
-                        console.log("maxCount of " + maxCount + " saved to file at " + now)
-                    })
-                }
+                connections[playerUuid] = {ws: ws}
+                updatePlayerCount(Object.keys(players).length)
             }
             if (!ws.player) {
-                ws.player = player
+                ws.player = playerUuid
             }
-            if (game.kingOfCrownMode && Object.keys(players).length == 2 && game.kingOfCrown == null && !players[player].kingOfCrown) {
-                setKingOfCrown(game, player)
+            if (getGame(gameName).kingOfCrownMode && Object.keys(players).length == 2 && game.kingOfCrown == null && !players[playerUuid].kingOfCrown) {
+                setKingOfCrown(getGame(gameName), playerUuid)
             }
             if (message.position) {
-                players[player].position = message.position
+                updatePlayer(gameName, playerUuid, 'position', message.position)
             }
             if (message.race) {
-                players[player].race = message.race
+                updatePlayer(gameName, playerUuid, 'race', message.race)
             }
             if (message.rotation) {
-                players[player].rotation = message.rotation
+                updatePlayer(gameName, playerUuid, 'rotation', message.rotation)
             }
             if (message.damage && message.to) {
-                players[message.to].hp -= message.damage
+                var newHp = players[message.to].hp - message.damage
+                updatePlayer(gameName, playerUuid, 'hp', newHp)
                 if (players[message.to].hp <= 0) {
-                    players[player].kills += 1
-                    if (game.kingOfCrownMode && players[message.to].kingOfCrown) {
-                        setKingOfCrown(game, ws.player)
+                    var kills = players[playerUuid].kills + 1
+                    updatePlayer(gameName, playerUuid, 'kills', kills)
+                    if (getGame(gameName).kingOfCrownMode && players[message.to].kingOfCrown) {
+                        setKingOfCrown(getGame(gameName), ws.player)
                     }
                 }
             }
         }
-        broadcastGameState(game)
     });
     ws.on('close', function onClose(code, req){
         removeConnection(this.player)
@@ -158,52 +151,42 @@ function removeConnection(playerUuid) {
     delete connections[playerUuid]
 }
 
+function updatePlayer(gameName, playerUuid, key, value) {
+    if (!payloads[gameName].players) payloads[gameName].players = {}
+    if (!payloads[gameName].players[playerUuid]) payloads[gameName].players[playerUuid] = {}
+    payloads[gameName].players[playerUuid][key] = value
+    getGame(gameName).players[playerUuid][key] = value
+}
+
 function removePlayer(game, playerUuid) {
     console.log("player "+playerUuid+" disconnected");
     delete game.players[playerUuid];
     updatePlayerCount(Object.keys(game.players).length)
 }
 
+function dumpPayload(gameName) {
+    if (payloads[gameName] && Object.entries(payloads[gameName]).length == 0) return;
+    Object.keys(getGame(gameName).players).forEach((playerUuid) => {
+        let connection = connections[playerUuid]
+        if (connection.ws.readyState === WebSocket.OPEN) {
+            var message = JSON.stringify(payloads[gameName])
+            console.log('sending: %s', message);
+            connection.ws.send(message);
+        }
+    })
+    payloads[gameName] = {}
+}
+
 function broadcastGameState(game) {
     Object.keys(game.players).forEach((playerUuid) => {
         let connection = connections[playerUuid]
         if (connection.ws.readyState === WebSocket.OPEN) {
-            var stateDelta = getDelta(game, connection.knownState)
-            if (Object.entries(stateDelta).length > 0) {
-                var message = JSON.stringify(stateDelta)
-                console.log('sending: %s', message);
-                connection.ws.send(message);
-//                 Object.assign(connection.knownState, game)
-            }
+            var message = JSON.stringify(game)
+            console.log('sending: %s', message);
+            connection.ws.send(message);
         }
     })
 }
-
-function getDelta(game, known) {
-    var delta = {}
-    for (var i=0; i<Object.keys(game).length; i++) {
-        var key = Object.keys(game)[i]
-        if (typeof game[key] == "object") {
-            if (!known[key]) known[key] = {}
-            delta[key] = getDelta(game[key], known[key])
-        } else {
-            if (game[key] != known[key]) {
-                delta[key] = game[key].valueOf()
-            }
-            known[key] = game[key].valueOf()
-        }
-    }
-    return delta
-}
-
-
-
-// function sendMessage(client, message) {
-//     if (client.readyState === WebSocket.OPEN) {
-//         client.send(JSON.stringify(message));
-//         console.log('sending: %s', JSON.stringify(message));   
-//     }
-// }
 
 function setKingOfCrown(game, playerUuid) {
     game.kingOfCrown = playerUuid
