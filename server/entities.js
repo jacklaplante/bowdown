@@ -6,37 +6,37 @@ let entityManager
 entities.init = function(games, payloads, gameName) {
     entityManager = new YUKA.EntityManager();
 
-    let vehicle = new YUKA.Vehicle();
-    vehicle.maxSpeed = 1.5;
-    vehicle.maxForce = 10;
+    let orc = new YUKA.Vehicle();
+    orc.maxSpeed = 1.5;
+    orc.maxForce = 10;
     const followPathBehavior = new YUKA.FollowPathBehavior();
-    vehicle.steering.add(followPathBehavior);
-    entityManager.add( vehicle );
+    orc.steering.add(followPathBehavior);
+    entityManager.add( orc );
     followPathBehavior.path.add(new YUKA.Vector3(100,100,100))
 
-    games[gameName].entities.vehicle = {
-        position: vehicle.position,
-        velocity: vehicle.velocity,
-        rotation: vehicle.rotation
+    games[gameName].entities.orc = {
+        position: orc.position,
+        velocity: orc.velocity,
+        rotation: orc.rotation
     }
     payloads[gameName].entities = {
-        position: vehicle.position,
-        velocity: vehicle.velocity,
-        rotation: vehicle.rotation
+        position: orc.position,
+        velocity: orc.velocity,
+        rotation: orc.rotation
     }
 
     setInterval( () => {
         entityManager.update(1);
         if (!payloads[gameName].entities) payloads[gameName].entities = {}
-        payloads[gameName].entities.vehicle = {
-            position: vehicle.position,
-            velocity: vehicle.velocity,
-            rotation: vehicle.rotation
+        payloads[gameName].entities.orc = {
+            position: orc.position,
+            velocity: orc.velocity,
+            rotation: orc.rotation
         }
-        games[gameName].entities.vehicle = {
-            position: vehicle.position,
-            velocity: vehicle.velocity,
-            rotation: vehicle.rotation
+        games[gameName].entities.orc = {
+            position: orc.position,
+            velocity: orc.velocity,
+            rotation: orc.rotation
         }
     }, 1000 );
 }

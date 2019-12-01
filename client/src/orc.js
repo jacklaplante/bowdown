@@ -23,5 +23,23 @@ loader.load(orcModel, (gltf) => {
     orc.anim['running'].reset().play()
 })
 
+orc.setRotation = function(quat) {
+    this.gltf.scene.quaternion.copy(quat)
+}
+
+orc.setPosition = function(vect) {
+    this.gltf.scene.position.copy(vect)
+}
+
+orc.setVelocity = function(vect) {
+    this.velocity = vect
+}
+
+orc.update = function(state) {
+    this.setPosition(state.position)
+    this.setRotation(state.rotation)
+    this.setVelocity(state.velocity)
+}
+
 export default orc
 

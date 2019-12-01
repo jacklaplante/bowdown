@@ -6,6 +6,7 @@ import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
+import entities from './entities'
 
 var recordingBot = false
 var log
@@ -28,6 +29,9 @@ function onConnect(){
 
 function onMessage(message) {
     var message = JSON.parse(message.data)
+    if (message.entities) {
+        entities.update(message.entities)
+    }
     if (message.players) {
         players.update(message.players);
     }
