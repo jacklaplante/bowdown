@@ -9,6 +9,8 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
+import orc from './orc'
+
 require.context('../images/');
 
 var clock = new Clock()
@@ -52,6 +54,9 @@ function animate() {
             camera.animate(delta);
         }
         player1.mixer.update( delta );
+    }
+    if (orc && orc.mixer) {
+        orc.mixer.update( delta );
     }
     animateArrows(delta);
     if (Object.keys(players.all()).length) {

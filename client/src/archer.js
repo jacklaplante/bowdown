@@ -1,31 +1,19 @@
 import {LoopOnce} from 'three'
 
-function getAnimation(archer, name){
-    var result;
-    archer.gltf.animations.forEach((animation) => {
-        if (animation.name===name) {
-            result = animation
-            return
-        }
-    })
-    if (result == null) {
-        console.error("animation: "+name+" cannot be found!")
-    }
-    return result
-}
+import {getAnimation} from './utils'
 
 function init(mixer, archer) {
     archer.mixer = mixer
     archer.anim = {
-        idle: mixer.clipAction(getAnimation(archer, "Idle")),
-        running: mixer.clipAction(getAnimation(archer, "Running best")),
-        runWithBow: mixer.clipAction(getAnimation(archer, "Running with bow best")),
-        runWithLegsOnly: mixer.clipAction(getAnimation(archer, "Running legs only")),
-        jumping: mixer.clipAction(getAnimation(archer, "Jumping2")).setLoop(LoopOnce),
-        equipBow: mixer.clipAction(getAnimation(archer, "Equip Bow")).setLoop(LoopOnce),
-        drawBow: mixer.clipAction(getAnimation(archer, "Draw bow")).setLoop(LoopOnce),
-        fireBow: mixer.clipAction(getAnimation(archer, "Fire bow")).setLoop(LoopOnce),
-        death: mixer.clipAction(getAnimation(archer, "death")).setLoop(LoopOnce)
+        idle: mixer.clipAction(getAnimation(archer.gltf, "Idle")),
+        running: mixer.clipAction(getAnimation(archer.gltf, "Running best")),
+        runWithBow: mixer.clipAction(getAnimation(archer.gltf, "Running with bow best")),
+        runWithLegsOnly: mixer.clipAction(getAnimation(archer.gltf, "Running legs only")),
+        jumping: mixer.clipAction(getAnimation(archer.gltf, "Jumping2")).setLoop(LoopOnce),
+        equipBow: mixer.clipAction(getAnimation(archer.gltf, "Equip Bow")).setLoop(LoopOnce),
+        drawBow: mixer.clipAction(getAnimation(archer.gltf, "Draw bow")).setLoop(LoopOnce),
+        fireBow: mixer.clipAction(getAnimation(archer.gltf, "Fire bow")).setLoop(LoopOnce),
+        death: mixer.clipAction(getAnimation(archer.gltf, "death")).setLoop(LoopOnce)
     }
     archer.anim.drawBow.clampWhenFinished = true
 
