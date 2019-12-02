@@ -24,7 +24,7 @@ const sprintModifier = 1.3
 const velocityInfluenceModifier = 30
 const inputInfluenceVelocityModifier = 5
 const gravityAcceleration = 10
-const godMode = false
+const godMode = true
 
 var sounds = {}
 sounds.bowShot = loadAudio(audioBowShot)
@@ -507,10 +507,11 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
 
 function randomSpawn() {
     if (scene.gravityDirection == "down") {
-        return new Vector3(10, 10, 10)
+        return new Vector3( - 13, - 0.75, - 9 )
     }
     if (process.env.NODE_ENV == 'development') {
-        return new Vector3(70,70,70)
+        // return new Vector3(70,70,70)
+        return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
     }
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }

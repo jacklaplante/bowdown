@@ -4,6 +4,7 @@ import Title from './title'
 import Controls from './controls'
 import Servers from './servers'
 import ChallengeFriends from './challengeFriends'
+import {connectToServer} from '../src/websocket'
 
 import scene from '../src/scene'
 
@@ -18,6 +19,7 @@ class Menu extends React.Component {
     this.showControls = this.showControls.bind(this);
     this.listServers = this.listServers.bind(this);
     this.challengeFriends = this.challengeFriends.bind(this);
+    this.testRange = this.testRange.bind(this)
     this.mainPage = this.mainPage.bind(this);
   }
 
@@ -37,6 +39,13 @@ class Menu extends React.Component {
   challengeFriends() {
     this.setState({page: "challengeFriends"})
     scene.loadMap("./garden.glb", "down");
+  }
+
+  testRange() {
+    this.setState({page: "testRange"})
+    scene.loadMap("./houseNavMesh.glb", "down");
+    connectToServer("ws://localhost:18181")
+    this.state.startGame();
   }
   
 
@@ -70,6 +79,7 @@ class Menu extends React.Component {
             {this.state.readyToRock ? 'challenge your friends' : 'loading'}
           </div>
           <div className="button" onClick={this.showControls} id="controls-button">controls</div>
+          {(process.env.NODE_ENV == 'development') ? <div className="button" onClick={this.testRange}>test range</div> : ''}
           <div id="menu-info">
             {(window.innerWidth < window.innerHeight) ? 'put phone in landscape mode for best experience' : ''}
           </div>

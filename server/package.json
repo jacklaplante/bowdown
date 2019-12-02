@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "node-fetch": "^2.6.0",
+    "text-encoding": "^0.7.0",
     "ws": "^7.1.0",
     "yuka": "^0.1.0"
   }
