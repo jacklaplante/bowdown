@@ -27,7 +27,7 @@ entities.init = function(g, p, gN) {
         entityManager.add(orc);
         // orc.position.copy(orc.navMesh.getClosestRegion(new YUKA.Vector3(22.46, -13.44, 17.86)).centroid)
         // orc.position.copy(orc.navMesh.getClosestRegion(new YUKA.Vector3(63,63,63)).centroid)
-        orc.position.set(0, 100, 0);
+        orc.navMesh.getRandomRegion().centroid
         entities.updateState();
         entities.go();
     }).catch((e) => {
@@ -46,6 +46,7 @@ entities.go = function() {
         let pos = games[gameName].players[Object.keys(games[gameName].players)[0]].position
         let to = new YUKA.Vector3(pos.x, pos.y, pos.z)
         if (orc.navMesh.getRegionForPoint(to, orc.navMesh.epsilonContainsTest)) {
+            var closest = orc.navMesh.getClosestRegion(to).centroid
             let path = orc.navMesh.findPath(orc.position, to);
             path.forEach((p) => {
                 followPathBehavior.active = true;
@@ -53,6 +54,7 @@ entities.go = function() {
             })
         }
         entityManager.update(1/updateSpeed)
+        orc.up.copy(orc.position.clone().normalize())
         if (followPathBehavior.active) {
             entities.updateState()
         }

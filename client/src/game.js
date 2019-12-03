@@ -9,7 +9,7 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
-// import entities from './entities'
+import entities from './entities'
 
 require.context('../images/');
 
@@ -55,7 +55,7 @@ function animate() {
         }
         player1.mixer.update( delta );
     }
-    // entities.animate(delta)
+    entities.animate(delta)
     animateArrows(delta);
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)

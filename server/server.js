@@ -50,7 +50,7 @@ function initGame(gameName) {
     let game = games[gameName]
     game.players = {}
     game.entities = {}
-    // entities.init(games, payloads, gameName)
+    entities.init(games, payloads, gameName)
     return game
 }
 
