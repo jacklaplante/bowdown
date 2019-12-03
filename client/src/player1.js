@@ -412,6 +412,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         player1.setPosition(pos)
         player1.hp = 100
         player1.gltf.scene.visible = true
+        player1.gltf.scene.rotation.set(0,0,0)
         if (scene.gravityDirection == "center") {
             player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
         }

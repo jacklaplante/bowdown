@@ -1,4 +1,4 @@
-import {AnimationMixer, LoopOnce, Vector3} from 'three'
+import {AnimationMixer, LoopOnce, Vector3, Quaternion} from 'three'
 
 import {loader} from './loader'
 import {getAnimation} from './utils'
@@ -18,13 +18,21 @@ loader.load(orcModel, (gltf) => {
         attack: orc.mixer.clipAction(getAnimation(gltf, "swing attack")).setLoop(LoopOnce),
         battleCry: orc.mixer.clipAction(getAnimation(gltf, "battle cry")).setLoop(LoopOnce),
     }
-    scene.add(orc.gltf.scene)
-    orc.gltf.scene.position.copy(new Vector3(63,63,63))
-    orc.anim['running'].reset().play()
 })
+
+orc.add = function(state) {
+    this.update(state)
+    this.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), orc.getPosition().normalize()))   
+    scene.add(orc.gltf.scene)
+    this.anim['running'].reset().play()
+}
 
 orc.setRotation = function(quat) {
     this.gltf.scene.quaternion.copy(quat)
+}
+
+orc.getPosition = function() {
+    return this.gltf.scene.position.clone()
 }
 
 orc.setPosition = function(vect) {
@@ -37,7 +45,7 @@ orc.setVelocity = function(vect) {
 
 orc.update = function(state) {
     this.setPosition(state.position)
-    this.setRotation(state.rotation)
+    // this.setRotation(state.rotation)
     this.setVelocity(state.velocity)
 }
 
