@@ -50,7 +50,7 @@ function initGame(gameName) {
     let game = games[gameName]
     game.players = {}
     game.entities = {}
-    entities.init(games, payloads, gameName)
+    // entities.init(games, payloads, gameName)
     return game
 }
 
@@ -114,6 +114,9 @@ wss.on('connection', function connection(ws, req) {
             }
             if (message.position) {
                 updatePlayer(gameName, playerUuid, 'position', message.position)
+            }
+            if (message.velocity) {
+                updatePlayer(gameName, playerUuid, 'velocity', message.velocity)
             }
             if (message.race) {
                 updatePlayer(gameName, playerUuid, 'race', message.race)

@@ -43,7 +43,7 @@ class Menu extends React.Component {
 
   testRange() {
     this.setState({page: "testRange"})
-    scene.loadMap("./houseNavMesh.glb", "down");
+    scene.loadMap("./lowildNavMesh.glb", "center");
     connectToServer("ws://localhost:18181")
     this.state.startGame();
   }

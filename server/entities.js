@@ -1,5 +1,5 @@
 const YUKA = require('yuka');
-
+const fs = require('fs')
 const fetch = require( 'node-fetch' );
 const TextDecoder = require( 'text-encoding' ).TextDecoder;
 
@@ -13,21 +13,21 @@ entities.init = function(g, p, gN) {
     games = g
     payloads = p
     gameName = gN
-    orc = new YUKA.Vehicle();
-    // orc.maxSpeed = 150;
-    // orc.maxForce = 10;
+    orc = new YUKA.Vehicle()
+    orc.maxTurnRate = Math.PI * 0.5;
+    orc.maxSpeed = 15;
     const followPathBehavior = new YUKA.FollowPathBehavior();
     // const wanderBehavior = new YUKA.WanderBehavior();
     orc.steering.add(followPathBehavior);
     // orc.steering.add(wanderBehavior);
     entityManager = new YUKA.EntityManager(); 
     const loader = new YUKA.NavMeshLoader();
-    loader.load('https://navmesh.s3.amazonaws.com/lowild.glb', { epsilonCoplanarTest: 0.05 }).then((navigationMesh) => {
+    loader.parse(fs.readFileSync('./lowildNavMesh.glb').buffer).then((navigationMesh) => {
         orc.navMesh = navigationMesh
         entityManager.add(orc);
         // orc.position.copy(orc.navMesh.getClosestRegion(new YUKA.Vector3(22.46, -13.44, 17.86)).centroid)
-        orc.position.copy(orc.navMesh.getClosestRegion(new YUKA.Vector3(63,63,63)).centroid)
-        // orc.position.set( - 13, - 0.75, - 9 );
+        // orc.position.copy(orc.navMesh.getClosestRegion(new YUKA.Vector3(63,63,63)).centroid)
+        orc.position.set(0, 100, 0);
         entities.updateState();
         entities.go();
     }).catch((e) => {

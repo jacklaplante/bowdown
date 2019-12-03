@@ -87,7 +87,8 @@ players.move = function(playerUuid, playerState) {
     var player = roster[playerUuid]
     if (player.gltf) {
         player.gltf.scene.position.copy(playerState.position)
-        player.gltf.scene.rotation.copy(playerState.rotation)   
+        player.gltf.scene.rotation.copy(playerState.rotation)
+        player.velocity = playerState.velocity
     } else {
         console.warn("players.move called on a player that hasn't been loaded yet")
     }
@@ -115,8 +116,15 @@ players.takeDamage = function(playerUuid, damage) {
 function animatePlayers(delta) {
     Object.keys(roster).forEach(
         (playerUuid) => {
-            if (roster[playerUuid].mixer) {
-                roster[playerUuid].mixer.update(delta)
+            let player = roster[playerUuid]
+            if (player.velocity) {
+                let velocity = new Vector3(player.velocity.x, player.velocity.y, player.velocity.z)
+                if (velocity.length() > 0) {
+                    player.gltf.scene.position.add(velocity.multiplyScalar(delta))
+                }   
+            }
+            if (player.mixer) {
+                player.mixer.update(delta)
             }
         })
 }
