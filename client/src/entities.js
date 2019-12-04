@@ -15,7 +15,7 @@ const entities = {
     },
     animate: function(delta) {
         if (orc && orc.mixer) {
-            orc.mixer.update(delta);
+            orc.animate(delta)
         }
     }
 }

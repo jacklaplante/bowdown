@@ -20,6 +20,13 @@ loader.load(orcModel, (gltf) => {
     }
 })
 
+orc.animate = function(delta) {
+    if (this.velocity) {
+        this.setPosition(this.getPosition().add(this.velocity.multiplyScalar(delta)))
+    }
+    this.mixer.update(delta);
+}
+
 orc.add = function(state) {
     this.update(state)
     scene.add(orc.gltf.scene)
