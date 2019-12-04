@@ -22,13 +22,12 @@ loader.load(orcModel, (gltf) => {
 
 orc.add = function(state) {
     this.update(state)
-    this.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), orc.getPosition().normalize()))   
     scene.add(orc.gltf.scene)
     this.anim['running'].reset().play()
 }
 
-orc.setRotation = function(quat) {
-    this.gltf.scene.quaternion.copy(quat)
+orc.setRotation = function(euler) {
+    this.gltf.scene.rotation.copy(euler)
 }
 
 orc.getPosition = function() {
@@ -45,7 +44,7 @@ orc.setVelocity = function(vect) {
 
 orc.update = function(state) {
     this.setPosition(state.position)
-    // this.setRotation(state.rotation)
+    this.setRotation(state.rotation)
     this.setVelocity(state.velocity)
 }
 
