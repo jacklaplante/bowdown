@@ -30,7 +30,7 @@ entities.init = function(g, p, gN) {
         orc.position.copy(pathfinding.zones[ZONE].vertices[Math.round(pathfinding.zones[ZONE].vertices.length/2)]) // random vector on nav mesh
         let quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), orc.position.clone().normalize())
         orc.applyQuaternion(quat)
-        orc.velocity = new THREE.Vector3(1,0,0).applyQuaternion(quat) // this is important for the initial rotation
+        orc.velocity = new THREE.Vector3(0,0,-1).applyQuaternion(quat) // this is important for the initial rotation I ALSO THINK THIS IS WRONG
         orc.target = orc.position.clone()
         entities.go()
     }, ( e ) => {
@@ -52,8 +52,7 @@ entities.go = function() {
             let direction = orc.path[0].clone().sub(orc.position);
             if (direction.lengthSq() > 0.05 * 0.05) {
                 let nextPos = orc.position.clone().add(direction.clone().normalize().multiplyScalar(Math.min(getMovementSpeed(), direction.length()))); // either go at the speed to the next point in path or to the next point if the speed will make the orc go past the point
-                // orc.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(orc.velocity.clone().normalize(), direction.clone().normalize()))
-                // orc.rotateOnAxis(new THREE.Vector3(0,1,0), orc.velocity.clone().normalize().angleTo(direction.clone().normalize()))
+                orc.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(orc.velocity.clone().normalize().projectOnPlane(nextPos.clone().normalize()), direction.clone().normalize().projectOnPlane(nextPos.clone().normalize())))
                 orc.velocity.copy(nextPos.clone().sub(orc.position).multiplyScalar(1/updateSpeed))
                 orc.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(orc.position.clone().normalize(), nextPos.clone().normalize()))
                 orc.position.copy(nextPos)
