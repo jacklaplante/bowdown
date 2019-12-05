@@ -46,7 +46,7 @@ orc.setPosition = function(vect) {
 }
 
 orc.setVelocity = function(vect) {
-    this.velocity = vect
+    this.velocity = new Vector3(vect.x, vect.y, vect.z)
 }
 
 orc.update = function(state) {

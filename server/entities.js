@@ -49,8 +49,12 @@ entities.go = function() {
         if (orc.path && orc.path.length > 0) {
             let direction = orc.path[0].clone().sub(orc.position);
             if (direction.lengthSq() > 0.05 * 0.05) {
-                orc.position.add(direction.clone().normalize().multiplyScalar(Math.min(getMovementSpeed(), direction.length()))); // either go at the speed to the next point in path or to the next point if the speed will make the orc go past the point
-                orc.rotation = new THREE.Euler().setFromQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), orc.position.clone().normalize()))
+                var nextPos = orc.position.clone().add(direction.clone().normalize().multiplyScalar(Math.min(getMovementSpeed(), direction.length()))); // either go at the speed to the next point in path or to the next point if the speed will make the orc go past the point
+                orc.velocity = nextPos.clone().sub(orc.position).multiplyScalar(1/updateSpeed)
+                orc.position = nextPos
+                orc.rotation = new THREE.Euler().setFromQuaternion(
+                    new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), orc.position.clone().normalize())
+                    )
             } else {
                 orc.path.shift();
             }
