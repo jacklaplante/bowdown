@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<!-- saved from url=(0049)https://threejs.org/docs/api/en/math/Vector3.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		
+		<!--<base href="../../../">--><base href=".">
+		<script src="./list.js"></script>
+		<script src="./page.js"></script>
+		<link type="text/css" rel="stylesheet" href="./page.css">
+	<link href="./prettify.css" rel="stylesheet"><link href="./threejs.css" rel="stylesheet"><script src="./prettify.js"></script></head>
+	<body>
+		<h1>Vector3</h1>
+
+		<p class="desc">Class representing a 3D <a href="https://en.wikipedia.org/wiki/Vector_space" target="_blank">vector</a>.
+
+		A 3D vector is an ordered triplet of numbers (labeled x, y, and z), which can be used to
+		represent a number of things, such as:
+		</p>
+
+		<ul>
+			<li>
+				A point in 3D space.
+			</li>
+			<li>
+				A direction and length in 3D space. In three.js the length will always be the
+				<a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">Euclidean distance</a>
+				(straight-line distance) from (0, 0, 0) to (x, y, z) and the direction is also
+				measured from (0, 0, 0) towards (x, y, z).
+			</li>
+			<li>
+				Any arbitrary ordered triplet of numbers.
+			</li>
+		</ul>
+
+		<p>
+		There are other things a 3D vector can be used to represent, such as momentum
+		vectors and so on, however these are the most common uses in three.js.
+		</p>
+
+
+		<h2>Example</h2>
+
+		<code class=" prettyprint"><span class="kwd">var</span><span class="pln"> a </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> THREE</span><span class="pun">.</span><span class="typ">Vector3</span><span class="pun">(</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> </span><span class="lit">1</span><span class="pun">,</span><span class="pln"> </span><span class="lit">0</span><span class="pln"> </span><span class="pun">);</span><span class="pln">
+
+</span><span class="com">//no arguments; will be initialised to (0, 0, 0)</span><span class="pln">
+</span><span class="kwd">var</span><span class="pln"> b </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> THREE</span><span class="pun">.</span><span class="typ">Vector3</span><span class="pun">(</span><span class="pln"> </span><span class="pun">);</span><span class="pln">
+
+</span><span class="kwd">var</span><span class="pln"> d </span><span class="pun">=</span><span class="pln"> a</span><span class="pun">.</span><span class="pln">distanceTo</span><span class="pun">(</span><span class="pln"> b </span><span class="pun">);</span></code>
+
+
+		<h2>Constructor</h2>
+
+		<h3>Vector3( x : <span class="param">Float</span>, y : <span class="param">Float</span>, z : <span class="param">Float</span> )</h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">x</a> - the x value of the vector. Default is <strong>0</strong>.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">y</a> -  the y value of the vector. Default is <strong>0</strong>.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">z</a> - the z value of the vector. Default is <strong>0</strong>.<br><br>
+
+		Creates a new Vector3.
+		</p>
+
+
+		<h2>Properties</h2>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.isVector3&#39;)" target="_parent" title="Vector3.isVector3" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.isVector3&#39;)" id="isVector3">isVector3</a>  : <span class="param">Boolean</span></h3>
+		<p>
+			Used to check whether this or derived classes are Vector3s. Default is <strong>true</strong>.<br><br>
+
+			You should not change this, as it is used internally for optimisation.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" target="_parent" title="Vector3.x" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" id="x">x</a>  : <span class="param">Float</span></h3>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" target="_parent" title="Vector3.y" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" id="y">y</a>  : <span class="param">Float</span></h3>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" target="_parent" title="Vector3.z" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" id="z">z</a>  : <span class="param">Float</span></h3>
+
+
+		<h2>Methods</h2>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.add&#39;)" target="_parent" title="Vector3.add" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.add&#39;)" id="add">add</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Adds <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> to this vector.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.addScalar&#39;)" target="_parent" title="Vector3.addScalar" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.addScalar&#39;)" id="addScalar">addScalar</a> ( s : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Adds the scalar value s to this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> values.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.addScaledVector&#39;)" target="_parent" title="Vector3.addScaledVector" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.addScaledVector&#39;)" id="addScaledVector">addScaledVector</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, s : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Adds the multiple of <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> and <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">s</a> to this vector.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.addVectors&#39;)" target="_parent" title="Vector3.addVectors" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.addVectors&#39;)" id="addVectors">addVectors</a> ( a : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, b : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Sets this vector to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">a</a> + <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">b</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.applyAxisAngle&#39;)" target="_parent" title="Vector3.applyAxisAngle" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.applyAxisAngle&#39;)" id="applyAxisAngle">applyAxisAngle</a> ( axis : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, angle : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">axis</a> - A normalized <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">Vector3</a>.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">angle</a> - An angle in radians.<br><br>
+
+		Applies a rotation specified by an axis and an angle to this vector.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.applyEuler&#39;)" target="_parent" title="Vector3.applyEuler" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.applyEuler&#39;)" id="applyEuler">applyEuler</a> ( euler : <a class="param" onclick="window.parent.setUrlFragment(&#39;Euler&#39;)">Euler</a> ) : <span class="param">this</span></h3>
+		<p>
+		Applies euler transform to this vector by converting the <a onclick="window.parent.setUrlFragment(&#39;Euler&#39;)" title="Euler">Euler</a> object to a
+		<a onclick="window.parent.setUrlFragment(&#39;Quaternion&#39;)" title="Quaternion">Quaternion</a> and applying.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.applyMatrix3&#39;)" target="_parent" title="Vector3.applyMatrix3" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.applyMatrix3&#39;)" id="applyMatrix3">applyMatrix3</a> ( m : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix3&#39;)">Matrix3</a> ) : <span class="param">this</span></h3>
+		<p>Multiplies this vector by <a onclick="window.parent.setUrlFragment(&#39;Matrix3&#39;)" title="Matrix3">m</a></p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.applyMatrix4&#39;)" target="_parent" title="Vector3.applyMatrix4" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.applyMatrix4&#39;)" id="applyMatrix4">applyMatrix4</a> ( m : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)">Matrix4</a> ) : <span class="param">this</span></h3>
+		<p>
+		Multiplies this vector (with an implicit 1 in the 4th dimension) and m, and divides by perspective.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.applyNormalMatrix&#39;)" target="_parent" title="Vector3.applyNormalMatrix" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.applyNormalMatrix&#39;)" id="applyNormalMatrix">applyNormalMatrix</a> ( m : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix3&#39;)">Matrix3</a> ) : <span class="param">this</span></h3>
+		<p>Multiplies this vector by normal matrix <a onclick="window.parent.setUrlFragment(&#39;Matrix3&#39;)" title="Matrix3">m</a> and normalizes the result.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.applyQuaternion&#39;)" target="_parent" title="Vector3.applyQuaternion" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.applyQuaternion&#39;)" id="applyQuaternion">applyQuaternion</a> ( quaternion : <a class="param" onclick="window.parent.setUrlFragment(&#39;Quaternion&#39;)">Quaternion</a> ) : <span class="param">this</span></h3>
+		<p>
+		Applies a <a onclick="window.parent.setUrlFragment(&#39;Quaternion&#39;)" title="Quaternion">Quaternion</a> transform to this vector.
+		</p>
+
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.angleTo&#39;)" target="_parent" title="Vector3.angleTo" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.angleTo&#39;)" id="angleTo">angleTo</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">Float</span></h3>
+		<p>
+		Returns the angle between this vector and vector <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> in radians. Neither this vector nor <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> can be the zero vector.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.ceil&#39;)" target="_parent" title="Vector3.ceil" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.ceil&#39;)" id="ceil">ceil</a> () : <span class="param">this</span></h3>
+		<p>
+		The <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> components of the vector are rounded up to the nearest integer value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.clamp&#39;)" target="_parent" title="Vector3.clamp" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.clamp&#39;)" id="clamp">clamp</a> ( min : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, max : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">min</a> - the minimum <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> values.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">max</a> - the maximum <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> values in the desired range<br><br>
+
+		If this vector's x, y or z value is greater than the max vector's x, y or z value, it is replaced by the corresponding value. <br><br>
+		If this vector's x, y or z value is less than the min vector's x, y or z value, it is replaced by the corresponding value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.clampLength&#39;)" target="_parent" title="Vector3.clampLength" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.clampLength&#39;)" id="clampLength">clampLength</a> ( min : <span class="param">Float</span>, max : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">min</a> - the minimum value the length will be clamped to <br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">max</a> - the maximum value the length will be clamped to<br><br>
+
+		If this vector's length is greater than the max value, it is replaced by the max value. <br><br>
+		If this vector's length is less than the min value, it is replaced by the min value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.clampScalar&#39;)" target="_parent" title="Vector3.clampScalar" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.clampScalar&#39;)" id="clampScalar">clampScalar</a> ( min : <span class="param">Float</span>, max : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">min</a> - the minimum value the components will be clamped to <br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">max</a> - the maximum value the components will be clamped to<br><br>
+
+		If this vector's x, y or z values are greater than the max value, they are replaced by the max value. <br><br>
+		If this vector's x, y or z values are less than the min value, they are replaced by the min value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.clone&#39;)" target="_parent" title="Vector3.clone" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.clone&#39;)" id="clone">clone</a> () : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a></h3>
+		<p>
+		Returns a new vector3 with the same <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> values as this one.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.copy&#39;)" target="_parent" title="Vector3.copy" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.copy&#39;)" id="copy">copy</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+			Copies the values of the passed vector3's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a>
+			properties to this vector3.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.cross&#39;)" target="_parent" title="Vector3.cross" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.cross&#39;)" id="cross">cross</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector to <a href="https://en.wikipedia.org/wiki/Cross_product" target="_blank">cross product</a> of itself and <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.crossVectors&#39;)" target="_parent" title="Vector3.crossVectors" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.crossVectors&#39;)" id="crossVectors">crossVectors</a> ( a : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, b : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector to <a href="https://en.wikipedia.org/wiki/Cross_product" target="_blank">cross product</a> of <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">a</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">b</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.distanceTo&#39;)" target="_parent" title="Vector3.distanceTo" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.distanceTo&#39;)" id="distanceTo">distanceTo</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">Float</span></h3>
+		<p>Computes the distance from this vector to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.manhattanDistanceTo&#39;)" target="_parent" title="Vector3.manhattanDistanceTo" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.manhattanDistanceTo&#39;)" id="manhattanDistanceTo">manhattanDistanceTo</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">Float</span></h3>
+		<p>
+		Computes the <a href="https://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">Manhattan distance</a> from this vector to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.distanceToSquared&#39;)" target="_parent" title="Vector3.distanceToSquared" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.distanceToSquared&#39;)" id="distanceToSquared">distanceToSquared</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">Float</span></h3>
+		<p>
+		Computes the squared distance from this vector to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>. If you are just
+		comparing the distance with another distance, you should compare the distance squared instead
+		as it is slightly more efficient to calculate.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.divide&#39;)" target="_parent" title="Vector3.divide" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.divide&#39;)" id="divide">divide</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Divides this vector by <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.divideScalar&#39;)" target="_parent" title="Vector3.divideScalar" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.divideScalar&#39;)" id="divideScalar">divideScalar</a> ( s : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		Divides this vector by scalar <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">s</a>.<br>
+		Sets vector to <strong>( 0, 0, 0 )</strong> if *<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">s</a> = 0*.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.dot&#39;)" target="_parent" title="Vector3.dot" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.dot&#39;)" id="dot">dot</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">Float</span></h3>
+		<p>
+		Calculate the <a href="https://en.wikipedia.org/wiki/Dot_product" target="_blank">dot product</a> of this
+		vector and <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.equals&#39;)" target="_parent" title="Vector3.equals" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.equals&#39;)" id="equals">equals</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">Boolean</span></h3>
+		<p>Checks for strict equality of this vector and <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.floor&#39;)" target="_parent" title="Vector3.floor" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.floor&#39;)" id="floor">floor</a> () : <span class="param">this</span></h3>
+		<p>The components of the vector are rounded down to the nearest integer value.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.fromArray&#39;)" target="_parent" title="Vector3.fromArray" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.fromArray&#39;)" id="fromArray">fromArray</a> ( array : <span class="param">Array</span>, offset : <span class="param">Integer</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Array&#39;)" title="Array">array</a> - the source array.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Integer&#39;)" title="Integer">offset</a> - ( optional) offset into the array. Default is 0.<br><br>
+
+		Sets this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a> value to be array[ offset + 0 ], <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> value to be array[ offset + 1 ]
+		and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> value to be array[ offset + 2 ].
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.fromBufferAttribute&#39;)" target="_parent" title="Vector3.fromBufferAttribute" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.fromBufferAttribute&#39;)" id="fromBufferAttribute">fromBufferAttribute</a> ( attribute : <a class="param" onclick="window.parent.setUrlFragment(&#39;BufferAttribute&#39;)">BufferAttribute</a>, index : <span class="param">Integer</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;BufferAttribute&#39;)" title="BufferAttribute">attribute</a> - the source attribute.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Integer&#39;)" title="Integer">index</a> - index in the attribute.<br><br>
+
+		Sets this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> values from the <a onclick="window.parent.setUrlFragment(&#39;BufferAttribute&#39;)" title="BufferAttribute">attribute</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.getComponent&#39;)" target="_parent" title="Vector3.getComponent" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.getComponent&#39;)" id="getComponent">getComponent</a> ( index : <span class="param">Integer</span> ) : <span class="param">Float</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Integer&#39;)" title="Integer">index</a> - 0, 1 or 2.<br><br>
+
+		If index equals 0 returns the <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a> value. <br>
+		If index equals 1 returns the <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> value. <br>
+		If index equals 2 returns the <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.length&#39;)" target="_parent" title="Vector3.length" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.length&#39;)" id="length">length</a> () : <span class="param">Float</span></h3>
+		<p>Computes the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">Euclidean length</a>
+		(straight-line length) from (0, 0, 0) to (x, y, z).</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.manhattanLength&#39;)" target="_parent" title="Vector3.manhattanLength" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.manhattanLength&#39;)" id="manhattanLength">manhattanLength</a> () : <span class="param">Float</span></h3>
+		<p>
+		Computes the <a href="http://en.wikipedia.org/wiki/Taxicab_geometry" target="_blank">Manhattan length</a> of this vector.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.lengthSq&#39;)" target="_parent" title="Vector3.lengthSq" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.lengthSq&#39;)" id="lengthSq">lengthSq</a> () : <span class="param">Float</span></h3>
+		<p>
+		Computes the square of the <a href="https://en.wikipedia.org/wiki/Euclidean_distance" target="_blank">Euclidean length</a>
+		(straight-line length) from (0, 0, 0) to (x, y, z). If you are 	comparing the lengths of
+		vectors, you should compare the length squared instead as it is slightly more efficient to calculate.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.lerp&#39;)" target="_parent" title="Vector3.lerp" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.lerp&#39;)" id="lerp">lerp</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, alpha : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> - <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">Vector3</a> to interpolate towards.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">alpha</a> - interpolation factor, typically in the closed interval [0, 1].<br><br>
+
+		Linearly interpolate between this vector and <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>, where alpha is the
+		percent distance along the line - alpha = 0 will be this vector, and alpha = 1 will be <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.lerpVectors&#39;)" target="_parent" title="Vector3.lerpVectors" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.lerpVectors&#39;)" id="lerpVectors">lerpVectors</a> ( v1 : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, v2 : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, alpha : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v1</a> - the starting <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">Vector3</a>.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v2</a> - <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">Vector3</a> to interpolate towards.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">alpha</a> - interpolation factor, typically in the closed interval [0, 1].<br><br>
+
+		Sets this vector to be the vector linearly interpolated between <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v1</a> and
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v2</a> where alpha is the percent distance along the line connecting the two vectors
+		- alpha = 0 will be <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v1</a>, and alpha = 1 will be <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v2</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.max&#39;)" target="_parent" title="Vector3.max" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.max&#39;)" id="max">max</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		If this vector's x, y or z value is less than <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>'s x, y or z value, replace
+		that value with the corresponding max value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.min&#39;)" target="_parent" title="Vector3.min" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.min&#39;)" id="min">min</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		If this vector's x, y or z value is greater than <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>'s x, y or z value, replace
+		that value with the corresponding min value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.multiply&#39;)" target="_parent" title="Vector3.multiply" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.multiply&#39;)" id="multiply">multiply</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Multiplies this vector by <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.multiplyScalar&#39;)" target="_parent" title="Vector3.multiplyScalar" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.multiplyScalar&#39;)" id="multiplyScalar">multiplyScalar</a> ( s : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Multiplies this vector by scalar <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">s</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.multiplyVectors&#39;)" target="_parent" title="Vector3.multiplyVectors" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.multiplyVectors&#39;)" id="multiplyVectors">multiplyVectors</a> ( a : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, b : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Sets this vector equal to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">a</a> * <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">b</a>, component-wise.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.negate&#39;)" target="_parent" title="Vector3.negate" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.negate&#39;)" id="negate">negate</a> () : <span class="param">this</span></h3>
+		<p>Inverts this vector - i.e. sets x = -x, y = -y and z = -z.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.normalize&#39;)" target="_parent" title="Vector3.normalize" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.normalize&#39;)" id="normalize">normalize</a> () : <span class="param">this</span></h3>
+		<p>
+		Convert this vector to a <a href="https://en.wikipedia.org/wiki/Unit_vector" target="_blank">unit vector</a> - that is, sets it equal to the vector with the same direction
+		as this one, but <a onclick="window.parent.setUrlFragment(&#39;Vector3.length&#39;)" title="Vector3.length">length</a> 1.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.project&#39;)" target="_parent" title="Vector3.project" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.project&#39;)" id="project">project</a> ( camera : <a class="param" onclick="window.parent.setUrlFragment(&#39;Camera&#39;)">Camera</a> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Camera&#39;)" title="Camera">camera</a> — camera to use in the projection.<br><br>
+
+		<a href="https://en.wikipedia.org/wiki/Vector_projection" target="_blank">Projects</a> the vector with the camera.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.projectOnPlane&#39;)" target="_parent" title="Vector3.projectOnPlane" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.projectOnPlane&#39;)" id="projectOnPlane">projectOnPlane</a> ( planeNormal : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">planeNormal</a> - A vector representing a plane normal.<br><br>
+
+		<a href="https://en.wikipedia.org/wiki/Vector_projection" target="_blank">Projects</a> this vector onto a plane by subtracting this vector projected onto the plane's
+		normal from this vector.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.projectOnVector&#39;)" target="_parent" title="Vector3.projectOnVector" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.projectOnVector&#39;)" id="projectOnVector">projectOnVector</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p><a href="https://en.wikipedia.org/wiki/Vector_projection" target="_blank">Projects</a> this vector onto <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a>. <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> cannot be the zero vector.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.reflect&#39;)" target="_parent" title="Vector3.reflect" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.reflect&#39;)" id="reflect">reflect</a> ( normal : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">normal</a> - the normal to the reflecting plane<br><br>
+
+		Reflect the vector off of plane orthogonal to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">normal</a>. Normal is assumed to
+		have unit length.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.round&#39;)" target="_parent" title="Vector3.round" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.round&#39;)" id="round">round</a> () : <span class="param">this</span></h3>
+		<p>The components of the vector are rounded to the nearest integer value.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.roundToZero&#39;)" target="_parent" title="Vector3.roundToZero" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.roundToZero&#39;)" id="roundToZero">roundToZero</a> () : <span class="param">this</span></h3>
+		<p>
+		The components of the vector are rounded towards zero (up if negative, down if positive) to an integer value.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.set&#39;)" target="_parent" title="Vector3.set" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.set&#39;)" id="set">set</a> ( x : <span class="param">Float</span>, y : <span class="param">Float</span>, z : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Sets the <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> components of this vector.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setComponent&#39;)" target="_parent" title="Vector3.setComponent" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setComponent&#39;)" id="setComponent">setComponent</a> ( index : <span class="param">Integer</span>, value : <span class="param">Float</span> ) : <span class="param">null</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Integer&#39;)" title="Integer">index</a> - 0, 1 or 2.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">value</a> - <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">Float</a><br><br>
+
+		If index equals 0 set <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a> to <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">value</a>.<br>
+		If index equals 1 set <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> to <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">value</a>.<br>
+		If index equals 2 set <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> to <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">value</a>
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromCylindrical&#39;)" target="_parent" title="Vector3.setFromCylindrical" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromCylindrical&#39;)" id="setFromCylindrical">setFromCylindrical</a> ( c : <a class="param" onclick="window.parent.setUrlFragment(&#39;Cylindrical&#39;)">Cylindrical</a> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector from the cylindrical coordinates <a onclick="window.parent.setUrlFragment(&#39;Cylindrical&#39;)" title="Cylindrical">c</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromCylindricalCoords&#39;)" target="_parent" title="Vector3.setFromCylindricalCoords" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromCylindricalCoords&#39;)" id="setFromCylindricalCoords">setFromCylindricalCoords</a> ( radius : <span class="param">Float</span>, theta : <span class="param">Float</span>, y : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Sets this vector from the cylindrical coordinates <a onclick="window.parent.setUrlFragment(&#39;Cylindrical&#39;)" title="Cylindrical">radius</a>, <a onclick="window.parent.setUrlFragment(&#39;Cylindrical&#39;)" title="Cylindrical">theta</a> and <a onclick="window.parent.setUrlFragment(&#39;Cylindrical&#39;)" title="Cylindrical">y</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromMatrixColumn&#39;)" target="_parent" title="Vector3.setFromMatrixColumn" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromMatrixColumn&#39;)" id="setFromMatrixColumn">setFromMatrixColumn</a> ( matrix : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)">Matrix4</a>, index : <span class="param">Integer</span> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> equal to the column of
+		the <a onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)" title="Matrix4">matrix</a> specified by the <a onclick="window.parent.setUrlFragment(&#39;Integer&#39;)" title="Integer">index</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromMatrixPosition&#39;)" target="_parent" title="Vector3.setFromMatrixPosition" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromMatrixPosition&#39;)" id="setFromMatrixPosition">setFromMatrixPosition</a> ( m : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)">Matrix4</a> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector to the position elements of the
+		<a href="https://en.wikipedia.org/wiki/Transformation_matrix" target="_blank">transformation matrix</a> <a onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)" title="Matrix4">m</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromMatrixScale&#39;)" target="_parent" title="Vector3.setFromMatrixScale" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromMatrixScale&#39;)" id="setFromMatrixScale">setFromMatrixScale</a> ( m : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)">Matrix4</a> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector to the scale elements of the
+		<a href="https://en.wikipedia.org/wiki/Transformation_matrix" target="_blank">transformation matrix</a> <a onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)" title="Matrix4">m</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromSpherical&#39;)" target="_parent" title="Vector3.setFromSpherical" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromSpherical&#39;)" id="setFromSpherical">setFromSpherical</a> ( s : <a class="param" onclick="window.parent.setUrlFragment(&#39;Spherical&#39;)">Spherical</a> ) : <span class="param">this</span></h3>
+		<p>
+		Sets this vector from the spherical coordinates <a onclick="window.parent.setUrlFragment(&#39;Spherical&#39;)" title="Spherical">s</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromSphericalCoords&#39;)" target="_parent" title="Vector3.setFromSphericalCoords" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setFromSphericalCoords&#39;)" id="setFromSphericalCoords">setFromSphericalCoords</a> ( radius : <span class="param">Float</span>, phi : <span class="param">Float</span>, theta : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Sets this vector from the spherical coordinates <a onclick="window.parent.setUrlFragment(&#39;Spherical&#39;)" title="Spherical">radius</a>, <a onclick="window.parent.setUrlFragment(&#39;Spherical&#39;)" title="Spherical">phi</a> and <a onclick="window.parent.setUrlFragment(&#39;Spherical&#39;)" title="Spherical">theta</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setLength&#39;)" target="_parent" title="Vector3.setLength" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setLength&#39;)" id="setLength">setLength</a> ( l : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		Set this vector to the vector with the same direction as this one, but <a onclick="window.parent.setUrlFragment(&#39;Vector3.length&#39;)" title="Vector3.length">length</a>
+		<a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">l</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setScalar&#39;)" target="_parent" title="Vector3.setScalar" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setScalar&#39;)" id="setScalar">setScalar</a> ( scalar : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>
+		Set the <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> values of this vector both equal to <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">scalar</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setX&#39;)" target="_parent" title="Vector3.setX" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setX&#39;)" id="setX">setX</a> ( x : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Replace this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a> value with <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">x</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setY&#39;)" target="_parent" title="Vector3.setY" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setY&#39;)" id="setY">setY</a> ( y : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Replace this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> value with <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">y</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.setZ&#39;)" target="_parent" title="Vector3.setZ" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.setZ&#39;)" id="setZ">setZ</a> ( z : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Replace this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> value with <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">z</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.sub&#39;)" target="_parent" title="Vector3.sub" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.sub&#39;)" id="sub">sub</a> ( v : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Subtracts <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">v</a> from this vector.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.subScalar&#39;)" target="_parent" title="Vector3.subScalar" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.subScalar&#39;)" id="subScalar">subScalar</a> ( s : <span class="param">Float</span> ) : <span class="param">this</span></h3>
+		<p>Subtracts <a onclick="window.parent.setUrlFragment(&#39;Float&#39;)" title="Float">s</a>  from this vector's <a onclick="window.parent.setUrlFragment(&#39;Vector3.x&#39;)" title="Vector3.x">x</a>, <a onclick="window.parent.setUrlFragment(&#39;Vector3.y&#39;)" title="Vector3.y">y</a> and <a onclick="window.parent.setUrlFragment(&#39;Vector3.z&#39;)" title="Vector3.z">z</a> compnents.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.subVectors&#39;)" target="_parent" title="Vector3.subVectors" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.subVectors&#39;)" id="subVectors">subVectors</a> ( a : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a>, b : <a class="param" onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)">Vector3</a> ) : <span class="param">this</span></h3>
+		<p>Sets this vector to <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">a</a> - <a onclick="window.parent.setUrlFragment(&#39;Vector3&#39;)" title="Vector3">b</a>.</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.toArray&#39;)" target="_parent" title="Vector3.toArray" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.toArray&#39;)" id="toArray">toArray</a> ( array : <span class="param">Array</span>, offset : <span class="param">Integer</span> ) : <span class="param">Array</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Array&#39;)" title="Array">array</a> - (optional) array to store the vector to. If this is not provided
+		a new array will be created.<br>
+		<a onclick="window.parent.setUrlFragment(&#39;Integer&#39;)" title="Integer">offset</a> - (optional) optional offset into the array.<br><br>
+
+		Returns an array [x, y, z], or copies x, y and z into the provided <a onclick="window.parent.setUrlFragment(&#39;Array&#39;)" title="Array">array</a>.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.transformDirection&#39;)" target="_parent" title="Vector3.transformDirection" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.transformDirection&#39;)" id="transformDirection">transformDirection</a> ( m : <a class="param" onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)">Matrix4</a> ) : <span class="param">this</span></h3>
+		<p>
+		Transforms the direction of this vector by a matrix (the upper left 3 x 3 subset of a <a onclick="window.parent.setUrlFragment(&#39;Matrix4&#39;)" title="Matrix4">m</a>)
+		and then <a onclick="window.parent.setUrlFragment(&#39;Vector3.normalize&#39;)" title="Vector3.normalize">normalizes</a> the result.
+		</p>
+
+		<h3><a onclick="window.parent.setUrlFragment(&#39;Vector3.unproject&#39;)" target="_parent" title="Vector3.unproject" class="permalink">#</a> .<a onclick="window.parent.setUrlFragment(&#39;Vector3.unproject&#39;)" id="unproject">unproject</a> ( camera : <a class="param" onclick="window.parent.setUrlFragment(&#39;Camera&#39;)">Camera</a> ) : <span class="param">this</span></h3>
+		<p>
+		<a onclick="window.parent.setUrlFragment(&#39;Camera&#39;)" title="Camera">camera</a> — camera to use in the projection.<br><br>
+
+		<a href="https://en.wikipedia.org/wiki/Vector_projection" target="_blank">Unprojects</a> the vector with the
+		camera's projection matrix.
+		</p>
+
+
+		<h2>Source</h2>
+
+		<p>
+			<a href="https://github.com/mrdoob/three.js/blob/master/src/math/Vector3.js" target="_blank">src/math/Vector3.js</a>
+		</p>
+	
+
+<div id="button"><img src="./ic_mode_edit_black_24dp.svg"></div></body></html>
