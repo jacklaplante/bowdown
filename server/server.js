@@ -2,7 +2,7 @@ const fs = require('fs');
 const WebSocket = require('ws');
 const https = require('https');
 
-const entities = require('./entities')
+const entities = require('./entities/entities')
 
 const playerLimit = 20
 const prod = process.argv[2] == 'prod'
