@@ -9,7 +9,7 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
-import entities from './entities'
+import entities from './entities/entities'
 
 require.context('../images/');
 

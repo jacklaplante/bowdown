@@ -6,7 +6,7 @@ import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
-import entities from './entities'
+import entities from './entities/entities'
 
 var recordingBot = false
 var log

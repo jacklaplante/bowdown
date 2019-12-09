@@ -57,6 +57,14 @@ orc.update = function() {
   }
 }
 
+orc.getState = function() {
+  return {
+    position: orc.position,
+    velocity: orc.velocity,
+    rotation: orc.rotation
+  }
+}
+
 function getGroupId() {
   return pathfinding.getGroup(ZONE, orc.position)
 }

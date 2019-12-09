@@ -1,10 +1,10 @@
 import {AnimationMixer, LoopOnce, Vector3, Quaternion} from 'three'
 
-import {loader} from './loader'
-import {getAnimation} from './utils'
-import scene from './scene';
+import {loader} from '../loader'
+import {getAnimation} from '../utils'
+import scene from '../scene';
 
-import orcModel from '../models/orc.glb'
+import orcModel from '../../models/orc.glb'
 
 const orc = {};
 
