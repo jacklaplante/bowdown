@@ -4,15 +4,18 @@ const entities = {};
 
 let games, payloads
 
+const updateSpeed = 50 // ms
 entities.init = function(g, p, gN) {
     games = g
     payloads = p
     gameName = gN
 
+    orc.init(games, gameName, updateSpeed)
+
     setInterval( () => {
-        orc.update(games, gameName)
+        orc.update()
         entities.updateState()
-    }, 50); // if you change the update interval it must be changed in orc as well
+    }, updateSpeed); // if you change the update interval it must be changed in orc as well
 }
 
 entities.updateState = function() {

@@ -11,8 +11,12 @@ const loader = new THREE.GLTFLoader();
 const pathfinding = new Pathfinding();
 const ZONE = 'level1';
 
-let navmesh;
-loader.parse( trimBuffer( content ), '', ( gltf ) => {
+let navmesh, updateSpeed, games, gameName;
+orc.init = function(g, gN, uS) {
+  games = g
+  gameName = gN
+  updateSpeed = uS
+  loader.parse( trimBuffer( content ), '', ( gltf ) => {
     gltf.scene.traverse((node) => {
         if (node.isMesh) navmesh = node;
     });
@@ -21,14 +25,14 @@ loader.parse( trimBuffer( content ), '', ( gltf ) => {
     let quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), orc.position.clone().normalize())
     orc.applyQuaternion(quat)
     orc.velocity = new THREE.Vector3(0,0,1).applyQuaternion(quat) // this is important for the initial rotation
-}, ( e ) => {
+  }, (e) => {
     console.error( e );
-});
+  });
+}
 
 
-const updateSpeed = 50 // ms
 const movementSpeed = 5
-orc.update = function(games, gameName) {
+orc.update = function() {
   if (Object.entries(games[gameName].players).length == 0) return
   let pos = toVector(games[gameName].players[Object.keys(games[gameName].players)[0]].position)
   if (pathfinding.getClosestNode(pos, ZONE, getGroupId())) { // not sure if this works
