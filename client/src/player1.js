@@ -505,7 +505,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
     console.log("player1 " + Math.round((bytes.loaded / bytes.total)*100) + "% loaded")
 });
 
-function randomSpawn() {
+function randomSpawn() { // this should be moved to the server
     if (scene.gravityDirection == "down") {
         return new Vector3( - 13, - 0.75, - 9 )
     }

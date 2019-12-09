@@ -1,34 +1,35 @@
 import orc from './orc'
-import bird from './bird'
+import birds from './birds'
+import {eachDo} from '../utils'
 
-const roster = {}
+const roster = {} // remove this when you update orc
 
 const entities = {
-    update: function(states) {
-        if (states.orc) {
+    update: function(state) {
+        if (state.orc) {
             if (!roster.orc) {
-                orc.add(states.orc)
+                orc.add(state.orc)
             } else {
-                orc.update(states.orc)
+                orc.update(state.orc)
             }
-            roster.orc = states.orc
+            roster.orc = state.orc
         }
-        if (states.bird) {
-            if (!roster.bird) {
-                bird.add(states.bird)
-            } else {
-                bird.update(states.bird)
-            }
-            roster.bird = states.bird
+        if (state.birds) {
+            eachDo(state.birds, (birdUuid) => {
+                let birdState = state.birds[birdUuid]
+                if (!birds.get(birdUuid)) {
+                    birds.add(birdUuid, birdState)
+                } else if (birds.get(birdUuid).update) {
+                    birds.get(birdUuid).update(birdState)
+                }
+            })
         }
     },
     animate: function(delta) {
         if (orc && orc.mixer) {
             orc.animate(delta)
         }
-        if (bird && bird.mixer) {
-            bird.animate(delta)
-        }
+        birds.animate(delta)
     }
 }
 

@@ -70,4 +70,8 @@ function getAnimation(gltf, name){
     return result
 }
 
-export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation}
+function eachDo(o, f) {
+    Object.keys(o).forEach((key) => f(key))
+}
+
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo}
