@@ -1,4 +1,4 @@
-import {AnimationMixer, LoopOnce, Vector3, Quaternion} from 'three'
+import {AnimationMixer, LoopOnce, Vector3} from 'three'
 
 import {loader} from '../loader'
 import {getAnimation} from '../utils'
