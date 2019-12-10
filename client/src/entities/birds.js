@@ -13,7 +13,7 @@ birds.add = function(uuid, state) {
   loader.load(flamingo, (gltf) => {
     let bird = this.roster[uuid]
     bird.gltf = gltf
-    // gltf.scene.scale.multiplyScalar(0.1)
+    gltf.scene.scale.multiplyScalar(0.1)
     bird.mixer = new AnimationMixer(gltf.scene)
     initBird(bird) // this just sets up the bird functions
     bird.update(state)
