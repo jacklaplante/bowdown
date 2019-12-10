@@ -1,10 +1,13 @@
-import {AnimationMixer, Vector3} from 'three'
+import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {getAnimation, eachDo} from '../utils'
 import scene from '../scene';
 import flamingo from '../../models/flamingo.gltf'
 
-const birds = {roster: {}}
+const birds = {
+  roster: {},
+  hitBoxes: []
+}
 
 import {loader} from '../loader'
 
@@ -13,12 +16,18 @@ birds.add = function(uuid, state) {
   loader.load(flamingo, (gltf) => {
     let bird = this.roster[uuid]
     bird.gltf = gltf
-    gltf.scene.scale.multiplyScalar(0.1)
+    gltf.scene.scale.multiplyScalar(0.02)
     bird.mixer = new AnimationMixer(gltf.scene)
     initBird(bird) // this just sets up the bird functions
     bird.update(state)
     scene.add(bird.gltf.scene)
     bird.fly.reset().play()
+
+    let hitBox = new Mesh(new BoxGeometry(50, 20, 50)); // this is effected by the scale of the flamingo
+    // hitBox.material.visible = false
+    gltf.scene.add(hitBox)
+    hitBox.playerUuid = uuid
+    birds.hitBoxes.push(hitBox)
   }) 
 }
 
