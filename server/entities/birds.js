@@ -22,7 +22,7 @@ birds.updateAll = function() {
 
 birds.update = function(uuid) {
   let bird = this.get(uuid)  
-  let nextPos = bird.position.clone().applyAxisAngle(bird.axisOfRotation, 0.01)
+  let nextPos = bird.position.clone().applyAxisAngle(bird.axisOfRotation, 0.005)
   let nextVel = nextPos.clone().sub(bird.position)
   bird.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(bird.velocity.clone().normalize(), nextVel.clone().normalize()))
   bird.velocity.copy(nextVel)
@@ -51,7 +51,7 @@ birds.get = function(uuid) {
 }
 
 function randomSpawn() {
-  return new THREE.Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
+  return new THREE.Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(130)
 }
 
 function getPerpendicular(vect) {
