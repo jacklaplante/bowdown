@@ -11,9 +11,9 @@ birds.init = function() {
   let spawnPoint = randomSpawn()
   bird.axisOfRotation = getPerpendicular(spawnPoint)
   bird.position.copy(spawnPoint)
-  bird.velocity = new THREE.Vector3();
   let quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), bird.position.clone().normalize())
   bird.applyQuaternion(quat)
+  bird.velocity = new THREE.Vector3(0,0,1).applyQuaternion(quat) // this is important for the initial rotation
 }
 
 birds.updateAll = function() {
@@ -21,10 +21,11 @@ birds.updateAll = function() {
 }
 
 birds.update = function(uuid) {
-  let bird = this.get(uuid)
+  let bird = this.get(uuid)  
   let nextPos = bird.position.clone().applyAxisAngle(bird.axisOfRotation, 0.01)
-  bird.velocity.copy(nextPos.clone().sub(bird.position))
-  bird.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(bird.position.clone().normalize(), nextPos.clone().normalize()))
+  let nextVel = nextPos.clone().sub(bird.position)
+  bird.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(bird.velocity.clone().normalize(), nextVel.clone().normalize()))
+  bird.velocity.copy(nextVel)
   bird.position.copy(nextPos)
 }
 
