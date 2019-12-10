@@ -50,6 +50,15 @@ function initGame(gameName) {
     let game = games[gameName]
     game.players = {}
     game.entities = {}
+    game.broadcast = function(message) {
+        Object.keys(game.players).forEach((playerUuid) => {
+            let connection = connections[playerUuid]
+            if (connection.ws.readyState === WebSocket.OPEN) {
+                console.log('sending: %s', message);
+                connection.ws.send(JSON.stringify(message));
+            }
+        })
+    }
     entities.init(games, payloads, gameName)
     return game
 }
@@ -125,6 +134,7 @@ wss.on('connection', function connection(ws, req) {
                 updatePlayer(gameName, playerUuid, 'rotation', message.rotation)
             }
             if (message.damage && message.to) {
+                game.broadcast(message)
                 var newHp = players[message.to].hp - message.damage
                 updatePlayer(gameName, playerUuid, 'hp', newHp)
                 if (players[message.to].hp <= 0) {
@@ -134,6 +144,9 @@ wss.on('connection', function connection(ws, req) {
                         setKingOfCrown(getGame(gameName), ws.player)
                     }
                 }
+            }
+            if (message.playAction || message.stopAction) {
+                game.broadcast(message)
             }
         }
     });
@@ -182,7 +195,6 @@ function dumpPayload(gameName) {
         let connection = connections[playerUuid]
         if (connection.ws.readyState === WebSocket.OPEN) {
             var message = JSON.stringify(payloads[gameName])
-            console.log('sending: %s', message);
             connection.ws.send(message);
         }
     })
@@ -194,7 +206,7 @@ function broadcastGameState(game) {
         let connection = connections[playerUuid]
         if (connection.ws.readyState === WebSocket.OPEN) {
             var message = JSON.stringify(game)
-            console.log('sending: %s', message);
+            console.log('broadcasting game state: %s', message);
             connection.ws.send(message);
         }
     })

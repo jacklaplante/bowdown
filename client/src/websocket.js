@@ -41,7 +41,8 @@ function onMessage(message) {
             if (message.kills) {
                 setKillCount(message.kills)
             }
-        } else if (message.chatMessage) {
+        }
+        if (message.chatMessage) {
             newChatMessage(message.chatMessage)
         } else {
             if (message.damage && message.to) {
