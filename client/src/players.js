@@ -41,13 +41,14 @@ players.respawn = function(uuid, position, rotation, race) {
 players.add = function(uuid, playerState) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     roster[uuid] = {hp: 100}
+    let player = roster[uuid]
     if (playerState.race==null) {
         console.error("race is undefined")
         playerState.race = 'brown'
     }
     loader.load('./models/benji_'+playerState.race+'.gltf', function(gltf) {
-        roster[uuid].gltf = gltf;
-        init(new AnimationMixer(gltf.scene), roster[uuid]);
+        player.gltf = gltf;
+        init(new AnimationMixer(gltf.scene), player);
         if (!playerState.rotation) {
             playerState.rotation = new Euler()
         }
@@ -84,11 +85,13 @@ players.update = function(playerState) {
 }
 
 players.move = function(playerUuid, playerState) {
-    var player = roster[playerUuid]
+    let player = roster[playerUuid]
     if (player.gltf) {
         player.gltf.scene.position.copy(playerState.position)
         player.gltf.scene.rotation.copy(playerState.rotation)
         player.velocity = playerState.velocity
+        player.hp = playerState.hp
+        if (!player.gltf.scene.visible && player.hp > 100) player.gltf.scene.visible = true
     } else {
         console.warn("players.move called on a player that hasn't been loaded yet")
     }
