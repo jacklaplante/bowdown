@@ -156,6 +156,7 @@ function animateArrows(delta) {
                     }
                     stopPlayer1Arrow(arrow)
                     sendMessage({
+                        player: player1.uuid,
                         arrow: {
                             stopped: true,
                             position: arrow.position,

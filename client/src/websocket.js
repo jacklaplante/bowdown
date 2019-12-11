@@ -64,7 +64,8 @@ function onMessage(message) {
                 players.stopAction(player, message.stopAction)
             }
         }
-    } else if (message.arrow) {
+    }
+    if (message.arrow) {
         if (message.arrow.stopped) {
             stopOtherPlayerArrow(message.arrow)
         } else {

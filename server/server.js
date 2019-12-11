@@ -133,20 +133,19 @@ wss.on('connection', function connection(ws, req) {
             if (message.rotation) {
                 updatePlayer(gameName, playerUuid, 'rotation', message.rotation)
             }
-            if (message.damage && message.to) {
+            if (message.playAction || message.stopAction || (message.damage && message.to) || message.arrow) {
                 game.broadcast(message)
-                var newHp = players[message.to].hp - message.damage
-                updatePlayer(gameName, playerUuid, 'hp', newHp)
-                if (players[message.to].hp <= 0) {
-                    var kills = players[playerUuid].kills + 1
-                    updatePlayer(gameName, playerUuid, 'kills', kills)
-                    if (getGame(gameName).kingOfCrownMode && players[message.to].kingOfCrown) {
-                        setKingOfCrown(getGame(gameName), ws.player)
+                if (message.damage && message.to) {
+                    var newHp = players[message.to].hp - message.damage
+                    updatePlayer(gameName, playerUuid, 'hp', newHp)
+                    if (players[message.to].hp <= 0) {
+                        var kills = players[playerUuid].kills + 1
+                        updatePlayer(gameName, playerUuid, 'kills', kills)
+                        if (getGame(gameName).kingOfCrownMode && players[message.to].kingOfCrown) {
+                            setKingOfCrown(getGame(gameName), ws.player)
+                        }
                     }
                 }
-            }
-            if (message.playAction || message.stopAction) {
-                game.broadcast(message)
             }
         }
     });
