@@ -120,7 +120,7 @@ wss.on('connection', function connection(ws, req) {
                 ws.player = playerUuid
             }
             if (getGame(gameName).kingOfCrownMode && Object.keys(players).length == 2 && game.kingOfCrown == null && !players[playerUuid].kingOfCrown) {
-                setKingOfCrown(getGame(gameName), playerUuid)
+                setKingOfCrown(gameName, playerUuid)
             }
             if (message.position) {
                 updatePlayer(gameName, playerUuid, 'position', message.position)
@@ -134,7 +134,7 @@ wss.on('connection', function connection(ws, req) {
             if (message.rotation) {
                 updatePlayer(gameName, playerUuid, 'rotation', message.rotation)
             }
-            if (message.playAction || message.stopAction || (message.damage && message.to) || message.arrow) {
+            if (message.playAction || message.stopAction || (message.damage && message.to) || message.arrow || message.chatMessage) {
                 game.broadcast(message)
                 if (message.damage && message.to) {
                     var newHp = players[message.to].hp - message.damage
@@ -143,7 +143,7 @@ wss.on('connection', function connection(ws, req) {
                         var kills = players[playerUuid].kills + 1
                         updatePlayer(gameName, playerUuid, 'kills', kills)
                         if (getGame(gameName).kingOfCrownMode && players[message.to].kingOfCrown) {
-                            setKingOfCrown(getGame(gameName), ws.player)
+                            setKingOfCrown(gameName, ws.player)
                         }
                     }
                 }
@@ -155,7 +155,7 @@ wss.on('connection', function connection(ws, req) {
         removePlayer(game, this.player)
         if (this.player && this.player.kingOfCrown && game.kingOfCrownMode) {
             if(Object.keys(players).length > 1) {
-                setKingOfCrown(game, Object.keys(players)[0])
+                setKingOfCrown(gameName, Object.keys(players)[0])
             } else {
                 game.kingOfCrown = null
             }
@@ -201,11 +201,12 @@ function dumpPayload(gameName) {
     payloads[gameName] = {}
 }
 
-function setKingOfCrown(game, playerUuid) {
+function setKingOfCrown(gameName, playerUuid) {
+    let game = getGame(gameName)
     game.kingOfCrown = playerUuid
     game.kingOfCrownStartTime = Date.now()
-    game.players[playerUuid].kingOfCrown = true
-    game.players[playerUuid].kingOfCrownStartTime = game.kingOfCrownStartTime
+    updatePlayer(gameName, playerUuid, 'kingOfCrown', true)
+    updatePlayer(gameName, playerUuid, 'kingOfCrownStartTime', game.kingOfCrownStartTime)
     console.log(playerUuid + " is the new king!")
 }
 

@@ -95,7 +95,7 @@ players.move = function(playerUuid, playerState) {
     } else {
         console.warn("players.move called on a player that hasn't been loaded yet")
     }
-    player.kingOfCrown = playerState.kingOfCrown
+    if (playerState.kingOfCrown != null) { player.kingOfCrown = playerState.kingOfCrown }
     if (player.kingOfCrown) {
         updateCrown(player)
     }
