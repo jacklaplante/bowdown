@@ -99,8 +99,9 @@ wss.on('connection', function connection(ws, req) {
     var game = getGame(gameName)
     var players = game.players
     ws.isAlive = true;
-    ws.on('pong', heartbeat);
-    broadcastGameState(game)
+    ws.on('pong', heartbeat)
+    // send the new client the state of the game
+    ws.send(JSON.stringify(game))
     ws.on('message', function incoming(message) {
         message = JSON.parse(message)
         ws.lastMessage = Date.now()
@@ -198,17 +199,6 @@ function dumpPayload(gameName) {
         }
     })
     payloads[gameName] = {}
-}
-
-function broadcastGameState(game) {
-    Object.keys(game.players).forEach((playerUuid) => {
-        let connection = connections[playerUuid]
-        if (connection.ws.readyState === WebSocket.OPEN) {
-            var message = JSON.stringify(game)
-            console.log('broadcasting game state: %s', message);
-            connection.ws.send(message);
-        }
-    })
 }
 
 function setKingOfCrown(game, playerUuid) {
