@@ -68,9 +68,13 @@ function init(mixer, archer) {
         }
     }
 
+    archer.addVelocity = function(vect) {
+        this.setVelocity(this.getVelocity().add(vect))
+    }
+
     archer.getVelocity = function() {
         if (archer.velocity) {
-            return archer.velocity
+            return archer.velocity.clone()
         }
         console.warn("archer.getVelocity() was called but aracher.velocity is null")
     }
