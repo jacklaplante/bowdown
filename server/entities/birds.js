@@ -42,6 +42,10 @@ birds.getState = function() {
   return state
 }
 
+birds.die = function(uuid) {
+  delete birds.roster[uuid]
+}
+
 birds.forEach = function(func) {
   Object.keys(this.roster).forEach((uuid) => func(uuid))
 }

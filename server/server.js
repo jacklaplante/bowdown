@@ -51,11 +51,12 @@ function initGame(gameName) {
     game.players = {}
     game.entities = {}
     game.broadcast = function(message) {
+        message = JSON.stringify(message)
+        console.log('broadcasting: %s', message);
         Object.keys(game.players).forEach((playerUuid) => {
             let connection = connections[playerUuid]
             if (connection.ws.readyState === WebSocket.OPEN) {
-                console.log('sending: %s', message);
-                connection.ws.send(JSON.stringify(message));
+                connection.ws.send(message);
             }
         })
     }
@@ -98,7 +99,6 @@ wss.on('connection', function connection(ws, req) {
     let gameName = getGameName(req.url)
     var game = getGame(gameName)
     let players = game.players
-    let entities = game.entities
     ws.isAlive = true;
     ws.on('pong', heartbeat)
     // send the new client the state of the game
@@ -148,6 +148,8 @@ wss.on('connection', function connection(ws, req) {
                                 setKingOfCrown(gameName, ws.player)
                             }
                         }
+                    } else if (entities.get(message.to)) {
+                        entities.die(message.to)
                     }
                 }
             }

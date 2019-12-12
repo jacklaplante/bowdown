@@ -2,6 +2,8 @@ import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {getAnimation, eachDo} from '../utils'
 import scene from '../scene';
+import {sendMessage} from '../websocket'
+
 import flamingo from '../../models/flamingo.gltf'
 
 const birds = {
@@ -43,7 +45,15 @@ birds.animate = function(delta) {
   })
 }
 
-birds.kill = function(uuid) {
+birds.kill = function(birdUuid, playerUuid) {
+  sendMessage({
+    player: playerUuid,
+    damage: 100,
+    to: birdUuid
+  })
+}
+
+birds.die = function(uuid) {
   birds.get(uuid).gltf.scene.visible = false
 }
 

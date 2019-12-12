@@ -32,5 +32,12 @@ entities.updateState = function() {
     games[gameName].entities.birds = birds.getState()
 }
 
+entities.get = function(uuid) {
+    return birds.get(uuid)
+}
+
+entities.die = function(uuid) {
+    birds.die(uuid)
+}
 
 module.exports = entities

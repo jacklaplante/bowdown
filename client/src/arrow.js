@@ -146,7 +146,8 @@ function animateArrows(delta) {
                 if (players.get(uuid)) {
                     killPlayer(uuid)
                 } else {
-                    birds.kill(uuid)
+                    birds.kill(uuid, player1.uuid)
+                    birds.die(uuid)
                 }
             }
             // detect collisions with the environment
