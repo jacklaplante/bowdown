@@ -60,7 +60,7 @@ function initGame(gameName) {
             }
         })
     }
-    entities.init(games, payloads, gameName)
+    if (gameName == 'default') entities.init(games, payloads, gameName)
     return game
 }
 
