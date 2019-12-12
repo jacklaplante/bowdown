@@ -22,7 +22,7 @@ birds.updateAll = function() {
 
 birds.update = function(uuid) {
   let bird = this.get(uuid)  
-  let nextPos = bird.position.clone().applyAxisAngle(bird.axisOfRotation, 0.005)
+  let nextPos = bird.position.clone().applyAxisAngle(bird.axisOfRotation, 0.002)
   let nextVel = nextPos.clone().sub(bird.position)
   bird.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(bird.velocity.clone().normalize(), nextVel.clone().normalize()))
   bird.velocity.copy(nextVel)

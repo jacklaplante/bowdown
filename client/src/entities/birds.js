@@ -26,7 +26,7 @@ birds.add = function(uuid, state) {
     let hitBox = new Mesh(new BoxGeometry(50, 20, 50)); // this is effected by the scale of the flamingo
     // hitBox.material.visible = false
     gltf.scene.add(hitBox)
-    hitBox.playerUuid = uuid
+    hitBox.hitBoxFor = uuid
     birds.hitBoxes.push(hitBox)
   }) 
 }
@@ -41,6 +41,10 @@ birds.animate = function(delta) {
       bird.mixer.update(delta);
     }
   })
+}
+
+birds.kill = function(uuid) {
+  birds.get(uuid).gltf.scene.visible = false
 }
 
 birds.get = function(uuid) {

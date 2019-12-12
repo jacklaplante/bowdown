@@ -61,7 +61,7 @@ players.add = function(uuid, playerState) {
         hitBox.position.y += 1
         hitBox.material.visible = false
         gltf.scene.add(hitBox)
-        hitBox.playerUuid = uuid
+        hitBox.hitBoxFor = uuid
         playerHitBoxes.push(hitBox)
     });
 }
