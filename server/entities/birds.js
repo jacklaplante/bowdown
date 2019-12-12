@@ -44,6 +44,7 @@ birds.getState = function() {
 
 birds.die = function(uuid) {
   delete birds.roster[uuid]
+  birds.init()
 }
 
 birds.forEach = function(func) {
