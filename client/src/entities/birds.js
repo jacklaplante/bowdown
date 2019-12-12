@@ -37,8 +37,8 @@ birds.animate = function(delta) {
   eachDo(birds.roster, (birdUuid) => {
     let bird = birds.get(birdUuid)
     if (bird.mixer) {
-      if (bird.velocity) {
-        bird.setPosition(bird.getPosition().add(bird.velocity.multiplyScalar(delta)))
+      if (bird.getVelocity().length() > 0) {
+        bird.setPosition(bird.getPosition().add(bird.getVelocity().multiplyScalar(delta)))
       }
       bird.mixer.update(delta);
     }
@@ -54,7 +54,9 @@ birds.kill = function(birdUuid, playerUuid) {
 }
 
 birds.die = function(uuid) {
-  birds.get(uuid).gltf.scene.visible = false
+  let bird = birds.get(uuid)
+  bird.fly.reset().stop()
+  bird.setVelocity(bird.getPosition().normalize().negate().multiplyScalar(20))
 }
 
 birds.get = function(uuid) {
@@ -71,6 +73,9 @@ function initBird(bird) {
   }
   bird.setPosition = function(vect) {
     this.gltf.scene.position.copy(vect)
+  }
+  bird.getVelocity = function() {
+    return this.velocity.clone()
   }
   bird.setVelocity = function(vect) {
     this.velocity = new Vector3(vect.x, vect.y, vect.z)
