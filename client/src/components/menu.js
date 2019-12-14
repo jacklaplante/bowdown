@@ -43,8 +43,8 @@ class Menu extends React.Component {
 
   testRange() {
     this.setState({page: "testRange"})
-    scene.loadMap("./lowildNavMesh.glb", "center");
-    connectToServer("ws://localhost:18181")
+    scene.loadMap("./lowild.glb", "center");
+    connectToServer("ws://10.0.0.159:18181")
     this.state.startGame();
   }
   
