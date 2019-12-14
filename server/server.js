@@ -4,7 +4,7 @@ const https = require('https');
 
 const entities = require('./src/entities/entities')
 
-const playerLimit = 20
+const playerLimit = 1000
 const prod = process.argv[2] == 'prod'
 
 var server, serverId, serverIp, apiKey
@@ -96,6 +96,7 @@ wss.shouldHandle = function(request) {
 }
 
 wss.on('connection', function connection(ws, req) {
+    console.log("player connected");
     let gameName = getGameName(req.url)
     var game = getGame(gameName)
     let players = game.players
@@ -114,6 +115,7 @@ wss.on('connection', function connection(ws, req) {
                     hp: 100,
                     kills: 0
                 }
+                console.log("player "+playerUuid+" initialized");
                 connections[playerUuid] = {ws: ws}
                 updatePlayerCount(Object.keys(players).length)
             }

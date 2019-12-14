@@ -53,7 +53,14 @@ var Menu = function (_React$Component) {
   }, {
     key: 'listServers',
     value: function listServers() {
-      this.setState({ page: "servers" });
+      var ip = void 0;
+      if (process.env.NODE_ENV == 'development') {
+        ip = "ws://localhost:18181";
+      } else {
+        ip = "wss://ws.bowdown.io:18181";
+      }
+      connectToServer(ip);
+      this.state.startGame();
       scene.loadMap("./lowild.glb", "center");
     }
   }, {

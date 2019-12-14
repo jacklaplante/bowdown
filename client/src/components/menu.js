@@ -32,7 +32,14 @@ class Menu extends React.Component {
   }
 
   listServers() {
-    this.setState({page: "servers"})
+    let ip;
+    if (process.env.NODE_ENV == 'development') {
+      ip = "ws://localhost:18181"
+    } else {
+      ip = "wss://ws.bowdown.io:18181"
+    }
+    connectToServer(ip)
+    this.state.startGame();
     scene.loadMap("./lowild.glb", "center");
   }
 
