@@ -9,6 +9,8 @@ import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
+import entities from './entities/entities'
+
 require.context('../images/');
 
 var clock = new Clock()
@@ -53,6 +55,7 @@ function animate() {
         }
         player1.mixer.update( delta );
     }
+    entities.animate(delta)
     animateArrows(delta);
     if (Object.keys(players.all()).length) {
         animatePlayers(delta)
@@ -187,7 +190,6 @@ function updateKingOfCrownTime() {
     }
 }
 
-var kickstarterOpened = false
 function gameOver() {
     state = "gameOver"
     document.body.classList.remove("playing")
@@ -205,14 +207,17 @@ function addMenuButton(text) {
     return button
 }
 
+let respawnCount = 0
+let kickstarterOpened = false
 function addRespawnButton() {
     var respawnButton = addMenuButton("respawn")
     respawnButton.onclick = function() {
         player1.respawn()
-        if (!kickstarterOpened) {
+        if (respawnCount > 2 && !kickstarterOpened) {
             window.open("https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", "_blank");
             kickstarterOpened = true
         }
+        respawnCount ++
         play()
         respawnButton.remove()
     }

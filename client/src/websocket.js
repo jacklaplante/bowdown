@@ -6,6 +6,8 @@ import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
+import entities from './entities/entities'
+import birds from './entities/birds'
 
 var recordingBot = false
 var log
@@ -28,8 +30,11 @@ function onConnect(){
 
 function onMessage(message) {
     var message = JSON.parse(message.data)
+    if (message.entities) {
+        entities.update(message.entities)
+    }
     if (message.players) {
-        players.init(message.players);
+        players.update(message.players);
     }
     if (message.player) {
         var player = message.player;
@@ -37,14 +42,17 @@ function onMessage(message) {
             if (message.kills) {
                 setKillCount(message.kills)
             }
-        } else if (message.chatMessage) {
+        }
+        if (message.chatMessage) {
             newChatMessage(message.chatMessage)
         } else {
             if (message.damage && message.to) {
                 if (message.to == player1.uuid) {
                     player1.takeDamage(message.damage)
-                } else {
+                } else if (players.get(message.to)) {
                     players.takeDamage(message.to, message.damage)
+                } else if (birds.get(message.to)) {
+                    birds.die(message.to)
                 }
             } else if (message.status==='disconnected') {
                 // player disconnected, remove
@@ -59,7 +67,8 @@ function onMessage(message) {
                 players.stopAction(player, message.stopAction)
             }
         }
-    } else if (message.arrow) {
+    }
+    if (message.arrow) {
         if (message.arrow.stopped) {
             stopOtherPlayerArrow(message.arrow)
         } else {

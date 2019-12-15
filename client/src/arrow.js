@@ -1,12 +1,13 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion} from 'three'
 
 import scene from './scene'
-import {playerHitBoxes, killPlayer} from './players'
+import {playerHitBoxes, killPlayer, players} from './players'
 import player1 from './player1'
 import {camera} from './camera'
 import {sendMessage} from './websocket'
 import {uuid} from './utils'
 import {loadAudio} from './audio'
+import birds from './entities/birds'
 
 import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
 import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
@@ -134,14 +135,20 @@ function animateArrows(delta) {
             // right now it is the distance from the arrow to the point where the arrow was fired, divided by 2
             // dividing it by 2 is really just a hack. if you don't divide it by 2, the ray would collide with the ground at the players feet when the arrow is shot into the air because the arrow was falling slightly due to gravity
             var ray = new Raycaster(arrow.position, direction, 0, collisionTrail)
-            // detect collisions with other players
-            var collisions = ray.intersectObjects(playerHitBoxes)
+            // detect collisions with other players and birds
+            var collisions = ray.intersectObjects(playerHitBoxes.concat(birds.hitBoxes))
             if (collisions.length > 0) {
                 var collision = collisions.pop()
                 arrow.position.copy(collision.point)
                 sounds.arrowHitPlayer.play()
                 stopPlayer1Arrow(arrow)
-                killPlayer(collision.object.playerUuid)
+                let uuid = collision.object.hitBoxFor
+                if (players.get(uuid)) {
+                    killPlayer(uuid)
+                } else {
+                    birds.kill(uuid, player1.uuid)
+                    birds.die(uuid)
+                }
             }
             // detect collisions with the environment
             var collidable = scene.getCollidableEnvironment([arrow.origin, arrow.position])
@@ -156,6 +163,7 @@ function animateArrows(delta) {
                     }
                     stopPlayer1Arrow(arrow)
                     sendMessage({
+                        player: player1.uuid,
                         arrow: {
                             stopped: true,
                             position: arrow.position,

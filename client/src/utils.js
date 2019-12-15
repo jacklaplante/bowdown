@@ -56,4 +56,22 @@ function showSpatialIndexLines(scene) { // if you use this make sure it's up to 
       }
 }
 
-export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector}
+function getAnimation(gltf, name){
+    var result;
+    gltf.animations.forEach((animation) => {
+        if (animation.name===name) {
+            result = animation
+            return
+        }
+    })
+    if (result == null) {
+        console.error("animation: "+name+" cannot be found!")
+    }
+    return result
+}
+
+function eachDo(o, f) {
+    Object.keys(o).forEach((key) => f(key))
+}
+
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo}

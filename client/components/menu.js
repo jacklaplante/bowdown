@@ -16,6 +16,7 @@ import Title from './title';
 import Controls from './controls';
 import Servers from './servers';
 import ChallengeFriends from './challengeFriends';
+import { connectToServer } from '../src/websocket';
 
 import scene from '../src/scene';
 
@@ -34,6 +35,7 @@ var Menu = function (_React$Component) {
     _this.showControls = _this.showControls.bind(_this);
     _this.listServers = _this.listServers.bind(_this);
     _this.challengeFriends = _this.challengeFriends.bind(_this);
+    _this.testRange = _this.testRange.bind(_this);
     _this.mainPage = _this.mainPage.bind(_this);
     return _this;
   }
@@ -51,7 +53,14 @@ var Menu = function (_React$Component) {
   }, {
     key: 'listServers',
     value: function listServers() {
-      this.setState({ page: "servers" });
+      var ip = void 0;
+      if (process.env.NODE_ENV == 'development') {
+        ip = "ws://localhost:18181";
+      } else {
+        ip = "wss://ws.bowdown.io:18181";
+      }
+      connectToServer(ip);
+      this.state.startGame();
       scene.loadMap("./lowild.glb", "center");
     }
   }, {
@@ -59,6 +68,14 @@ var Menu = function (_React$Component) {
     value: function challengeFriends() {
       this.setState({ page: "challengeFriends" });
       scene.loadMap("./garden.glb", "down");
+    }
+  }, {
+    key: 'testRange',
+    value: function testRange() {
+      this.setState({ page: "testRange" });
+      scene.loadMap("./lowild.glb", "center");
+      connectToServer("ws://10.0.0.159:18181");
+      this.state.startGame();
     }
   }, {
     key: 'componentDidMount',
@@ -127,6 +144,11 @@ var Menu = function (_React$Component) {
             { className: 'button', onClick: this.showControls, id: 'controls-button' },
             'controls'
           ),
+          process.env.NODE_ENV == 'development' ? React.createElement(
+            'div',
+            { className: 'button', onClick: this.testRange },
+            'test range'
+          ) : '',
           React.createElement(
             'div',
             { id: 'menu-info' },

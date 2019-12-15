@@ -30,25 +30,30 @@ players.respawn = function(uuid, position, rotation, race) {
             players.move(uuid, position, rotation)
         }
     } else {
-        players.add(uuid, position, rotation, race)
+        players.add(uuid, {
+            position: position,
+            rotation: rotation,
+            race: race
+        })
     }
 }
 
-players.add = function(uuid, position, rotation, race) {
+players.add = function(uuid, playerState) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     roster[uuid] = {hp: 100}
-    if (race==null) {
+    let player = roster[uuid]
+    if (playerState.race==null) {
         console.error("race is undefined")
-        race = 'brown'
+        playerState.race = 'brown'
     }
-    loader.load('./models/benji_'+race+'.gltf', function(gltf) {
-        roster[uuid].gltf = gltf;
-        init(new AnimationMixer(gltf.scene), roster[uuid]);
-        if (!rotation) {
-            rotation = new Euler()
+    loader.load('./models/benji_'+playerState.race+'.gltf', function(gltf) {
+        player.gltf = gltf;
+        init(new AnimationMixer(gltf.scene), player);
+        if (!playerState.rotation) {
+            playerState.rotation = new Euler()
         }
-        if (position) {
-            players.move(uuid, position, rotation)
+        if (playerState.position) {
+            players.move(uuid, playerState)
         }
         scene.add( gltf.scene );
 
@@ -56,7 +61,7 @@ players.add = function(uuid, position, rotation, race) {
         hitBox.position.y += 1
         hitBox.material.visible = false
         gltf.scene.add(hitBox)
-        hitBox.playerUuid = uuid
+        hitBox.hitBoxFor = uuid
         playerHitBoxes.push(hitBox)
     });
 }
@@ -66,21 +71,31 @@ players.remove = function(uuid) {
     delete roster[uuid]
 }
 
-players.init = function(newPlayers) {
-    Object.keys(newPlayers).forEach(
+players.update = function(playerState) {
+    Object.keys(playerState).forEach(
         (playerUuid) => {
-            players.add(playerUuid,
-                newPlayers[playerUuid].position,
-                newPlayers[playerUuid].rotation,
-                newPlayers[playerUuid].race);
-        })
+            if (playerUuid == player1.uuid) {return;}
+            if (!players.get(playerUuid)) {
+                players.add(playerUuid, playerState[playerUuid]);
+            } else {
+                players.move(playerUuid, playerState[playerUuid])
+            }
+        }
+    )
 }
 
-players.move = function(playerUuid, pos, rotation, kingOfCrown) {
-    var player = roster[playerUuid]
-    player.gltf.scene.position.copy(pos)
-    player.gltf.scene.rotation.copy(rotation)
-    player.kingOfCrown = kingOfCrown
+players.move = function(playerUuid, playerState) {
+    let player = roster[playerUuid]
+    if (player.gltf) {
+        player.gltf.scene.position.copy(playerState.position)
+        player.gltf.scene.rotation.copy(playerState.rotation)
+        player.velocity = playerState.velocity
+        player.hp = playerState.hp
+        if (!player.gltf.scene.visible && player.hp > 100) player.gltf.scene.visible = true
+    } else {
+        console.warn("players.move called on a player that hasn't been loaded yet")
+    }
+    if (playerState.kingOfCrown != null) { player.kingOfCrown = playerState.kingOfCrown }
     if (player.kingOfCrown) {
         updateCrown(player)
     }
@@ -104,8 +119,15 @@ players.takeDamage = function(playerUuid, damage) {
 function animatePlayers(delta) {
     Object.keys(roster).forEach(
         (playerUuid) => {
-            if (roster[playerUuid].mixer) {
-                roster[playerUuid].mixer.update(delta)
+            let player = roster[playerUuid]
+            if (player.velocity) {
+                let velocity = new Vector3(player.velocity.x, player.velocity.y, player.velocity.z)
+                if (velocity.length() > 0) {
+                    player.gltf.scene.position.add(velocity.multiplyScalar(delta))
+                }   
+            }
+            if (player.mixer) {
+                player.mixer.update(delta)
             }
         })
 }

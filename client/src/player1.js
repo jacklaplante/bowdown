@@ -37,11 +37,11 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
   ( gltf ) => {
     player1.gltf = gltf;
     Object.keys(sounds).forEach((sound) => player1.gltf.scene.add(sounds[sound]))
-    player1.velocity = new Vector3()
     player1.bowState = "unequipped"
     
     var mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
+    player1.setVelocity(new Vector3())
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
             player1.bowState = "drawn"
@@ -55,9 +55,9 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
 
     player1.falling = function(delta){
         if (delta) {
-            var origin = player1.getPosition().add(player1.velocity.clone().multiplyScalar(delta)).sub(this.globalVector(new Vector3(0, 0.1, 0)));
+            var origin = player1.getPosition().add(player1.getVelocity().multiplyScalar(delta)).sub(this.globalVector(new Vector3(0, 0.1, 0)));
             var dir = this.globalVector(new Vector3(0, 1, 0));
-            var ray = new Raycaster(origin, dir, 0, 0.2 + player1.velocity.length() * delta);
+            var ray = new Raycaster(origin, dir, 0, 0.2 + player1.getVelocity().length() * delta);
             var collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin]), true);
             if ( collisionResults.length > 0) {
                 player1.doubleJumped = false
@@ -143,16 +143,19 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         }
     }
 
+    var payload = {} // right now the payload will only keep track of velocity and position
     player1.broadcast = async function() {
         sendMessage(
             {
                 player: player1.uuid,
                 position: player1.getPosition(),
+                velocity: player1.getVelocity(),
                 rotation: player1.getRotation(),
                 bowState: player1.bowState,
                 kingOfCrown: player1.kingOfCrown
             }
         )
+        payload = {}
     }
 
     function godModeOn() {
@@ -245,7 +248,10 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         var nextPos, rotation;
         var falling = player1.falling(delta)
         if (godModeOn() || (!falling && scene.loaded)) {
-            player1.velocity.set(0,0,0)
+            if (player1.getVelocity().length() > 0) {
+                player1.setVelocity(new Vector3())
+                player1.broadcast()
+            }
             if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 nextPos = player1.getPosition()
@@ -305,7 +311,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         var positionDeltaFromVelocity = velocityToPositionDelta(delta, inputDirection, cameraDirection)
         if (positionDeltaFromVelocity) {
             if (!nextPos) nextPos = player1.getPosition()
-            nextPos.add(player1.velocity.clone().multiplyScalar(delta))
+            nextPos.add(player1.getVelocity().multiplyScalar(delta))
         }
         if (nextPos) {
             var collision = player1.collisionDetected(nextPos)
@@ -313,7 +319,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
                 this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
             } else {
-                player1.velocity.set(0,0,0)
+                player1.setVelocity(new Vector3())
             }
             player1.broadcast()
         } else if (rotation) {
@@ -356,19 +362,19 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         if (grappling()) {
             if (inputDirection.length() != 0) {
                 var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                player1.velocity.add(velocityInfluence.multiplyScalar(delta))
+                player1.addVelocity(velocityInfluence.multiplyScalar(delta))
             }
             var arrowToPlayer = activeRopeArrow.position.clone().sub(player1.getPosition())
-            player1.velocity.add(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
-            if (player1.velocity.angleTo(arrowToPlayer) > Math.PI/2) {
-                player1.velocity.projectOnPlane(arrowToPlayer.clone().normalize())
+            player1.addVelocity(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
+            if (player1.getVelocity().angleTo(arrowToPlayer) > Math.PI/2) {
+                player1.setVelocity(player1.getVelocity().projectOnPlane(arrowToPlayer.clone().normalize()))
             }
             if (!sounds.grappleReel.isPlaying) {
                 sounds.grappleReel.play()
             }
         }
-        if (player1.velocity.length() != 0) {
-            return player1.velocity.clone().multiplyScalar(delta)
+        if (player1.getVelocity().length() != 0) {
+            return player1.getVelocity().multiplyScalar(delta)
         }
     }
 
@@ -408,12 +414,12 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
             this.anim["death"].stop()
         }
         var pos = randomSpawn()
-        player1.setPosition(pos)
         player1.hp = 100
         player1.gltf.scene.visible = true
         if (scene.gravityDirection == "center") {
-            player1.gltf.scene.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
+            player1.gltf.scene.rotation.setFromQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), pos.clone().normalize()))
         }
+        updatePosition(pos)
         // say hi to server
         sendMessage({
             player: player1.uuid,
@@ -504,12 +510,13 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
     console.log("player1 " + Math.round((bytes.loaded / bytes.total)*100) + "% loaded")
 });
 
-function randomSpawn() {
+function randomSpawn() { // this should be moved to the server
     if (scene.gravityDirection == "down") {
-        return new Vector3(10, 10, 10)
+        return new Vector3( - 13, 10, - 9 )
     }
     if (process.env.NODE_ENV == 'development') {
-        return new Vector3(70,70,70)
+        return new Vector3(-70,-70,-70)
+        // return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
     }
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
 }
