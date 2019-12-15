@@ -37,8 +37,8 @@ function onMessage(message) {
         players.update(message.players);
     }
     if (message.player) {
-        var player = message.player;
-        if (player == player1.uuid) {
+        var playerUuid = message.player;
+        if (playerUuid == player1.uuid) {
             if (message.kills) {
                 setKillCount(message.kills)
             }
@@ -56,15 +56,18 @@ function onMessage(message) {
                 }
             } else if (message.status==='disconnected') {
                 // player disconnected, remove
-                players.remove(player)
-            } else if (!players.get(player) || message.status==='respawn') {
-                players.respawn(player, message.position, message.rotation, message.race)
-            } else if (players.get(player).gltf && message.position && message.rotation!=null) {
-                players.move(player, message.position, message.rotation, message.kingOfCrown)
-            } else if (players.get(player).gltf && message.playAction) {
-                players.playAction(player, message.playAction)
-            } else if (players.get(player).gltf && message.stopAction) {
-                players.stopAction(player, message.stopAction)
+                players.remove(playerUuid)
+            } else if (playerUuid != player1.uuid ) {
+                let player = players.get(playerUuid)
+                if (!player || message.status==='respawn') {
+                    players.respawn(playerUuid, message.position, message.rotation, message.race)
+                } else if (player.gltf && message.position && message.rotation!=null) {
+                    players.move(playerUuid, message.position, message.rotation, message.kingOfCrown)
+                } else if (player.gltf && message.playAction) {
+                    players.playAction(playerUuid, message.playAction)
+                } else if (player.gltf && message.stopAction) {
+                    players.stopAction(playerUuid, message.stopAction)
+                }   
             }
         }
     }
