@@ -58,8 +58,10 @@ class Menu extends React.Component {
 
   async componentDidMount() {
     const game = await import(/* webpackChunkName: "game" */ '../src/game')
-    document.body.classList.remove("loading")
-    document.body.classList.add("ready")
+
+    let root = document.getElementById("root")
+    root.classList.remove("loading")
+    root.classList.add("ready")
     this.setState({
       readyToRock: true,
       startGame: function() {
@@ -77,7 +79,7 @@ class Menu extends React.Component {
   render() {
     if (this.state.page == "main") {
       return (
-        <div className="centered">
+        <div id="menu" className="centered">
           <Title title='bowdown' />
           <div className="button" onClick={this.listServers} id="servers">
             {this.state.readyToRock ? 'face the world' : 'loading'}

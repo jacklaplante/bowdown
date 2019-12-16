@@ -37,12 +37,6 @@ var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
 var jumpTouch = {id: null}
 const cameraTouchSensitivity = 4
-const touchElements = [
-    document.getElementById("shoot-button"),
-    document.getElementById("rope-button"),
-    document.getElementById("jump-button"),
-    document.getElementById("menu-button")
-]
 var rotated
 
 function animate() {
@@ -158,8 +152,9 @@ function onMouseUp(event) {
 }
 
 function play() {
-    document.body.classList.remove("ready")
-    document.body.classList.add('playing')
+    let root = document.getElementById("root")
+    root.classList.remove("ready")
+    root.classList.add('playing')
     removeMenuElement()
     state = "playing"
 }
@@ -169,7 +164,7 @@ function removeMenuElement() {
 }
 
 function getMenuElement() {
-    return document.querySelector("#menu .centered")
+    return document.querySelector("#menu.centered")
 }
 
 function setKillCount(count) {
@@ -236,6 +231,7 @@ function pause() {
     addRespawnButton()
 }
 
+let touchElements
 function touchControls(bool) {
     if (bool!=usingTouchControls) {
         if (bool) {
@@ -271,10 +267,10 @@ function handleTouch(event) {
         cameraTouch.x = camTouch.pageX
         cameraTouch.y = camTouch.pageY
     } else if (newTouch) {
-        if (newTouch.target.id === "shoot-button") {
+        if (newTouch.target.id === "shoot-button" || document.getElementById("shoot-button").contains(event.target)) {
             player1.onMouseDown()
             cameraTouch.shoot = true
-        } else if (newTouch.target.id === "rope-button") {
+        } else if (newTouch.target.id === "rope-button" || document.getElementById("rope-button").contains(event.target)) {
             player1.onMouseDown()
             cameraTouch.rope = true
         }
@@ -359,8 +355,15 @@ function rotate() {
     rotated = true
 }
 
-function initTouchElements(elements) {
-    elements.forEach((element) => {
+function initTouchElements() {
+    touchElements = [
+        document.getElementById("shoot-button"),
+        document.getElementById("rope-button"),
+        document.getElementById("jump-button"),
+        document.getElementById("menu-button"),
+        renderer.domElement
+    ]
+    touchElements.forEach((element) => {
         var mc = new Hammer.Manager(element, {recognizers:[[Hammer.Pinch, { enable: true }]]})
         if (element.id == "menu-button") {
             mc.add(new Hammer.Tap());
@@ -386,7 +389,7 @@ function start() {
     // renderer
     document.body.appendChild(renderer.domElement)
     // hammerjs touch controls
-    initTouchElements(touchElements.concat(renderer.domElement))
+    initTouchElements()
     // auto rotate
     if (window.innerWidth < window.innerHeight && document.body.requestPointerLock && document.body.requestPointerLock() && screen.orientation.type && screen.orientation.type.includes("portrait")) {
         if (document.body.requestFullscreen) {
