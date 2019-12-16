@@ -84,6 +84,7 @@ scene.animate = function(delta) {
 }
 
 scene.getCollidableEnvironment = function(positions) {
+    if (!scene.loaded) return []
     if (this.gravityDirection == "down") { // create spatial index for garden
         return collidableEnvironment
     }
@@ -96,7 +97,7 @@ scene.getCollidableEnvironment = function(positions) {
                 if (objects[collision]) {
                     collidable.push(objects[collision])
                 } else {
-                    console.error(collision + "not found in objects, you need to recreate the spatialIndex")
+                    console.error(collision + " not found in objects, you need to recreate the spatialIndex")
                 }
             })
         })

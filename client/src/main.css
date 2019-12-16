@@ -18,7 +18,7 @@ canvas {
     color: #ffdba5;
 }
 
-#menu .centered {
+#menu.centered {
     display: inline;
     position: fixed;
     top: 50%;
@@ -117,7 +117,6 @@ svg .cls-2{
     transform: translate(-50%, -50%);
     width: 20pt;
     height: 20pt;
-    background-image: url(images/fullscreen.svg);
     z-index: 1;
 }
 
@@ -146,7 +145,6 @@ svg .cls-2{
 #menu-button {
     display: none;
     position: fixed;
-    background-image: url(images/menu-button.svg);
     top: 1vw;
     left: 1vw;
     width: 4vw;
@@ -157,10 +155,9 @@ svg .cls-2{
     display: none;
     position: fixed;
     top: 50%;
-    left: 85%;
+    left: 80%;
     width: 70pt;
     height: 70pt;
-    background-image: url(images/dot-and-circle.svg);
 }
 
 #rope-button {
@@ -170,7 +167,6 @@ svg .cls-2{
     left: 70%;
     width: 70pt;
     height: 70pt;
-    background-image: url(images/rope.svg);
 }
 
 #jump-button {
@@ -252,6 +248,7 @@ ul, #server-list .server, .footer {
 
 #title {
     position: relative;
+    padding: 1vh 1vw;
 }
 
 #kickstarter {

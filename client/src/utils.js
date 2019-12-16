@@ -78,4 +78,16 @@ function getRandom(arr) {
     return arr[Math.floor(Math.random()*arr.length)];
 }
 
-export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo, getRandom}
+function initTouchElements(elements) {
+    elements.forEach((element) => {
+        var mc = new Hammer.Manager(element, {recognizers:[[Hammer.Pinch, { enable: true }]]})
+        if (element.id == "menu-button") {
+            mc.add(new Hammer.Tap());
+            mc.on("tap", function() {
+                pause()
+            });
+        }
+    })
+}
+
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo, getRandom, initTouchElements}
