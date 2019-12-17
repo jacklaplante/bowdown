@@ -1,6 +1,6 @@
 import {Clock} from 'three'
 
-import player1 from './player1'
+import player1 from './player1/player1'
 import { players } from './players'
 import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
 import { newChatMessage } from './chat'

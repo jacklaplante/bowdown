@@ -1,6 +1,6 @@
 import {PerspectiveCamera, Vector3, Raycaster, Quaternion, AudioListener} from 'three'
 import scene from './scene'
-import player1 from './player1'
+import player1 from './player1/player1'
 
 var distance = 3.5;
 var width, height;

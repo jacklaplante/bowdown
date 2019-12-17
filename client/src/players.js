@@ -5,7 +5,7 @@ import scene from './scene'
 import {init} from './archer'
 import {sendMessage} from './websocket';
 import {updateCrown} from './kingOfCrown'
-import player1 from './player1';
+import player1 from './player1/player1';
 
 var players = {};
 var roster = {}
