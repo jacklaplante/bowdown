@@ -46,10 +46,9 @@ birds.getState = function() {
 
 birds.die = function(uuid) {
   let bird = birds.roster[uuid]
-  let pos = bird.position.clone()
-  let ray = new THREE.Raycaster(pos, pos.clone().negate().normalize())
-  let collisions = ray.intersectObject(scene, true)
-  debugger
+  // let pos = bird.position.clone()
+  // let ray = new THREE.Raycaster(pos, pos.clone().negate().normalize())
+  // let collisions = ray.intersectObject(scene, true)
   delete birds.roster[uuid]
   birds.init() // create a new bird when one dies
 }

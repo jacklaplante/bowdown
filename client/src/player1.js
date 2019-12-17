@@ -55,7 +55,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         }
     })
 
-    player1.falling = function(delta){
+    player1.isFalling = function(delta){
         if (delta) {
             var origin = player1.getPosition().add(player1.getVelocity().multiplyScalar(delta)).sub(this.globalVector(new Vector3(0, 0.1, 0)));
             var dir = this.globalVector(new Vector3(0, 1, 0));
@@ -249,8 +249,8 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         var forwardDirection = getForwardDirection(cameraDirection) // Vector2 describing the direction the relative direction (if the player were on flat land) (not taking into account user movement input)in
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
-        let falling = player1.falling(delta)
-        if (godModeOn() || !falling) {
+        this.falling = player1.isFalling(delta)
+        if (godModeOn() || !this.falling) {
             if (player1.getVelocity().length() > 0) {
                 player1.setVelocity(new Vector3())
                 player1.broadcast()
@@ -293,7 +293,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         }
         if (input.jump && !player1.doubleJumped) {
             input.jump = null
-            if (falling) {
+            if (this.falling) {
                 player1.doubleJumped = true
                 if (inputDirection.length()) {
                     this.velocity.copy(globalDirection.clone().multiplyScalar(1/delta))
