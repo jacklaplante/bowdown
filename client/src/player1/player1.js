@@ -4,12 +4,12 @@ import {loader} from '../loader'
 import {uuid, removeCollisionLines, localVector, getRandom} from '../utils'
 import scene from '../scene'
 import {camera, cameraTarget} from '../camera'
-import {shootArrow, retractRopeArrow} from '../arrow'
 import {sendMessage} from '../websocket'
 import {init} from '../archer'
 import {gameOver} from '../game'
 import {loadAudio, loadAllAudio, addAudio} from '../audio'
 import {updateCrown} from '../kingOfCrown'
+import initControls from './controls'
 
 import audioBowShot from '../../audio/effects/Bow Shot.mp3'
 import audioBowDraw from '../../audio/effects/Bow Draw.mp3'
@@ -19,30 +19,31 @@ import audioGrappleReel from '../../audio/effects/Grapple Reel Loop.mp3'
 const benji = require.context('../../models/benji');
 const footsteps = require.context('../../audio/effects/footsteps');
 
-var player1 = {uuid: uuid()}
-const movementSpeed = 7
-const sprintModifier = 1.3
 const velocityInfluenceModifier = 30
 const inputInfluenceVelocityModifier = 5
 const gravityAcceleration = 10
 const godMode = false
 
-var sounds = {}
-sounds.bowShot = loadAudio(audioBowShot)
-sounds.bowDraw = loadAudio(audioBowDraw)
-sounds.grappleShot = loadAudio(audioGrappleShot)
-sounds.grappleReel = loadAudio(audioGrappleReel)
-sounds.footsteps = loadAllAudio(footsteps)
+var player1 = {
+  uuid: uuid(),
+  sounds: {
+    bowShot: loadAudio(audioBowShot),
+    bowDraw: loadAudio(audioBowDraw),
+    grappleShot: loadAudio(audioGrappleShot),
+    grappleReel: loadAudio(audioGrappleReel),
+    footsteps: loadAllAudio(footsteps)
+  }
+}
 
 player1.race = getRandom(['black', 'brown', 'white']);
-loader.load(benji('./benji_'+player1.race+'.gltf'),
-  ( gltf ) => {
+loader.load(benji('./benji_'+player1.race+'.gltf'), (gltf) => {
     player1.gltf = gltf;
-    addAudio(player1.gltf.scene, sounds)
+    addAudio(player1.gltf.scene, player1.sounds)
     player1.bowState = "unequipped"
     
     var mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
+    initControls(player1)
     player1.setVelocity(new Vector3())
     mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "Draw bow") {
@@ -93,57 +94,6 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         this.broadcast();
     }
 
-    player1.onMouseDown = function() {
-        if (this.activeRopeArrow!=null) {
-            this.activeRopeArrow = null
-            retractRopeArrow();
-            if (sounds.grappleReel.isPlaying) {
-                sounds.grappleReel.stop()   
-            }
-        } else if (this.bowState == "unequipped") {
-            this.equipBow()
-        } else {
-            if (this.activeActions.includes("jumping")) {
-                this.stopAction("jumping")
-            }
-            sounds.bowDraw.play();
-            this.playBowAction("drawBow")
-            this.bowState = "drawing"
-            setTimeout(function(){
-                if (player1.bowState == "drawing") {
-                    document.getElementById("crosshair").classList.add("aiming")
-                    player1.bowState = "drawn"
-                }
-            }, 1000);
-            camera.zoomIn()
-        }
-    }
-
-    player1.onMouseUp = function(event) {
-        document.getElementById("crosshair").classList.remove("aiming")
-        if (sounds.bowDraw.isPlaying) {
-            sounds.bowDraw.stop()
-        }
-        if (this.bowState == "drawn") {
-            this.playBowAction("fireBow")
-            if (event.button == 2) {
-                this.activeRopeArrow = shootArrow("rope")
-                sounds.grappleShot.play()
-            } else {
-                sounds.bowShot.play();
-                shootArrow("normal");   
-            }
-            this.bowState = "firing"
-            camera.zoomOut()
-        } else if (this.bowState === "drawing") {
-            this.stopAction(this.activeBowAction)
-            this.activeBowAction = null
-            this.bowState = "equipped"
-            this.idle()
-            camera.zoomOut()
-        }
-    }
-
     var payload = {} // right now the payload will only keep track of velocity and position
     player1.broadcast = async function() {
         sendMessage(
@@ -159,66 +109,8 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         payload = {}
     }
 
-    function godModeOn() {
+    player1.godModeOn = function() {
         return godMode && process.env.NODE_ENV == 'development'
-    }
-
-    function runOrSprint(input) {
-        if (input.keyboard.shift) {
-            if (player1.isRunning()) {
-                player1.anim[player1.activeMovement].timeScale = sprintModifier
-            }
-            if (godModeOn()) {
-                return movementSpeed*sprintModifier*30
-            }
-            return movementSpeed*sprintModifier
-        } else {
-            if (player1.anim[player1.activeMovement]) {
-                player1.anim[player1.activeMovement].timeScale = 1
-            }
-            return movementSpeed
-        }
-    }
-
-    function getInputDirection(input) {
-        var x=0, y=0 // these are the inputDirections
-        if (input.touch.x!=0 && input.touch.y!=0) {
-            var dir = new Vector2(input.touch.x, input.touch.y)
-            if (dir.length()>100) {
-                input.keyboard.shift = true // sprinting
-            } else {
-                input.keyboard.shift = false
-            }
-            dir.normalize()
-            x = dir.x
-            y = dir.y
-        }
-        if (input.keyboard.forward) {
-            x += 0
-            y += 1
-        }
-        if (input.keyboard.backward) {
-            x += 0
-            y += -1
-        }
-        if (input.keyboard.left) {
-            x += -1
-            y += 0
-        }
-        if (input.keyboard.right) {
-            x += 1
-            y += 0
-        }
-        return new Vector2(x, y)
-    }
-
-    function getGlobalDirection(cameraDirection, inputDirection, input, delta) {
-        var up = player1.localVector(0, 1, 0)
-        return cameraDirection.clone()
-            .projectOnPlane(up)
-            .applyAxisAngle(up, -Math.atan2(inputDirection.x, inputDirection.y))
-            .normalize()
-            .multiplyScalar(delta*runOrSprint(input))
     }
 
     function getForwardDirection(cameraDirection) {
@@ -242,19 +134,19 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
     player1.doubleJumped = false
     player1.animate = function(delta, input){
         if (!scene.loaded) return
-        var inputDirection = getInputDirection(input) // Vector2 describing the direction of user input for movement
+        var inputDirection = this.getInputDirection(input) // Vector2 describing the direction of user input for movement
         var cameraDirection = camera.getWorldDirection(new Vector3())// Vector3 describing the direction the camera is pointed
-        var globalDirection = getGlobalDirection(cameraDirection, inputDirection, input, delta) // Vector3 describing the players forward movement in the world
+        var globalDirection = this.getGlobalDirection(cameraDirection, inputDirection, input, delta) // Vector3 describing the players forward movement in the world
         var forwardDirection = getForwardDirection(cameraDirection) // Vector2 describing the direction the relative direction (if the player were on flat land) (not taking into account user movement input)in
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
         this.falling = this.isFalling(delta)
-        if (godModeOn() || !this.falling) {
+        if (this.godModeOn() || !this.falling) {
             if (this.getVelocity().length() > 0) {
                 this.setVelocity(new Vector3())
                 this.broadcast()
             }
-            if (runningInput(input)) {
+            if (this.runningInput(input)) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 nextPos = this.getPosition()
                 nextPos.add(globalDirection)
@@ -277,7 +169,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
                     }
                 }
             }
-        } else if (!godModeOn() && scene.loaded) {
+        } else if (!this.godModeOn() && scene.loaded) {
             var grav = gravityAcceleration
             // if the player is falling
             if (this.doubleJumped && this.isFiring()) {
@@ -308,10 +200,10 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         }
         if (nextPos) {
             var collision = this.collisionDetected(nextPos)
-            if(godModeOn() || !collision) {
+            if(this.godModeOn() || !collision) {
                 this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
-                if (runningInput(input)) {
+                if (this.runningInput(input)) {
                     this.run() // running animation and footstep sound
                 }
             } else {
@@ -355,23 +247,23 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
     }
 
     function velocityToPositionDelta(delta, inputDirection, cameraDirection) {
-        if (grappling()) {
-            if (inputDirection.length() != 0) {
-                var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
-                player1.addVelocity(velocityInfluence.multiplyScalar(delta))
-            }
-            var arrowToPlayer = player1.activeRopeArrow.position.clone().sub(player1.getPosition())
-            player1.addVelocity(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
-            if (player1.getVelocity().angleTo(arrowToPlayer) > Math.PI/2) {
-                player1.setVelocity(player1.getVelocity().projectOnPlane(arrowToPlayer.clone().normalize()))
-            }
-            if (!sounds.grappleReel.isPlaying) {
-                sounds.grappleReel.play()
-            }
+      if (grappling()) {
+        if (inputDirection.length() != 0) {
+          var velocityInfluence = cameraDirection.clone().applyAxisAngle(player1.getPosition().normalize(), -Math.atan2(inputDirection.x, inputDirection.y))
+          player1.addVelocity(velocityInfluence.multiplyScalar(delta))
         }
-        if (player1.getVelocity().length() != 0) {
-            return player1.getVelocity().multiplyScalar(delta)
+        var arrowToPlayer = player1.activeRopeArrow.position.clone().sub(player1.getPosition())
+        player1.addVelocity(arrowToPlayer.normalize().multiplyScalar(velocityInfluenceModifier*delta))
+        if (player1.getVelocity().angleTo(arrowToPlayer) > Math.PI/2) {
+          player1.setVelocity(player1.getVelocity().projectOnPlane(arrowToPlayer.clone().normalize()))
         }
+        if (!player1.sounds.grappleReel.isPlaying) {
+          player1.sounds.grappleReel.play()
+        }
+      }
+      if (player1.getVelocity().length() != 0) {
+        return player1.getVelocity().multiplyScalar(delta)
+      }
     }
 
     player1.localVector = function(x, y, z) {
@@ -499,7 +391,7 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
     player1.playFootstepSound = function() {
         setTimeout(() => {
             if (player1.isRunning()) {
-                let sound = getRandom(sounds.footsteps)
+                let sound = getRandom(this.sounds.footsteps)
                 sound.play()
                 player1.playFootstepSound()
             }
@@ -538,10 +430,6 @@ function randomSpawn() { // this should be moved to the server
         // return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
     }
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
-}
-
-function runningInput(input) {
-    return (input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right
 }
 
 export default player1
