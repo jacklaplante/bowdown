@@ -20,7 +20,6 @@ const benji = require.context("../../models/benji");
 const footsteps = require.context("../../audio/effects/footsteps");
 
 const velocityInfluenceModifier = 30;
-const inputInfluenceVelocityModifier = 5;
 const gravityAcceleration = 10;
 const godMode = false;
 
