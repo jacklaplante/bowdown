@@ -10,6 +10,7 @@ import { gameOver } from "../game";
 import { loadAudio, loadAllAudio, addAudio } from "../audio";
 import { updateCrown } from "../kingOfCrown";
 import initControls from "./controls";
+import initActions from "./actions";
 
 import audioBowShot from "../../audio/effects/Bow Shot.mp3";
 import audioBowDraw from "../../audio/effects/Bow Draw.mp3";
@@ -32,7 +33,8 @@ var player1 = {
     grappleShot: loadAudio(audioGrappleShot),
     grappleReel: loadAudio(audioGrappleReel),
     footsteps: loadAllAudio(footsteps)
-  }
+  },
+  activeActions: []
 };
 
 player1.race = getRandom(["black", "brown", "white"]);
@@ -46,6 +48,7 @@ loader.load(
     var mixer = new AnimationMixer(gltf.scene);
     init(mixer, player1);
     initControls(player1);
+    initActions(player1);
     player1.setVelocity(new Vector3());
     mixer.addEventListener("finished", event => {
       if (event.action.getClip().name == "Draw bow") {
@@ -329,53 +332,6 @@ loader.load(
       });
     };
 
-    player1.activeActions = [];
-    player1.playAction = function(action) {
-      if (this.anim[action]) {
-        this.anim[action].reset().play();
-        sendMessage({
-          player: this.uuid,
-          playAction: action
-        });
-        if (!this.activeActions.includes(action)) {
-          this.activeActions.push(action);
-        }
-      }
-    };
-
-    player1.stopAction = function(action) {
-      if (this.activeActions.includes(action)) {
-        this.activeActions = this.activeActions.filter(e => e != action);
-        this.anim[action].stop();
-        sendMessage({
-          player: this.uuid,
-          stopAction: action
-        });
-      } else {
-        console.error("tried to stop action: " + action + ", but action was never started");
-      }
-    };
-
-    player1.bowAction = function(bowAction) {
-      if (this.anim && this.anim[bowAction]) {
-        if (this.activeBowAction != bowAction) {
-          if (this.activeBowAction) {
-            this.stopAction(this.activeBowAction);
-            this.activeBowAction = null;
-          }
-          if (this.activeMovement && this.activeMovement != "runWithLegsOnly") {
-            this.stopAction(this.activeMovement);
-          }
-          if (bowAction) {
-            this.playAction(bowAction);
-          }
-          this.activeBowAction = bowAction;
-        }
-      } else {
-        console.error("action: " + bowAction + " does not exist!");
-      }
-    };
-
     player1.run = function() {
       if (!this.isRunning()) {
         this.playFootstepSound();
@@ -397,22 +353,6 @@ loader.load(
           player1.playFootstepSound();
         }
       }, 400);
-    };
-
-    player1.movementAction = function(action = "idle") {
-      if (this.anim && this.anim[action]) {
-        if (this.activeMovement) {
-          if (this.activeMovement != action) {
-            this.stopAction(this.activeMovement);
-          } else {
-            return;
-          }
-        }
-        this.playAction(action);
-        this.activeMovement = action;
-      } else {
-        console.error("action: " + action + " does not exist!");
-      }
     };
 
     function grappling() {
