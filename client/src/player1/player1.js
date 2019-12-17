@@ -89,7 +89,6 @@ loader.load(
       return false;
     };
 
-    var payload = {}; // right now the payload will only keep track of velocity and position
     player1.broadcast = async function() {
       sendMessage({
         player: this.uuid,
@@ -99,7 +98,6 @@ loader.load(
         bowState: this.bowState,
         kingOfCrown: this.kingOfCrown
       });
-      payload = {};
     };
 
     player1.godModeOn = function() {
@@ -127,9 +125,9 @@ loader.load(
           nextPos.add(globalDirection);
           // for moving up/down slopes
           // also worth mentioning that the players movement distance will increase as it goes uphill, which should probably be fixed eventually
-          var origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.25, 0)));
-          var slopeRay = new Raycaster(origin, this.globalVector(new Vector3(0, -1, 0)), 0, 0.5);
-          var top = slopeRay.intersectObjects(scene.getCollidableEnvironment([origin]), true);
+          let origin = nextPos.clone().add(this.globalVector(new Vector3(0, 0.25, 0)));
+          let slopeRay = new Raycaster(origin, this.globalVector(new Vector3(0, -1, 0)), 0, 0.5);
+          let top = slopeRay.intersectObjects(scene.getCollidableEnvironment([origin]), true);
           if (top.length > 0) {
             // the 0.01 is kinda hacky tbh
             nextPos = top[0].point.add(this.globalVector(new Vector3(0, 0.01, 0)));
@@ -145,7 +143,7 @@ loader.load(
           }
         }
       } else if (!this.godModeOn() && scene.loaded) {
-        var grav = gravityAcceleration;
+        let grav = gravityAcceleration;
         // if the player is falling
         if (this.doubleJumped && this.isFiring()) {
           grav *= 0.5; //slow fall
@@ -167,8 +165,7 @@ loader.load(
         this.velocity.add(this.localVector(0, 7, 0));
         this.playAction("jumping");
       }
-      var positionDeltaFromVelocity = velocityToPositionDelta(delta, inputDirection, cameraDirection);
-      if (positionDeltaFromVelocity) {
+      if (velocityToPositionDelta(delta, inputDirection, cameraDirection)) {
         if (!nextPos) nextPos = this.getPosition();
         nextPos.add(this.getVelocity().multiplyScalar(delta));
       }
