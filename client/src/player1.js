@@ -1,14 +1,14 @@
 import {Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler} from 'three'
 
 import {loader} from './loader'
-import {uuid, removeCollisionLines, localVector} from './utils'
+import {uuid, removeCollisionLines, localVector, getRandom} from './utils'
 import scene from './scene'
 import {camera, cameraTarget} from './camera'
 import {shootArrow, retractRopeArrow} from './arrow'
 import {sendMessage} from './websocket'
 import {init} from './archer'
 import {gameOver} from './game'
-import {loadAudio} from './audio'
+import {loadAudio, loadAllAudio, addAudio} from './audio'
 import {updateCrown} from './kingOfCrown'
 
 import audioBowShot from '../audio/effects/Bow Shot.mp3'
@@ -17,6 +17,7 @@ import audioGrappleShot from '../audio/effects/Grapple Shot.mp3'
 import audioGrappleReel from '../audio/effects/Grapple Reel Loop.mp3'
 
 const benji = require.context('../models/benji');
+const footsteps = require.context('../audio/effects/footsteps');
 
 var player1 = {uuid: uuid()}
 const movementSpeed = 7
@@ -31,12 +32,13 @@ sounds.bowShot = loadAudio(audioBowShot)
 sounds.bowDraw = loadAudio(audioBowDraw)
 sounds.grappleShot = loadAudio(audioGrappleShot)
 sounds.grappleReel = loadAudio(audioGrappleReel)
+sounds.footsteps = loadAllAudio(footsteps)
 
-player1.race = ['black', 'brown', 'white'][Math.floor(Math.random()*3)];
+player1.race = getRandom(['black', 'brown', 'white']);
 loader.load(benji('./benji_'+player1.race+'.gltf'),
   ( gltf ) => {
     player1.gltf = gltf;
-    Object.keys(sounds).forEach((sound) => player1.gltf.scene.add(sounds[sound]))
+    addAudio(player1.gltf.scene, sounds)
     player1.bowState = "unequipped"
     
     var mixer = new AnimationMixer(gltf.scene);
@@ -240,19 +242,20 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
 
     player1.doubleJumped = false
     player1.animate = function(delta, input){
+        if (!scene.loaded) return
         var inputDirection = getInputDirection(input) // Vector2 describing the direction of user input for movement
         var cameraDirection = camera.getWorldDirection(new Vector3())// Vector3 describing the direction the camera is pointed
         var globalDirection = getGlobalDirection(cameraDirection, inputDirection, input, delta) // Vector3 describing the players forward movement in the world
         var forwardDirection = getForwardDirection(cameraDirection) // Vector2 describing the direction the relative direction (if the player were on flat land) (not taking into account user movement input)in
         var localDirection = getLocalDirection(forwardDirection, inputDirection, delta) //  Vector2 describing the direction the relative direction (if the player were on flat land)
         var nextPos, rotation;
-        var falling = player1.falling(delta)
-        if (godModeOn() || (!falling && scene.loaded)) {
+        let falling = player1.falling(delta)
+        if (godModeOn() || !falling) {
             if (player1.getVelocity().length() > 0) {
                 player1.setVelocity(new Vector3())
                 player1.broadcast()
             }
-            if ((input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right) {
+            if (runningInput(input)) {
                 rotation = Math.atan2(localDirection.x, localDirection.y)
                 nextPos = player1.getPosition()
                 nextPos.add(globalDirection)
@@ -264,15 +267,6 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
                 if (top.length>0){
                     // the 0.01 is kinda hacky tbh
                     nextPos = top[0].point.add(this.globalVector(new Vector3(0, 0.01, 0)))
-                }
-                if (!player1.isRunning()) {
-                    if (player1.bowState == "equipped") {
-                        player1.movementAction('runWithBow')
-                    } else if (player1.isFiring()) {
-                        player1.movementAction('runWithLegsOnly')
-                    } else {
-                        player1.movementAction('running')
-                    }
                 }
             } else {
                 if (player1.isRunning()) {
@@ -318,6 +312,9 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
             if(godModeOn() || !collision) {
                 this.velocity = nextPos.clone().sub(this.getPosition()).multiplyScalar(1/delta)
                 updatePosition(nextPos, rotation)
+                if (runningInput(input)) {
+                    player1.run() // running animation and footstep sound
+                }
             } else {
                 player1.setVelocity(new Vector3())
             }
@@ -487,6 +484,29 @@ loader.load(benji('./benji_'+player1.race+'.gltf'),
         }
     }
 
+    player1.run = function() {
+        if (!player1.isRunning()) {
+            this.playFootstepSound()
+            if (player1.bowState == "equipped") {
+                player1.movementAction('runWithBow')
+            } else if (player1.isFiring()) {
+                player1.movementAction('runWithLegsOnly')
+            } else {
+                player1.movementAction('running')
+            }
+        }
+    }
+
+    player1.playFootstepSound = function() {
+        setTimeout(() => {
+            if (this.isRunning()) {
+                let sound = getRandom(sounds.footsteps)
+                sound.play()
+                this.playFootstepSound()
+            }
+        }, 400)
+    }
+
     player1.movementAction = function(action="idle") {
         if (this.anim && this.anim[action]) {
             if (this.activeMovement) {
@@ -519,6 +539,10 @@ function randomSpawn() { // this should be moved to the server
         // return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
     }
     return new Vector3(Math.random()*2-1, Math.random()*2-1, Math.random()*2-1).normalize().multiplyScalar(150)
+}
+
+function runningInput(input) {
+    return (input.touch.x!=0&&input.touch.y!=0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right
 }
 
 export default player1
