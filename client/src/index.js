@@ -25,15 +25,4 @@ if (document.body.requestFullscreen || document.body.mozRequestFullScreen || doc
     }
 }
 
-import('../audio/Menu_Theme.mp3').then(function(song) {
-    song = new Audio(song.default);
-    song.addEventListener("load", function() {
-        song.play();
-    }, true);
-    song.autoplay=true
-    song.loop=true
-    document.body.appendChild(song)
-    song.load()
-})
-
 ReactDOM.render(React.createElement(Menu), document.getElementById("menu"))
