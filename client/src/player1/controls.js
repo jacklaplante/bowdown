@@ -1,6 +1,6 @@
 import { Vector2, Quaternion, Vector3 } from "three";
 
-import { camera, cameraTarget } from "../camera";
+import camera from "../camera";
 import { shootArrow, retractRopeArrow } from "../arrow";
 import scene from "../scene";
 
@@ -126,7 +126,7 @@ function initControls(p1) {
   p1.getForwardDirection = function(cameraDirection) {
     var direction = cameraDirection.clone();
     if (scene.gravityDirection == "center") {
-      direction.applyQuaternion(new Quaternion().setFromUnitVectors(cameraTarget.clone().normalize(), new Vector3(0, 1, 0)));
+      direction.applyQuaternion(new Quaternion().setFromUnitVectors(camera.cameraTarget.clone().normalize(), new Vector3(0, 1, 0)));
     }
     return new Vector2(direction.x, direction.z);
   };

@@ -1,6 +1,6 @@
 import {AudioLoader, PositionalAudio} from 'three';
 
-import {camera} from './camera';
+import camera from './camera';
 
 var audioLoader = new AudioLoader();
 

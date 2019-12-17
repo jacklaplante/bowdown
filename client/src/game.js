@@ -3,13 +3,13 @@ import Hammer from 'hammerjs'
 
 import player1 from './player1/player1'
 import scene from './scene'
+import camera from './camera'
+import entities from './entities/entities'
 import { renderer } from './renderer'
-import { camera } from './camera'
 import { animateArrows } from './arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
-import entities from './entities/entities'
 
 require.context('../images/');
 
