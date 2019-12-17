@@ -47,6 +47,17 @@ function initActions(p1) {
     }
   };
 
+  p1.playBowAction = function(bowAction) {
+    if (this.isRunning() && this.activeMovement != "runWithLegsOnly") {
+      this.movementAction("runWithLegsOnly");
+    } else if (this.activeMovement) {
+      this.stopAction(this.activeMovement);
+      this.activeMovement = null;
+    }
+    this.bowAction(bowAction);
+    this.broadcast();
+  };
+
   p1.movementAction = function(action = "idle") {
     if (this.anim && this.anim[action]) {
       if (this.activeMovement) {

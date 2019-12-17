@@ -3,7 +3,6 @@ import { Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler } from "
 import { loader } from "../loader";
 import { uuid, removeCollisionLines, localVector, getRandom } from "../utils";
 import scene from "../scene";
-import { camera, cameraTarget } from "../camera";
 import { sendMessage } from "../websocket";
 import { init } from "../archer";
 import { gameOver } from "../game";
@@ -90,17 +89,6 @@ loader.load(
       return false;
     };
 
-    player1.playBowAction = function(bowAction) {
-      if (this.isRunning() && this.activeMovement != "runWithLegsOnly") {
-        this.movementAction("runWithLegsOnly");
-      } else if (this.activeMovement) {
-        this.stopAction(this.activeMovement);
-        this.activeMovement = null;
-      }
-      this.bowAction(bowAction);
-      this.broadcast();
-    };
-
     var payload = {}; // right now the payload will only keep track of velocity and position
     player1.broadcast = async function() {
       sendMessage({
@@ -118,29 +106,14 @@ loader.load(
       return godMode && process.env.NODE_ENV == "development";
     };
 
-    function getForwardDirection(cameraDirection) {
-      var direction = cameraDirection.clone();
-      if (scene.gravityDirection == "center") {
-        direction.applyQuaternion(new Quaternion().setFromUnitVectors(cameraTarget.clone().normalize(), new Vector3(0, 1, 0)));
-      }
-      return new Vector2(direction.x, direction.z);
-    }
-
-    function getLocalDirection(forwardDirection, inputDirection, delta) {
-      if (inputDirection.length() == 0) {
-        inputDirection = new Vector2(0, 1);
-      }
-      return forwardDirection.clone().rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y));
-    }
-
     player1.doubleJumped = false;
     player1.animate = function(delta, input) {
       if (!scene.loaded) return;
       var inputDirection = this.getInputDirection(input); // Vector2 describing the direction of user input for movement
-      var cameraDirection = camera.getWorldDirection(new Vector3()); // Vector3 describing the direction the camera is pointed
+      var cameraDirection = this.getCameraDirection(); // Vector3 describing the direction the camera is pointed
       var globalDirection = this.getGlobalDirection(cameraDirection, inputDirection, input, delta); // Vector3 describing the players forward movement in the world
-      var forwardDirection = getForwardDirection(cameraDirection); // Vector2 describing the direction the relative direction (if the player were on flat land) (not taking into account user movement input)in
-      var localDirection = getLocalDirection(forwardDirection, inputDirection, delta); //  Vector2 describing the direction the relative direction (if the player were on flat land)
+      var forwardDirection = this.getForwardDirection(cameraDirection); // Vector2 describing the direction the relative direction (if the player were on flat land) (not taking into account user movement input)in
+      var localDirection = this.getLocalDirection(forwardDirection, inputDirection); //  Vector2 describing the direction the relative direction (if the player were on flat land)
       var nextPos, rotation;
       this.falling = this.isFalling(delta);
       if (this.godModeOn() || !this.falling) {
@@ -181,7 +154,6 @@ loader.load(
       }
       if (this.isFiring()) {
         rotation = Math.atan2(forwardDirection.x, forwardDirection.y);
-        camera.updateCamera(); // is this needed?
         this.broadcast();
       }
       if (input.jump && !this.doubleJumped) {
@@ -223,7 +195,6 @@ loader.load(
     function updatePosition(nextPos, rotation) {
       updateRotation(nextPos, rotation);
       player1.setPosition(nextPos);
-      camera.updateCamera();
       if (player1.kingOfCrown) {
         updateCrown(player1);
       }

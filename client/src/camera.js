@@ -92,13 +92,6 @@ camera.animate = function(delta) {
             }
         }
     }
-}
-
-camera.setPosition = function(nextPos) {
-    camera.position.copy(nextPos)
-}
-
-camera.updateCamera = function() {
     if (player1!=null && scene.loaded) {
         var v = player1.getPosition().clone().sub(camera.position.clone())
         if (scene.gravityDirection == "down") {
@@ -120,7 +113,7 @@ camera.updateCamera = function() {
             // jk, I take the difference between the nextPos and the point of collision, normalize it, multiply it by 0.1, and add that to the collision point to get the new nextPos
             // really all it does is make sure the camera is slightly above the surface that it's colliding with (instead of at the surface)
         }
-        camera.setPosition(nextPos)
+        camera.position.copy(nextPos)
     }
     if (scene.gravityDirection == "center") {
         camera.up.copy(player1.getPosition().normalize())
@@ -135,7 +128,6 @@ camera.moveCamera = function(movementX, movementY) {
     if (140 > x && x > -145) {
         phi = x
     }
-    camera.updateCamera();
 }
 
 export { camera, cameraTarget };

@@ -1,7 +1,8 @@
-import { Vector2 } from "three";
+import { Vector2, Quaternion, Vector3 } from "three";
 
-import { camera } from "../camera";
+import { camera, cameraTarget } from "../camera";
 import { shootArrow, retractRopeArrow } from "../arrow";
+import scene from "../scene";
 
 const movementSpeed = 7;
 const sprintModifier = 1.3;
@@ -120,6 +121,25 @@ function initControls(p1) {
 
   p1.runningInput = function(input) {
     return (input.touch.x != 0 && input.touch.y != 0) || input.keyboard.forward || input.keyboard.backward || input.keyboard.left || input.keyboard.right;
+  };
+
+  p1.getForwardDirection = function(cameraDirection) {
+    var direction = cameraDirection.clone();
+    if (scene.gravityDirection == "center") {
+      direction.applyQuaternion(new Quaternion().setFromUnitVectors(cameraTarget.clone().normalize(), new Vector3(0, 1, 0)));
+    }
+    return new Vector2(direction.x, direction.z);
+  };
+
+  p1.getLocalDirection = function(forwardDirection, inputDirection) {
+    if (inputDirection.length() == 0) {
+      inputDirection = new Vector2(0, 1);
+    }
+    return forwardDirection.clone().rotateAround(new Vector2(), Math.atan2(inputDirection.x, inputDirection.y));
+  };
+
+  p1.getCameraDirection = function() {
+    return camera.getWorldDirection(new Vector3());
   };
 }
 
