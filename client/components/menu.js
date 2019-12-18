@@ -81,7 +81,7 @@ var Menu = function (_React$Component) {
     key: 'componentDidMount',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime.mark(function _callee() {
-        var game;
+        var game, root;
         return _regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -91,9 +91,10 @@ var Menu = function (_React$Component) {
 
               case 2:
                 game = _context.sent;
+                root = document.getElementById("root");
 
-                document.body.classList.remove("loading");
-                document.body.classList.add("ready");
+                root.classList.remove("loading");
+                root.classList.add("ready");
                 this.setState({
                   readyToRock: true,
                   startGame: function startGame() {
@@ -107,7 +108,7 @@ var Menu = function (_React$Component) {
                   }
                 });
 
-              case 6:
+              case 7:
               case 'end':
                 return _context.stop();
             }
@@ -127,7 +128,7 @@ var Menu = function (_React$Component) {
       if (this.state.page == "main") {
         return React.createElement(
           'div',
-          { className: 'centered' },
+          { id: 'menu', className: 'centered' },
           React.createElement(Title, { title: 'bowdown' }),
           React.createElement(
             'div',
