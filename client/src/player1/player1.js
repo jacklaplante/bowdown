@@ -59,6 +59,7 @@ loader.load(
         player1.idle();
       }
     });
+    scene.add(player1.gltf.scene)
 
     player1.isFalling = function(delta) {
       if (delta) {
@@ -82,7 +83,11 @@ loader.load(
       //check for collisions at foot level
       var origin = this.getPosition();
       var ray = new Raycaster(origin, vect.clone().normalize(), 0, vect.length());
-      var collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true);
+      var collisionResults = ray.intersectObjects(scene.triggers, true);
+      if (collisionResults.length > 0) {
+        console.log("trigger event")
+      }
+      collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true);
       if (collisionResults.length > 0) {
         return true;
       }

@@ -96,7 +96,7 @@ camera.animate = function(delta) {
 }
 
 camera.update = function() {
-  if (player1!=null && scene.loaded) {
+  if (player1!=null && player1.gltf && scene.loaded) {
     var v = player1.getPosition().clone().sub(camera.position.clone())
     if (scene.gravityDirection == "down") {
       var v2 = new Vector3(-v.z, v.y, v.x).normalize().multiplyScalar(0.5)

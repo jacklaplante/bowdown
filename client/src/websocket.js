@@ -109,6 +109,7 @@ function recordBot() {
 }
 
 function sendMessage(message) {
+    if (!ws) return
     if (ws.readyState == 1) {
         if (recordingBot) {
             log.push({

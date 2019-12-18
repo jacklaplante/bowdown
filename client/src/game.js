@@ -43,7 +43,7 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && player1.mixer) {
-        if (state != "gameOver" && player1.hp > 0) {
+        if (state != "gameOver" && (player1.hp==null || player1.hp > 0)) {
             player1.animate(delta, input);
             camera.animate(delta);
         }
@@ -129,10 +129,10 @@ function unlockPointer() {
 function onMouseDown() {
     if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
         document.getElementById("chat").classList.add("chatting")
-    } else if (event.target.innerText != "respawn") {
+    } else if (!event.target.classList.contains("button")) {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
-            if (state == "paused" && player1.hp > 0) {
+            if (state == "paused" && (player1.hp == null || player1.hp > 0)) {
                 lockPointer()
                 play()
             }
@@ -403,7 +403,6 @@ function start() {
         }
         rotate()
     }
-
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

@@ -91,6 +91,8 @@ var Menu = function (_React$Component) {
 
               case 2:
                 game = _context.sent;
+
+                game.start();
                 root = document.getElementById("root");
 
                 root.classList.remove("loading");
@@ -104,11 +106,10 @@ var Menu = function (_React$Component) {
                     if (document.getElementsByTagName("audio").length > 0) {
                       document.getElementsByTagName("audio")[0].pause();
                     }
-                    game.start();
                   }
                 });
 
-              case 7:
+              case 8:
               case 'end':
                 return _context.stop();
             }

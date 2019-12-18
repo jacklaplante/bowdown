@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper} from 'three'
+import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper, MeshStandardMaterial, DoubleSide} from 'three'
 
 import { loader } from './loader'
 import heather_ft from '../skybox/bluecloud_ft.jpg'
@@ -17,6 +17,24 @@ var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
 var objects = {}
 
+scene.triggers = []
+let mesh = new Mesh(new BoxGeometry(20,4,20), new MeshStandardMaterial({color: 0x0bb09d, side: DoubleSide}));
+mesh.position.y = -5
+scene.add(mesh)
+collidableEnvironment = [mesh]
+scene.loaded = true
+scene.gravityDirection = "down"
+let faceWorldBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
+faceWorldBox.position.z-=5
+faceWorldBox.name = "faceWorldBox"
+scene.triggers.push(faceWorldBox)
+scene.add(faceWorldBox)
+let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))
+challengeFriendsBox.position.z+=5
+challengeFriendsBox.name = "challengeFriendsBox"
+scene.triggers.push(challengeFriendsBox)
+scene.add(challengeFriendsBox)
+
 scene.loadMap = function(map, gravityDirection) {
     scene.gravityDirection = gravityDirection
     loadingIndicator.add()
@@ -28,7 +46,7 @@ scene.loadMap = function(map, gravityDirection) {
             objects[child.name] = child
         })
         scene.add(mesh);
-        collidableEnvironment.push(mesh)
+        collidableEnvironment = [mesh]
         scene.loaded = true
     }, function(bytes) {
         loadingIndicator.update(Math.round((bytes.loaded / bytes.total)*100) + "%")

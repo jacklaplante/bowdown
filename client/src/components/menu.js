@@ -58,7 +58,7 @@ class Menu extends React.Component {
 
   async componentDidMount() {
     const game = await import(/* webpackChunkName: "game" */ '../src/game')
-
+    game.start();
     let root = document.getElementById("root")
     root.classList.remove("loading")
     root.classList.add("ready")
@@ -71,7 +71,6 @@ class Menu extends React.Component {
         if (document.getElementsByTagName("audio").length > 0) {
           document.getElementsByTagName("audio")[0].pause()
         }
-        game.start();
       }
     })
   }
