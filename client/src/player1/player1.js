@@ -10,6 +10,7 @@ import { loadAudio, loadAllAudio, addAudio } from "../audio";
 import { updateCrown } from "../kingOfCrown";
 import initControls from "./controls";
 import initActions from "./actions";
+import camera from "../camera"
 
 import audioBowShot from "../../audio/effects/Bow Shot.mp3";
 import audioBowDraw from "../../audio/effects/Bow Draw.mp3";
@@ -194,6 +195,7 @@ loader.load(
       if (player1.kingOfCrown) {
         updateCrown(player1);
       }
+      camera.update()
     }
 
     function updateRotation(nextPos, rotation) {

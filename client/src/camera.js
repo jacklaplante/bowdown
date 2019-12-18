@@ -92,6 +92,10 @@ camera.animate = function(delta) {
       }
     }
   }
+  this.update()
+}
+
+camera.update = function() {
   if (player1!=null && scene.loaded) {
     var v = player1.getPosition().clone().sub(camera.position.clone())
     if (scene.gravityDirection == "down") {
@@ -123,11 +127,12 @@ camera.animate = function(delta) {
 }
 
 camera.moveCamera = function(movementX, movementY) {
-    theta -= movementX * 0.2
-    var x = phi + movementY * 0.2
-    if (140 > x && x > -145) {
-        phi = x
-    }
+  theta -= movementX * 0.2
+  var x = phi + movementY * 0.2
+  if (140 > x && x > -145) {
+      phi = x
+  }
+  this.update()
 }
 
 export default camera;
