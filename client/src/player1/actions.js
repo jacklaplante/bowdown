@@ -73,6 +73,22 @@ function initActions(p1) {
       console.error("action: " + action + " does not exist!");
     }
   };
+
+  p1.idle = function() {
+    this.movementAction("idle");
+    this.broadcast();
+  };
+
+  p1.equipBow = function() {
+    this.bowState = "equipped";
+    this.playBowAction("equipBow");
+    this.toggleBow(true);
+  };
+
+  p1.unequipBow = function() {
+    this.toggleBow(false);
+    this.bowState = "unequipped";
+  };
 }
 
 export default initActions;

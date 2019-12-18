@@ -244,22 +244,6 @@ loader.load(
       return localVector(new Vector3(x, y, z), this.getPosition(), scene.gravityDirection);
     };
 
-    player1.idle = function() {
-      this.movementAction("idle");
-      this.broadcast();
-    };
-
-    player1.equipBow = function() {
-      this.bowState = "equipped";
-      this.playBowAction("equipBow");
-      this.toggleBow(true);
-    };
-
-    player1.unequipBow = function() {
-      this.toggleBow(false);
-      this.bowState = "unequipped";
-    };
-
     player1.takeDamage = function(damage) {
       this.hp -= damage;
       this.playAction("death");
