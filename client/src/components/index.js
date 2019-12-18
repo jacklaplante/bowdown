@@ -4,16 +4,16 @@ import ReactDOM from 'react-dom'
 import Menu from './menu'
 import '../src/main.css'
 
-import('../audio/Menu_Theme.mp3').then(function(song) {
-    song = new Audio(song.default);
-    song.addEventListener("load", function() {
-        song.play();
-    }, true);
-    song.autoplay=true
-    song.loop=true
-    document.body.appendChild(song)
-    song.load()
-})
+// import('../audio/Menu_Theme.mp3').then(function(song) {
+//     song = new Audio(song.default);
+//     song.addEventListener("load", function() {
+//         song.play();
+//     }, true);
+//     song.autoplay=true
+//     song.loop=true
+//     document.body.appendChild(song)
+//     song.load()
+// })
 
 class App extends React.Component {
   render() {
