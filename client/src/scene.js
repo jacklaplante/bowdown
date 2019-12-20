@@ -1,15 +1,17 @@
 import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper, MeshStandardMaterial, DoubleSide} from 'three'
 
 import { loader } from './loader'
-import heather_ft from '../skybox/bluecloud_ft.jpg'
-import heather_bk from '../skybox/bluecloud_bk.jpg'
-import heather_up from '../skybox/bluecloud_up.jpg'
-import heather_dn from '../skybox/bluecloud_dn.jpg'
-import heather_rt from '../skybox/bluecloud_rt.jpg'
-import heather_lf from '../skybox/bluecloud_lf.jpg'
+import {connectToServer} from './websocket'
+
+// import heather_ft from '../skybox/bluecloud_ft.jpg'
+// import heather_bk from '../skybox/bluecloud_bk.jpg'
+// import heather_up from '../skybox/bluecloud_up.jpg'
+// import heather_dn from '../skybox/bluecloud_dn.jpg'
+// import heather_rt from '../skybox/bluecloud_rt.jpg'
+// import heather_lf from '../skybox/bluecloud_lf.jpg'
 import spatialIndex from '../spatialIndex.json'
 
-const maps = require.context('../models/maps');
+// const maps = require.context('../models/maps');
 
 var scene = new Scene();
 scene.loaded = false
@@ -25,20 +27,25 @@ collidableEnvironment = [mesh]
 scene.loaded = true
 scene.gravityDirection = "down"
 let faceWorldBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
-faceWorldBox.position.z-=5
-faceWorldBox.name = "faceWorldBox"
+faceWorldBox.position.x-=5
 scene.triggers.push(faceWorldBox)
 scene.add(faceWorldBox)
+import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
+    faceWorldBox.material.color.set(0x34eb58)
+    faceWorldBox.trigger = function() {
+        connectToServer("wss://ws.bowdown.io:18181")
+        scene.loadMap(file.default, "center")
+    }
+})
 let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))
-challengeFriendsBox.position.z+=5
-challengeFriendsBox.name = "challengeFriendsBox"
+challengeFriendsBox.position.x+=5
 scene.triggers.push(challengeFriendsBox)
 scene.add(challengeFriendsBox)
 
 scene.loadMap = function(map, gravityDirection) {
     scene.gravityDirection = gravityDirection
     loadingIndicator.add()
-    loader.load(maps(map), function (gltf) {
+    loader.load(map, function (gltf) {
         loadingIndicator.remove()
         var mesh = gltf.scene;
         mesh.children.forEach((child) => {
@@ -74,18 +81,18 @@ const loadingIndicator = {
     }
 }
 
-let materialArray = [];  
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_ft) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_bk) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_up) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_dn) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_rt) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_lf) }));
-for (let i = 0; i < 6; i++)
-  materialArray[i].side = BackSide;
-let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
-let skybox = new Mesh( skyboxGeo, materialArray );
-scene.add( skybox );
+// let materialArray = [];  
+// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_ft) }));
+// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_bk) }));
+// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_up) }));
+// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_dn) }));
+// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_rt) }));
+// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_lf) }));
+// for (let i = 0; i < 6; i++)
+//   materialArray[i].side = BackSide;
+// let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
+// let skybox = new Mesh( skyboxGeo, materialArray );
+// scene.add( skybox );
 
 scene.add(getHemisphereLight());
 var directionalLight = getDirectionalLight();
@@ -98,7 +105,7 @@ if (process.env.NODE_ENV == 'development') {
 scene.add(getDirectionalLight());
 
 scene.animate = function(delta) {
-    skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
+//     skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
 }
 
 scene.getCollidableEnvironment = function(positions) {

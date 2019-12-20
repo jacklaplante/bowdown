@@ -12,12 +12,12 @@ import initControls from "./controls";
 import initActions from "./actions";
 import camera from "../camera"
 
-import audioBowShot from "../../audio/effects/Bow Shot.mp3";
-import audioBowDraw from "../../audio/effects/Bow Draw.mp3";
-import audioGrappleShot from "../../audio/effects/Grapple Shot.mp3";
-import audioGrappleReel from "../../audio/effects/Grapple Reel Loop.mp3";
+// import audioBowShot from "../../audio/effects/Bow Shot.mp3";
+// import audioBowDraw from "../../audio/effects/Bow Draw.mp3";
+// import audioGrappleShot from "../../audio/effects/Grapple Shot.mp3";
+// import audioGrappleReel from "../../audio/effects/Grapple Reel Loop.mp3";
 
-const benji = require.context("../../models/benji");
+// const benji = require.context("../../models/benji");
 const footsteps = require.context("../../audio/effects/footsteps");
 
 const velocityInfluenceModifier = 30;
@@ -26,22 +26,19 @@ const godMode = false;
 
 var player1 = {
   uuid: uuid(),
-  sounds: {
-    bowShot: loadAudio(audioBowShot),
-    bowDraw: loadAudio(audioBowDraw),
-    grappleShot: loadAudio(audioGrappleShot),
-    grappleReel: loadAudio(audioGrappleReel),
-    footsteps: loadAllAudio(footsteps)
-  },
   activeActions: []
 };
 
 player1.race = getRandom(["black", "brown", "white"]);
-loader.load(
-  benji("./benji_" + player1.race + ".gltf"),
-  gltf => {
+
+import(/* webpackMode: "lazy" */ `../../audio/effects/Bow Shot.mp3`).then((module) => {
+  console.log("audio loaded")
+})
+
+import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`).then((file) => {
+  loader.load(file.default, (gltf) => {
     player1.gltf = gltf;
-    addAudio(player1.gltf.scene, player1.sounds);
+//     addAudio(player1.gltf.scene, player1.sounds);
     player1.bowState = "unequipped";
 
     var mixer = new AnimationMixer(gltf.scene);
@@ -85,7 +82,8 @@ loader.load(
       var ray = new Raycaster(origin, vect.clone().normalize(), 0, vect.length());
       var collisionResults = ray.intersectObjects(scene.triggers, true);
       if (collisionResults.length > 0) {
-        console.log("trigger event")
+        let t = collisionResults[0].object
+        if (t.trigger) t.trigger()
       }
       collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true);
       if (collisionResults.length > 0) {
@@ -320,7 +318,7 @@ loader.load(
   bytes => {
     console.log("player1 " + Math.round((bytes.loaded / bytes.total) * 100) + "% loaded");
   }
-);
+)});
 
 function randomSpawn() {
   // this should be moved to the server

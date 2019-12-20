@@ -2,11 +2,7 @@ import React from 'react'
 
 import Title from './title'
 import Controls from './controls'
-import Servers from './servers'
 import ChallengeFriends from './challengeFriends'
-import {connectToServer} from '../src/websocket'
-
-import scene from '../src/scene'
 
 class Menu extends React.Component {
 
@@ -17,9 +13,7 @@ class Menu extends React.Component {
       readyToRock: false
     };
     this.showControls = this.showControls.bind(this);
-    this.listServers = this.listServers.bind(this);
     this.challengeFriends = this.challengeFriends.bind(this);
-    this.testRange = this.testRange.bind(this)
     this.mainPage = this.mainPage.bind(this);
   }
 
@@ -31,28 +25,9 @@ class Menu extends React.Component {
     this.setState({page: "controls"})
   }
 
-  listServers() {
-    let ip;
-    if (process.env.NODE_ENV == 'development') {
-      ip = "ws://localhost:18181"
-    } else {
-      ip = "wss://ws.bowdown.io:18181"
-    }
-    connectToServer(ip)
-    this.state.startGame();
-    scene.loadMap("./lowild.glb", "center");
-  }
-
   challengeFriends() {
     this.setState({page: "challengeFriends"})
     scene.loadMap("./garden.glb", "down");
-  }
-
-  testRange() {
-    this.setState({page: "testRange"})
-    scene.loadMap("./lowild.glb", "center");
-    connectToServer("ws://10.0.0.159:18181")
-    this.state.startGame();
   }
   
 
@@ -80,14 +55,7 @@ class Menu extends React.Component {
       return (
         <div id="menu" className="centered">
           <Title title='bowdown' />
-          <div className="button" onClick={this.listServers} id="servers">
-            {this.state.readyToRock ? 'face the world' : 'loading'}
-          </div>
-          <div className="button" onClick={this.challengeFriends} id="challenge-friends">
-            {this.state.readyToRock ? 'challenge your friends' : 'loading'}
-          </div>
           <div className="button" onClick={this.showControls} id="controls-button">controls</div>
-          {(process.env.NODE_ENV == 'development') ? <div className="button" onClick={this.testRange}>test range</div> : ''}
           <div id="menu-info">
             {(window.innerWidth < window.innerHeight) ? 'put phone in landscape mode for best experience' : ''}
           </div>
@@ -97,10 +65,6 @@ class Menu extends React.Component {
           </div>
         </div>
       );
-    } else if (this.state.page == "servers") {
-      return (
-        <Servers mainMenu={this.mainPage} startGame={this.state.startGame} />
-      )
     } else if (this.state.page == "challengeFriends") {
       return (
         <ChallengeFriends mainMenu={this.mainPage} startGame={this.state.startGame} />
