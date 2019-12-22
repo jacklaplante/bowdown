@@ -1,4 +1,4 @@
-import { Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler } from "three";
+import { Vector3, AnimationMixer, Raycaster, Quaternion, Euler } from "three";
 
 import { loader } from "../loader";
 import { uuid, removeCollisionLines, localVector, getRandom } from "../utils";

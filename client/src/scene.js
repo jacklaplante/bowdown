@@ -3,12 +3,6 @@ import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, Textu
 import { loader } from './loader'
 import {connectToServer} from './websocket'
 
-// import heather_ft from '../skybox/bluecloud_ft.jpg'
-// import heather_bk from '../skybox/bluecloud_bk.jpg'
-// import heather_up from '../skybox/bluecloud_up.jpg'
-// import heather_dn from '../skybox/bluecloud_dn.jpg'
-// import heather_rt from '../skybox/bluecloud_rt.jpg'
-// import heather_lf from '../skybox/bluecloud_lf.jpg'
 import spatialIndex from '../spatialIndex.json'
 
 // const maps = require.context('../models/maps');
@@ -49,6 +43,7 @@ import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
         } else {
             connectToServer("wss://ws.bowdown.io:18181")
         }
+        scene.loadSkyBox()
     }
 })
 let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))
@@ -95,18 +90,23 @@ const loadingIndicator = {
     }
 }
 
-// let materialArray = [];  
-// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_ft) }));
-// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_bk) }));
-// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_up) }));
-// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_dn) }));
-// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_rt) }));
-// materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_lf) }));
-// for (let i = 0; i < 6; i++)
-//   materialArray[i].side = BackSide;
-// let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
-// let skybox = new Mesh( skyboxGeo, materialArray );
-// scene.add( skybox );
+scene.loadSkyBox = function() {
+    var materialArray = [];  
+    ["ft", "bk", "up", "dn", "rt", "lf"].forEach((face) => {
+        import(/* webpackMode: "lazy-once" */ `../skybox/bluecloud_${face}.jpg`).then(image => {
+            let mat = new MeshBasicMaterial( { map: new TextureLoader().load(image.default) });
+            mat.side = BackSide;
+            materialArray.push(mat);
+            if (materialArray.length == 6) {
+                for (let i = 0; i < 6; i++)
+                    materialArray[i].side = BackSide;
+                let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
+                let skybox = new Mesh( skyboxGeo, materialArray );
+                scene.add( skybox );
+            }
+        })
+    })
+}
 
 scene.add(getHemisphereLight());
 var directionalLight = getDirectionalLight();
