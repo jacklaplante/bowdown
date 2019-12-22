@@ -15,17 +15,14 @@ var log
 var clock = new Clock()
 var ws;
 function connectToServer(serverAddress) {
-    if (ws && (ws.readyState == 0 || ws.readyState == 1)) {
+    if (ws && ws.readyState == 1) {
         ws.close();
     }
     ws = new WebSocket(serverAddress);
     ws.onmessage = onMessage;
-    ws.onopen = onConnect;
-}
-
-function onConnect(){
-    player1.init()
-    player1.respawn()
+    ws.onopen = function() {
+        player1.respawn()
+    };
 }
 
 function onMessage(message) {
@@ -118,6 +115,8 @@ function sendMessage(message) {
             })
         }
         ws.send(JSON.stringify(message))
+    } else if (ws.readyState == 0) {
+        console.warn("still connecting to server")
     } else {
         console.error("error connecting to server")
         var message = document.createElement("p")

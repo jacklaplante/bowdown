@@ -31,10 +31,24 @@ faceWorldBox.position.x-=5
 scene.triggers.push(faceWorldBox)
 scene.add(faceWorldBox)
 import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
+    var lowild
+    loader.load(file.default, (gltf) => {
+        lowild = gltf.scene;
+        lowild.children.forEach((child) => {
+            if (objects[child.name]) throw "all object names bust be unique"
+            objects[child.name] = child
+        })
+    })
     faceWorldBox.material.color.set(0x34eb58)
     faceWorldBox.trigger = function() {
-        connectToServer("wss://ws.bowdown.io:18181")
-        scene.loadMap(file.default, "center")
+        scene.add(lowild)
+        collidableEnvironment = [mesh]
+        scene.gravityDirection = "center"
+        if (process.env.NODE_ENV == 'development') {
+            connectToServer("ws://localhost:18181")
+        } else {
+            connectToServer("wss://ws.bowdown.io:18181")
+        }
     }
 })
 let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))

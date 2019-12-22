@@ -11,9 +11,15 @@ const birds = {
   hitBoxes: []
 }
 
+let flamingoGltf
+import(/* webpackMode: "lazy" */ '../../models/flamingo.gltf').then(file => {
+  flamingoGltf = file.default
+})
+
 import {loader} from '../loader'
 
 birds.add = function(uuid, state) {
+  if (flamingoGltf == null) return
   this.roster[uuid] = {}
   loader.load(flamingo, (gltf) => {
     let bird = this.roster[uuid]

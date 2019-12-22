@@ -6,19 +6,12 @@ import scene from "../scene";
 import { sendMessage } from "../websocket";
 import { init } from "../archer";
 import { gameOver } from "../game";
-import { loadAudio, loadAllAudio, addAudio } from "../audio";
 import { updateCrown } from "../kingOfCrown";
 import initControls from "./controls";
 import initActions from "./actions";
 import camera from "../camera"
 
-// import audioBowShot from "../../audio/effects/Bow Shot.mp3";
-// import audioBowDraw from "../../audio/effects/Bow Draw.mp3";
-// import audioGrappleShot from "../../audio/effects/Grapple Shot.mp3";
-// import audioGrappleReel from "../../audio/effects/Grapple Reel Loop.mp3";
-
-// const benji = require.context("../../models/benji");
-const footsteps = require.context("../../audio/effects/footsteps");
+const benji = require.context("../../models/benji");
 
 const velocityInfluenceModifier = 30;
 const gravityAcceleration = 10;
@@ -31,14 +24,11 @@ var player1 = {
 
 player1.race = getRandom(["black", "brown", "white"]);
 
-import(/* webpackMode: "lazy" */ `../../audio/effects/Bow Shot.mp3`).then((module) => {
-  console.log("audio loaded")
-})
-
-import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`).then((file) => {
-  loader.load(file.default, (gltf) => {
+loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
     player1.gltf = gltf;
-//     addAudio(player1.gltf.scene, player1.sounds);
+    import(/* webpackMode: "lazy" */ './audio').then((audio) => {
+      audio.default(player1)
+    })
     player1.bowState = "unequipped";
 
     var mixer = new AnimationMixer(gltf.scene);
@@ -234,8 +224,8 @@ import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`
         if (player1.getVelocity().angleTo(arrowToPlayer) > Math.PI / 2) {
           player1.setVelocity(player1.getVelocity().projectOnPlane(arrowToPlayer.clone().normalize()));
         }
-        if (!player1.sounds.grappleReel.isPlaying) {
-          player1.sounds.grappleReel.play();
+        if (player1.sounds) {
+          player1.playSoundIfNotPlaying("grappleReel")
         }
       }
       if (player1.getVelocity().length() != 0) {
@@ -251,10 +241,6 @@ import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`
       this.hp -= damage;
       this.playAction("death");
       gameOver();
-    };
-
-    player1.init = function() {
-      scene.add(this.gltf.scene);
     };
 
     player1.respawn = function() {
@@ -290,7 +276,7 @@ import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`
 
     player1.run = function() {
       if (!this.isRunning()) {
-        this.playFootstepSound();
+        if (this.sounds) this.playFootstepSound();
         if (this.bowState == "equipped") {
           this.movementAction("runWithBow");
         } else if (this.isFiring()) {
@@ -301,16 +287,6 @@ import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`
       }
     };
 
-    player1.playFootstepSound = function() {
-      setTimeout(() => {
-        if (player1.isRunning()) {
-          let sound = getRandom(this.sounds.footsteps);
-          sound.play();
-          player1.playFootstepSound();
-        }
-      }, 400);
-    };
-
     function grappling() {
       return player1.activeRopeArrow != null && player1.activeRopeArrow.stopped;
     }
@@ -318,7 +294,7 @@ import(/* webpackMode: "lazy" */ `../../models/benji/benji_${player1.race}.gltf`
   bytes => {
     console.log("player1 " + Math.round((bytes.loaded / bytes.total) * 100) + "% loaded");
   }
-)});
+)
 
 function randomSpawn() {
   // this should be moved to the server

@@ -7,6 +7,8 @@ import {sendMessage} from './websocket';
 import {updateCrown} from './kingOfCrown'
 import player1 from './player1/player1';
 
+const benji = require.context("../models/benji");
+
 var players = {};
 var roster = {}
 var playerHitBoxes = []
@@ -46,7 +48,7 @@ players.add = function(uuid, playerState) {
         console.error("race is undefined")
         playerState.race = 'brown'
     }
-    loader.load('./models/benji_'+playerState.race+'.gltf', function(gltf) {
+    loader.load(benji("./benji_" + player1.race + ".gltf"), function(gltf) {
         player.gltf = gltf;
         init(new AnimationMixer(gltf.scene), player);
         if (!playerState.rotation) {

@@ -1,6 +1,5 @@
 const THREE = global.THREE = require('three');
 const getUuid = require('../../utils')
-const scene = require('../scene')
 
 const birds = {}
 birds.roster = {}
@@ -9,7 +8,6 @@ birds.init = function() {
   let uuid = getUuid()
   this.roster[uuid] = new THREE.Object3D();
   let bird = this.roster[uuid]
-  scene.add(bird)
   let spawnPoint = randomSpawn()
   bird.axisOfRotation = getPerpendicular(spawnPoint)
   bird.position.copy(spawnPoint)
@@ -45,7 +43,7 @@ birds.getState = function() {
 }
 
 birds.die = function(uuid) {
-  let bird = birds.roster[uuid]
+  // let bird = birds.roster[uuid]
   // let pos = bird.position.clone()
   // let ray = new THREE.Raycaster(pos, pos.clone().negate().normalize())
   // let collisions = ray.intersectObject(scene, true)
