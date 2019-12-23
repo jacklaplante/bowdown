@@ -24,6 +24,10 @@ let faceWorldBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({co
 faceWorldBox.position.x-=5
 scene.triggers.push(faceWorldBox)
 scene.add(faceWorldBox)
+let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))
+challengeFriendsBox.position.x+=5
+scene.triggers.push(challengeFriendsBox)
+scene.add(challengeFriendsBox)
 import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
     var lowild
     loader.load(file.default, (gltf) => {
@@ -35,21 +39,30 @@ import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
     })
     faceWorldBox.material.color.set(0x34eb58)
     faceWorldBox.trigger = function() {
-        scene.add(lowild)
-        collidableEnvironment = [mesh]
+        scene.add(lowild)        
         scene.gravityDirection = "center"
+        collidableEnvironment = [lowild]
+        scene.loadSkyBox()
         if (process.env.NODE_ENV == 'development') {
             connectToServer("ws://localhost:18181")
         } else {
             connectToServer("wss://ws.bowdown.io:18181")
         }
-        scene.loadSkyBox()
     }
+    import(/* webpackMode: "lazy" */ '../models/maps/garden.glb').then( file => {
+        var garden
+        loader.load(file.default, gltf => {
+            garden = gltf.scene
+        })
+        challengeFriendsBox.material.color.set(0x34eb59)
+        challengeFriendsBox.trigger = function() {
+            scene.add(garden)
+            collidableEnvironment = [garden]
+            scene.gravityDirection = "down"
+            scene.loadSkyBox()
+        }
+    })
 })
-let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))
-challengeFriendsBox.position.x+=5
-scene.triggers.push(challengeFriendsBox)
-scene.add(challengeFriendsBox)
 
 scene.loadMap = function(map, gravityDirection) {
     scene.gravityDirection = gravityDirection
@@ -101,7 +114,7 @@ scene.loadSkyBox = function() {
                 for (let i = 0; i < 6; i++)
                     materialArray[i].side = BackSide;
                 let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
-                let skybox = new Mesh( skyboxGeo, materialArray );
+                skybox = new Mesh( skyboxGeo, materialArray );
                 scene.add( skybox );
             }
         })
@@ -118,8 +131,11 @@ if (process.env.NODE_ENV == 'development') {
 }
 scene.add(getDirectionalLight());
 
+var skybox
 scene.animate = function(delta) {
-//     skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
+    if (skybox) {
+        skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
+    }
 }
 
 scene.getCollidableEnvironment = function(positions) {
