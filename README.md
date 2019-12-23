@@ -3,11 +3,6 @@
 [bowdown.io](https://bowdown.io)
 
 
-you might need this when changing react components in client/src/components (run in `client`)
-
-```
-npx babel --watch src/components --out-dir components/ --presets react-app/prod
-```
 
 use `tools/tools.html` to run bots or run the spatial indexer. Select the bot files or gltf/glb file. Indexer can take a very long time to finish. The page can become unresponsive for hours.
 
