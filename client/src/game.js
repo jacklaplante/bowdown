@@ -152,9 +152,8 @@ function onMouseUp(event) {
 }
 
 function play() {
-    let root = document.getElementById("root")
-    root.classList.remove("ready")
-    root.classList.add('playing')
+    let body = document.body
+    body.classList.add('playing')
     removeMenuElement()
     state = "playing"
 }

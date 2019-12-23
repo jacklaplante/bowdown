@@ -1,6 +1,11 @@
+# ignore
 client/node_modules/
 server/node_modules/
 npm-debug.log
 client/dist/main.js
-client/dist
+client/dist/*
 server/numberOfPlayers.txt
+
+# don't ignore hthese files
+!client/dist/index.html
+!client/dist/main.css

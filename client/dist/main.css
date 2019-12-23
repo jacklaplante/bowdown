@@ -28,10 +28,6 @@ canvas {
     padding: 2%;
 }
 
-#title svg {
-    fill: #ffdba5;
-}
-
 #title svg .cls-1 {
     fill:#754c29;
 }
@@ -249,6 +245,10 @@ ul, #server-list .server, .footer {
 #title {
     position: relative;
     padding: 1vh 1vw;
+}
+
+.playing #title {
+    display: none;
 }
 
 #kickstarter {
