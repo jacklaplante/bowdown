@@ -202,17 +202,10 @@ function addMenuButton(text) {
     return button
 }
 
-let respawnCount = 0
-let kickstarterOpened = false
 function addRespawnButton() {
     var respawnButton = addMenuButton("respawn")
     respawnButton.onclick = function() {
         player1.respawn()
-        if (respawnCount > 2 && !kickstarterOpened) {
-            window.open("https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", "_blank");
-            kickstarterOpened = true
-        }
-        respawnCount ++
         play()
         respawnButton.remove()
     }
