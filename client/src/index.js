@@ -20,7 +20,10 @@ if (document.body.requestFullscreen || document.body.mozRequestFullScreen || doc
     }
 }
 
-const game = import(/* webpackChunkName: "game" */ './game').then((game) => {
+let g = import(
+    /* webpackMode: "lazy" */
+    /* webpackChunkName: "game" */ './game')
+g.then((game) => {
   game.start()
   let root = document.body
   root.classList.remove("loading")
