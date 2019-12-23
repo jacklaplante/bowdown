@@ -22,6 +22,12 @@ function initAudio(p1) {
     this.sounds[sound].play();
   }
 
+  p1.stopSoundIfPlaying = function(sound) {
+    if (this.sounds[sound].isPlaying) {
+      this.sounds[sound].stop()
+    }
+  }
+
   p1.playSoundIfNotPlaying = function(sound) {
     if (!this.sounds[sound].isPlaying) {
       this.sounds[sound].play();
