@@ -21,13 +21,9 @@ collidableEnvironment = [mesh]
 scene.loaded = true
 scene.gravityDirection = "down"
 let faceWorldBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
-faceWorldBox.position.x-=5
+faceWorldBox.position.z-=5
 scene.triggers.push(faceWorldBox)
 scene.add(faceWorldBox)
-let challengeFriendsBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x9500ff, side: DoubleSide}))
-challengeFriendsBox.position.x+=5
-scene.triggers.push(challengeFriendsBox)
-scene.add(challengeFriendsBox)
 import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
     var lowild
     loader.load(file.default, (gltf) => {
@@ -49,19 +45,6 @@ import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
             connectToServer("wss://ws.bowdown.io:18181")
         }
     }
-    import(/* webpackMode: "lazy" */ '../models/maps/garden.glb').then( file => {
-        var garden
-        loader.load(file.default, gltf => {
-            garden = gltf.scene
-        })
-        challengeFriendsBox.material.color.set(0x34eb59)
-        challengeFriendsBox.trigger = function() {
-            scene.add(garden)
-            collidableEnvironment = [garden]
-            scene.gravityDirection = "down"
-            scene.loadSkyBox()
-        }
-    })
 })
 
 scene.loadMap = function(map, gravityDirection) {
@@ -110,7 +93,7 @@ scene.loadSkyBox = function() {
             let mat = new MeshBasicMaterial( { map: new TextureLoader().load(image.default) });
             mat.side = BackSide;
             materialArray.push(mat);
-            if (materialArray.length == 6) {
+            if (materialArray.length == 6 && skybox == null) {
                 for (let i = 0; i < 6; i++)
                     materialArray[i].side = BackSide;
                 let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
