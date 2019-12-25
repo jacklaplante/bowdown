@@ -2,6 +2,7 @@ import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, Textu
 
 import { loader } from '../loader'
 import {connectToServer} from '../websocket'
+import {createTextMesh} from '../utils'
 
 import spatialIndex from '../../spatialIndex.json'
 
@@ -19,11 +20,16 @@ platform.position.y = -5
 collidableEnvironment = [platform]
 scene.loaded = true
 scene.gravityDirection = "down"
-let faceWorldBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
+let faceWorldBox = new Mesh(new BoxGeometry(4,4,4), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
 faceWorldBox.position.z-=5
+faceWorldBox.position.y-=2
 scene.triggers.push(faceWorldBox)
 scene.add(faceWorldBox)
 scene.add(platform)
+let loadingText = createTextMesh('loading', 0x030bfc)
+loadingText.position.z -= 3
+loadingText.position.x -= 4
+scene.add(loadingText)
 import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
     var lowild
     loader.load(file.default, (gltf) => {
@@ -33,7 +39,12 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
             objects[child.name] = child
         })
         faceWorldBox.material.color.set(0x34eb58)
-            faceWorldBox.trigger = function() {
+        scene.remove(loadingText)
+        let readyText = createTextMesh('ready', 0x030bfc)
+        readyText.position.z -= 3
+        readyText.position.x -= 3
+        scene.add(readyText)
+        faceWorldBox.trigger = function() {
             scene.add(lowild)
             scene.remove(platform)
             scene.gravityDirection = "center"
