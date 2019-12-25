@@ -6,7 +6,7 @@ import scene from './scene/scene'
 import camera from './camera'
 import entities from './entities/entities'
 import { renderer } from './renderer'
-import { animateArrows } from './arrow'
+import { animateArrows } from './arrow/arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'

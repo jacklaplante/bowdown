@@ -1,17 +1,12 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion} from 'three'
 
-import scene from './scene/scene'
-import {playerHitBoxes, killPlayer, players} from './players'
-import player1 from './player1/player1'
-import camera from './camera'
-import {sendMessage} from './websocket'
-import {uuid} from './utils'
-import {loadAudio} from './audio'
-import birds from './entities/birds'
-
-import arrowHitGroundAudio from '../audio/effects/Arrow to Ground.mp3'
-import arrowHitPlayerAudio from '../audio/effects/Arrow to Player.mp3'
-import grappleHitAudio from '../audio/effects/Grapple Hit.mp3'
+import scene from '../scene/scene'
+import {playerHitBoxes, killPlayer, players} from '../players'
+import player1 from '../player1/player1'
+import camera from '../camera'
+import {sendMessage} from '../websocket'
+import {uuid} from '../utils'
+import birds from '../entities/birds'
 
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
@@ -27,27 +22,23 @@ const arrowTypes = {
     }
 }
 
-var sounds = {}
-sounds.arrowHitGround = loadAudio(arrowHitGroundAudio)
-sounds.arrowHitPlayer = loadAudio(arrowHitPlayerAudio)
-sounds.grappleHit = loadAudio(grappleHitAudio)
+var initAudio
+import(/* webpackMode: "lazy" */ './audio').then((audio) => {
+    initAudio = audio.default
+})
 
 function createArrow(origin, rotation, type){
     if (!arrowTypes[type]) console.error("arrow type: " + type + " does not exist");
     var geometry = new BoxGeometry(arrowWidth, arrowWidth, arrowLength);
     var material = new MeshBasicMaterial({color: arrowTypes[type].color});
     var arrow = new Mesh( geometry, material );
-    if (type == "rope") {
-        arrow.add(sounds.grappleHit)
-    } else {
-        arrow.add(sounds.arrowHitGround)   
-    }
-    arrow.add(sounds.arrowHitPlayer)
     
     arrow.origin = origin
     arrow.position.copy(origin)
     arrow.rotation.copy(rotation)
     arrow.type = type
+
+    if (initAudio) initAudio(arrow)
 
     scene.add(arrow);
     return arrow
@@ -140,7 +131,7 @@ function animateArrows(delta) {
             if (collisions.length > 0) {
                 var collision = collisions.pop()
                 arrow.position.copy(collision.point)
-                sounds.arrowHitPlayer.play()
+                if (arrow.hitPlayerSound) arrow.hitPlayerSound.play()
                 stopPlayer1Arrow(arrow)
                 let uuid = collision.object.hitBoxFor
                 if (players.get(uuid)) {
@@ -156,11 +147,7 @@ function animateArrows(delta) {
                 collisions = ray.intersectObjects(collidable, true)
                 if (collisions.length > 0) {
                     arrow.position.copy(collisions.pop().point)
-                    if (arrow.type=="rope") {
-                        sounds.grappleHit.play()
-                    } else {
-                        sounds.arrowHitGround.play()
-                    }
+                    if (arrow.hitSound) arrow.hitSound.play()
                     stopPlayer1Arrow(arrow)
                     sendMessage({
                         player: player1.uuid,
@@ -206,8 +193,10 @@ function getArrowVelocity(type) {
 }
 
 function stopOtherPlayerArrow(stoppedArrow) {
-    otherPlayerArrows[stoppedArrow.uuid].position.copy(stoppedArrow.position)
-    otherPlayerArrows[stoppedArrow.uuid].stopped = true
+    let arrow = otherPlayerArrows[stoppedArrow.uuid]
+    arrow.position.copy(stoppedArrow.position)
+    arrow.stopped = true
+    if (arrow.hitSound) arrow.hitSound.play()
 }
 
 function stopArrowIfOutOfBounds(arrow) {

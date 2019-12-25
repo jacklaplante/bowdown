@@ -16,7 +16,9 @@ function loadAudio(file) {
 function loadAllAudio(files) {
     let audio = []
     files.keys().forEach((file) => {
-        audio.push(loadAudio(files(file)))
+        let a = loadAudio(files(file))
+        a.setVolume(0.5)
+        audio.push(a)
     });
     return audio
 }

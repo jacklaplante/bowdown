@@ -2,7 +2,7 @@ import {Clock} from 'three'
 
 import player1 from './player1/player1'
 import { players } from './players'
-import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
+import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow/arrow'
 import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
