@@ -1,5 +1,5 @@
 import {PerspectiveCamera, Vector3, Raycaster, Quaternion, AudioListener} from 'three'
-import scene from './scene'
+import scene from './scene/scene'
 import player1 from './player1/player1'
 
 var distance = 3.5;
@@ -25,7 +25,7 @@ var phi = 0
 
 var onTop = 1 // for some reason, without this things get real fucky when the player is on the south pole
 function updateOnTop() { // this is essentially a hack, and it's not even a good one
-  if (scene.gravityDirection == "down") {
+  if (scene.gravityDirection != "center") {
     return 1
   }
   if (camera.cameraTarget.y < -20 ) {

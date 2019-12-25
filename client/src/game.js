@@ -2,7 +2,7 @@ import { Clock } from 'three'
 import Hammer from 'hammerjs'
 
 import player1 from './player1/player1'
-import scene from './scene'
+import scene from './scene/scene'
 import camera from './camera'
 import entities from './entities/entities'
 import { renderer } from './renderer'
@@ -141,12 +141,12 @@ function onMouseDown() {
             if (document.pointerLockElement == null) {
                 lockPointer()
             }
-            player1.onMouseDown()
+            if (player1 && player1.onMouseDown) player1.onMouseDown()
         }
     }
 }
 function onMouseUp(event) {
-    if (state === "playing") {
+    if (state === "playing" && player1 && player1.onMouseUp) {
         player1.onMouseUp(event)
     }
 }

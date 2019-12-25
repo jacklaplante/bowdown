@@ -1,6 +1,6 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion} from 'three'
 
-import scene from './scene'
+import scene from './scene/scene'
 import {playerHitBoxes, killPlayer, players} from './players'
 import player1 from './player1/player1'
 import camera from './camera'

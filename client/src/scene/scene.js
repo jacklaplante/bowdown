@@ -1,9 +1,9 @@
 import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper, MeshStandardMaterial, DoubleSide} from 'three'
 
-import { loader } from './loader'
-import {connectToServer} from './websocket'
+import { loader } from '../loader'
+import {connectToServer} from '../websocket'
 
-import spatialIndex from '../spatialIndex.json'
+import spatialIndex from '../../spatialIndex.json'
 
 // const maps = require.context('../models/maps');
 
@@ -14,17 +14,17 @@ const indexMod = 5 // if you change this you need to change it on the indexer to
 var objects = {}
 
 scene.triggers = []
-let mesh = new Mesh(new BoxGeometry(20,4,20), new MeshStandardMaterial({color: 0x0bb09d, side: DoubleSide}));
-mesh.position.y = -5
-scene.add(mesh)
-collidableEnvironment = [mesh]
+let platform = new Mesh(new BoxGeometry(500,4,500), new MeshStandardMaterial({color: 0xd1736b, side: DoubleSide}));
+platform.position.y = -5
+collidableEnvironment = [platform]
 scene.loaded = true
 scene.gravityDirection = "down"
 let faceWorldBox = new Mesh(new BoxGeometry(2,2,2), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
 faceWorldBox.position.z-=5
 scene.triggers.push(faceWorldBox)
 scene.add(faceWorldBox)
-import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
+scene.add(platform)
+import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
     var lowild
     loader.load(file.default, (gltf) => {
         lowild = gltf.scene;
@@ -32,19 +32,20 @@ import(/* webpackMode: "lazy" */ '../models/maps/lowild.glb').then( file => {
             if (objects[child.name]) throw "all object names bust be unique"
             objects[child.name] = child
         })
-    })
-    faceWorldBox.material.color.set(0x34eb58)
-    faceWorldBox.trigger = function() {
-        scene.add(lowild)        
-        scene.gravityDirection = "center"
-        collidableEnvironment = [lowild]
-        scene.loadSkyBox()
-        if (process.env.NODE_ENV == 'development') {
-            connectToServer("ws://localhost:18181")
-        } else {
-            connectToServer("wss://ws.bowdown.io:18181")
+        faceWorldBox.material.color.set(0x34eb58)
+            faceWorldBox.trigger = function() {
+            scene.add(lowild)
+            scene.remove(platform)
+            scene.gravityDirection = "center"
+            collidableEnvironment = [lowild]
+            scene.loadSkyBox()
+            if (process.env.NODE_ENV == 'development') {
+                connectToServer("ws://localhost:18181")
+            } else {
+                connectToServer("wss://ws.bowdown.io:18181")
+            }
         }
-    }
+    })
 })
 
 scene.loadMap = function(map, gravityDirection) {
@@ -89,7 +90,7 @@ const loadingIndicator = {
 scene.loadSkyBox = function() {
     var materialArray = [];  
     ["ft", "bk", "up", "dn", "rt", "lf"].forEach((face) => {
-        import(/* webpackMode: "lazy-once" */ `../skybox/bluecloud_${face}.jpg`).then(image => {
+        import(/* webpackMode: "lazy-once" */ `../../skybox/bluecloud_${face}.jpg`).then(image => {
             let mat = new MeshBasicMaterial( { map: new TextureLoader().load(image.default) });
             mat.side = BackSide;
             materialArray.push(mat);

@@ -1,7 +1,7 @@
 import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {getAnimation, eachDo} from '../utils'
-import scene from '../scene';
+import scene from '../scene/scene';
 import {sendMessage} from '../websocket'
 
 import flamingo from '../../models/flamingo.gltf'

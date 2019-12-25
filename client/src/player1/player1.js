@@ -2,7 +2,7 @@ import { Vector3, AnimationMixer, Raycaster, Quaternion, Euler } from "three";
 
 import { loader } from "../loader";
 import { uuid, removeCollisionLines, localVector, getRandom } from "../utils";
-import scene from "../scene";
+import scene from "../scene/scene";
 import { sendMessage } from "../websocket";
 import { init } from "../archer";
 import { gameOver } from "../game";

@@ -2,7 +2,7 @@ import { Vector2, Quaternion, Vector3 } from "three";
 
 import camera from "../camera";
 import { shootArrow, retractRopeArrow } from "../arrow";
-import scene from "../scene";
+import scene from "../scene/scene";
 
 const movementSpeed = 7;
 const sprintModifier = 1.3;

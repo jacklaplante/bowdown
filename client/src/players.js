@@ -1,7 +1,7 @@
 import {AnimationMixer, Mesh, BoxGeometry, Euler, Geometry, LineBasicMaterial, Line, Vector3} from 'three'
 
 import {loader} from './loader'
-import scene from './scene'
+import scene from './scene/scene'
 import {init} from './archer'
 import {sendMessage} from './websocket';
 import {updateCrown} from './kingOfCrown'
