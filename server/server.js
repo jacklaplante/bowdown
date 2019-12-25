@@ -137,7 +137,7 @@ wss.on('connection', function connection(ws, req) {
             if (message.rotation) {
                 updatePlayer(gameName, playerUuid, 'rotation', message.rotation)
             }
-            if (message.playAction || message.stopAction || (message.damage && message.to) || message.arrow || message.chatMessage) {
+            if (message.playSound || message.playAction || message.stopAction || (message.damage && message.to) || message.arrow || message.chatMessage) {
                 game.broadcast(message)
                 if (message.damage && message.to) {
                     if (players[message.to]) {

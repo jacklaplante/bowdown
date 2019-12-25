@@ -58,13 +58,18 @@ function onMessage(message) {
                 let player = players.get(playerUuid)
                 if (!player || message.status==='respawn') {
                     players.respawn(playerUuid, message.position, message.rotation, message.race)
-                } else if (player.gltf && message.position && message.rotation!=null) {
+                }
+                if (player.gltf && message.position && message.rotation!=null) {
                     players.move(playerUuid, message.position, message.rotation, message.kingOfCrown)
-                } else if (player.gltf && message.playAction) {
+                }
+                if (player.gltf && message.playAction) {
                     players.playAction(playerUuid, message.playAction)
                 } else if (player.gltf && message.stopAction) {
                     players.stopAction(playerUuid, message.stopAction)
-                }   
+                }
+                if (player.gltf && message.playSound) {
+                    players.playSound(playerUuid, message.playSound)
+                }
             }
         }
     }

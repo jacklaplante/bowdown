@@ -8,33 +8,39 @@ import audioGrappleReel from "../../audio/effects/Grapple Reel Loop.mp3";
 
 const footsteps = require.context("../../audio/effects/footsteps");
 
-function initAudio(p1) {
-  p1.sounds = {
+function initAudio(archer) {
+  archer.sounds = {
     bowShot: loadAudio(audioBowShot),
     bowDraw: loadAudio(audioBowDraw),
     grappleShot: loadAudio(audioGrappleShot),
     grappleReel: loadAudio(audioGrappleReel),
     footsteps: loadAllAudio(footsteps)
   }
-  addAudio(p1.gltf.scene, p1.sounds);
+  addAudio(archer.gltf.scene, archer.sounds);
 
-  p1.playSound = function(sound) {
-    this.sounds[sound].play();
+  archer.playSound = function(sound) {
+    if (sound == "footsteps") {
+      this.playFootstepSound()
+    } else if (sound == "grappleReel") {
+      this.playSoundIfNotPlaying("grappleReel")
+    } else {
+      this.sounds[sound].play();
+    }
   }
 
-  p1.stopSoundIfPlaying = function(sound) {
+  archer.stopSoundIfPlaying = function(sound) {
     if (this.sounds[sound].isPlaying) {
       this.sounds[sound].stop()
     }
   }
 
-  p1.playSoundIfNotPlaying = function(sound) {
+  archer.playSoundIfNotPlaying = function(sound) {
     if (!this.sounds[sound].isPlaying) {
       this.sounds[sound].play();
     }
   }
 
-  p1.playFootstepSound = function() {
+  archer.playFootstepSound = function() {
     setTimeout(() => {
       if (this.isRunning()) {
         let sound = getRandom(this.sounds.footsteps);

@@ -1,8 +1,8 @@
-import {AnimationMixer, Mesh, BoxGeometry, Euler, Geometry, LineBasicMaterial, Line, Vector3} from 'three'
+import {AnimationMixer, Mesh, BoxGeometry, Euler, Vector3} from 'three'
 
 import {loader} from './loader'
 import scene from './scene/scene'
-import {init} from './archer'
+import {init} from './archer/archer'
 import {sendMessage} from './websocket';
 import {updateCrown} from './kingOfCrown'
 import player1 from './player1/player1';
@@ -50,7 +50,7 @@ players.add = function(uuid, playerState) {
     }
     loader.load(benji("./benji_" + player1.race + ".gltf"), function(gltf) {
         player.gltf = gltf;
-        init(new AnimationMixer(gltf.scene), player);
+        init(player);
         if (!playerState.rotation) {
             playerState.rotation = new Euler()
         }
@@ -105,12 +105,22 @@ players.move = function(playerUuid, playerState) {
 
 players.playAction = function(playerUuid, action) {
     var player = roster[playerUuid]
+    if (action.includes("run")) {
+        player.running = true
+    } else if (action.includes("idle")) {
+        player.running = false
+    }
     player.anim[action].reset().play()
 }
 
 players.stopAction = function(playerUuid, action) {
     var player = roster[playerUuid]
     player.anim[action].stop()
+}
+
+players.playSound = function(playerUuid, sound) {
+    let player = roster[playerUuid]
+    if (player.sounds) player.playSound(sound)
 }
 
 players.takeDamage = function(playerUuid, damage) {

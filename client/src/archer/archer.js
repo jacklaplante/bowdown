@@ -1,23 +1,26 @@
-import {LoopOnce} from 'three'
+import {LoopOnce, AnimationMixer} from 'three'
 
-import {getAnimation} from './utils'
+import {getAnimation} from '../utils'
 
-function init(mixer, archer) {
-    archer.mixer = mixer
+function init(archer) {
+    import(/* webpackMode: "lazy" */ './audio').then((audio) => {
+        audio.default(archer)
+    })
+    archer.mixer = new AnimationMixer(archer.gltf.scene);
     archer.anim = {
-        idle: mixer.clipAction(getAnimation(archer.gltf, "Idle")),
-        running: mixer.clipAction(getAnimation(archer.gltf, "Running best")),
-        runWithBow: mixer.clipAction(getAnimation(archer.gltf, "Running with bow best")),
-        runWithLegsOnly: mixer.clipAction(getAnimation(archer.gltf, "Running legs only")),
-        jumping: mixer.clipAction(getAnimation(archer.gltf, "Jumping2")).setLoop(LoopOnce),
-        equipBow: mixer.clipAction(getAnimation(archer.gltf, "Equip Bow")).setLoop(LoopOnce),
-        drawBow: mixer.clipAction(getAnimation(archer.gltf, "Draw bow")).setLoop(LoopOnce),
-        fireBow: mixer.clipAction(getAnimation(archer.gltf, "Fire bow")).setLoop(LoopOnce),
-        death: mixer.clipAction(getAnimation(archer.gltf, "death")).setLoop(LoopOnce)
+        idle: archer.mixer.clipAction(getAnimation(archer.gltf, "Idle")),
+        running: archer.mixer.clipAction(getAnimation(archer.gltf, "Running best")),
+        runWithBow: archer.mixer.clipAction(getAnimation(archer.gltf, "Running with bow best")),
+        runWithLegsOnly: archer.mixer.clipAction(getAnimation(archer.gltf, "Running legs only")),
+        jumping: archer.mixer.clipAction(getAnimation(archer.gltf, "Jumping2")).setLoop(LoopOnce),
+        equipBow: archer.mixer.clipAction(getAnimation(archer.gltf, "Equip Bow")).setLoop(LoopOnce),
+        drawBow: archer.mixer.clipAction(getAnimation(archer.gltf, "Draw bow")).setLoop(LoopOnce),
+        fireBow: archer.mixer.clipAction(getAnimation(archer.gltf, "Fire bow")).setLoop(LoopOnce),
+        death: archer.mixer.clipAction(getAnimation(archer.gltf, "death")).setLoop(LoopOnce)
     }
     archer.anim.drawBow.clampWhenFinished = true
 
-    mixer.addEventListener('finished', (event) => {
+    archer.mixer.addEventListener('finished', (event) => {
         if (event.action.getClip().name == "death" && archer.hp <= 0) {
             archer.gltf.scene.visible = false
         }
@@ -43,8 +46,10 @@ function init(mixer, archer) {
     }
 
     archer.isRunning = function() {
-        if (archer.activeMovement) {
+        if (archer.activeMovement) { // this is what I'm using to determin if player1 is running
             return archer.activeMovement.toLowerCase().includes("run")
+        } else if (archer.running) { // this is what I'm using to determine if another player is running
+            return archer.running
         }
         return false
     }

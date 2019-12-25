@@ -1,10 +1,10 @@
-import { Vector3, AnimationMixer, Raycaster, Quaternion, Euler } from "three";
+import { Vector3, Raycaster, Quaternion, Euler } from "three";
 
 import { loader } from "../loader";
 import { uuid, removeCollisionLines, localVector, getRandom } from "../utils";
 import scene from "../scene/scene";
 import { sendMessage } from "../websocket";
-import { init } from "../archer";
+import { init } from "../archer/archer";
 import { gameOver } from "../game";
 import { updateCrown } from "../kingOfCrown";
 import initControls from "./controls";
@@ -26,17 +26,13 @@ player1.race = getRandom(["black", "brown", "white"]);
 
 loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
     player1.gltf = gltf;
-    import(/* webpackMode: "lazy" */ './audio').then((audio) => {
-      audio.default(player1)
-    })
     player1.bowState = "unequipped";
 
-    var mixer = new AnimationMixer(gltf.scene);
-    init(mixer, player1);
+    init(player1);
     initControls(player1);
     initActions(player1);
     player1.setVelocity(new Vector3());
-    mixer.addEventListener("finished", event => {
+    player1.mixer.addEventListener("finished", event => {
       if (event.action.getClip().name == "Draw bow") {
         player1.bowState = "drawn";
       } else {
@@ -225,7 +221,7 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
           player1.setVelocity(player1.getVelocity().projectOnPlane(arrowToPlayer.clone().normalize()));
         }
         if (player1.sounds) {
-          player1.playSoundIfNotPlaying("grappleReel")
+          player1.broadcastSound("grappleReel")
         }
       }
       if (player1.getVelocity().length() != 0) {
@@ -276,7 +272,6 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
 
     player1.run = function() {
       if (!this.isRunning()) {
-        if (this.sounds) this.playFootstepSound();
         if (this.bowState == "equipped") {
           this.movementAction("runWithBow");
         } else if (this.isFiring()) {
@@ -284,8 +279,18 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
         } else {
           this.movementAction("running");
         }
+        if (this.sounds) this.broadcastSound("footsteps")
       }
     };
+
+    // this will play a sound and broadcast to the other players that the sounds needs to be played for this player
+    player1.broadcastSound = function(sound) {
+      this.playSound(sound)
+      sendMessage({
+        player: this.uuid,
+        playSound: sound
+      })
+    }
 
     function grappling() {
       return player1.activeRopeArrow != null && player1.activeRopeArrow.stopped;

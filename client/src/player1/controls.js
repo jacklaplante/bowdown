@@ -22,7 +22,7 @@ function initControls(p1) {
         this.stopAction("jumping");
       }
       if (this.sounds) {
-        this.playSound("bowDraw");
+        this.broadcastSound("bowDraw");
       }
       this.playBowAction("drawBow");
       this.bowState = "drawing";
@@ -46,11 +46,11 @@ function initControls(p1) {
       if (event.button == 2) {
         this.activeRopeArrow = shootArrow("rope");
         if (this.sounds) {
-          this.playSound("grappleShot")
+          this.broadcastSound("grappleShot")
         }
       } else {
         if (this.sounds) {
-          this.playSound("bowShot")
+          this.broadcastSound("bowShot")
         }
         shootArrow("normal");
       }
