@@ -30,3 +30,13 @@ then run the output command but take away the "-e none" and run with `sudo`
 sudo docker tag jacklaplante/bowdown-server:latest 396569707329.dkr.ecr.us-east-1.amazonaws.com/bowdown-server:latest
 sudo docker push 396569707329.dkr.ecr.us-east-1.amazonaws.com/bowdown-server:latest
 ```
+
+DAT.gui example
+```
+if (process.env.NODE_ENV == 'development') {
+  let dat = require('dat.gui')
+  let gui = new dat.GUI()
+  let v = {refDistance: refDistance}
+  gui.add(v, 'refDistance')
+}
+```

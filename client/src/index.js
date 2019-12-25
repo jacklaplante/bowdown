@@ -20,10 +20,9 @@ if (document.body.requestFullscreen || document.body.mozRequestFullScreen || doc
     }
 }
 
-let g = import(
+import(
     /* webpackMode: "lazy" */
-    /* webpackChunkName: "game" */ './game')
-g.then((game) => {
+    /* webpackChunkName: "game" */ './game').then((game) => {
   game.start()
   let root = document.body
   root.classList.remove("loading")

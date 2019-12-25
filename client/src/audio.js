@@ -8,7 +8,6 @@ function loadAudio(file) {
     var sound = new PositionalAudio(camera.listener);
     audioLoader.load(file, function(buffer) {
         sound.setBuffer(buffer);
-        sound.setRefDistance(5);
     })
     return sound
 }
