@@ -247,10 +247,12 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
       var pos = randomSpawn();
       this.hp = 100;
       this.gltf.scene.visible = true;
-      if (scene.gravityDirection == "center") {
-        this.gltf.scene.rotation.setFromQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), pos.clone().normalize()));
-      }
       updatePosition(pos);
+      if (scene.gravityDirection == "center") {
+        this.gltf.scene.rotation.copy(new Euler())
+        let quat = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), pos.clone().normalize())
+        this.gltf.scene.applyQuaternion(quat)
+      }
       // say hi to server
       sendMessage({
         player: this.uuid,
