@@ -63,7 +63,7 @@ function shootArrow(type){
         camera.getWorldDirection(direction)
     }
 
-    arrow.velocity = direction.normalize().multiplyScalar(getArrowVelocity(type))
+    arrow.velocity = player1.getVelocity().add(direction.normalize().multiplyScalar(getArrowVelocity(type)))
     player1Arrows.push(arrow)
 
     sendMessage({
