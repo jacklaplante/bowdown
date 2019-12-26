@@ -1,4 +1,4 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper, MeshStandardMaterial, DoubleSide, Group} from 'three'
+import {BoxGeometry, Mesh, MeshStandardMaterial, DoubleSide, Group} from 'three'
 
 import {createTextMesh} from '../utils'
 

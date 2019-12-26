@@ -1,9 +1,10 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper, MeshStandardMaterial, DoubleSide} from 'three'
+import { Scene, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3} from 'three'
 
 import { loader } from '../loader'
 import {connectToServer} from '../websocket'
 import {createTextMesh} from '../utils'
 import lobby from './lobby'
+import letThereBeLight from './lights'
 
 import spatialIndex from '../../spatialIndex.json'
 
@@ -107,15 +108,7 @@ scene.loadSkyBox = function() {
     })
 }
 
-scene.add(getHemisphereLight());
-var directionalLight = getDirectionalLight();
-if (process.env.NODE_ENV == 'development') {
-    var lightHelper = new DirectionalLightHelper(directionalLight)
-    scene.add(lightHelper)
-    var axesHelper = new AxesHelper(5);
-    scene.add(axesHelper)
-}
-scene.add(getDirectionalLight());
+letThereBeLight(scene)
 
 var skybox
 scene.animate = function(delta) {
@@ -148,33 +141,6 @@ scene.getCollidableEnvironment = function(positions) {
         collidable = collidableEnvironment
     }
     return collidable
-}
-
-function getHemisphereLight() {
-    var hemiLight = new HemisphereLight( 0xffffff, 0x9bc9a7 );
-    hemiLight.color.setHSL( 0.6, 1, 0.8 );
-    hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-    hemiLight.position.set(-690,-450,-240);
-    hemiLight.visible = true;
-    return hemiLight;
-}
-
-function getDirectionalLight() {
-    var dirLight = new DirectionalLight(0xffffff, 3);
-    dirLight.color.setHSL( 0.1, 1, 0.95 );
-    dirLight.position.set(230,150,80);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = 2048;
-    dirLight.shadow.mapSize.height = 2048;
-    var d = 50;
-    dirLight.shadow.camera.left = - d;
-    dirLight.shadow.camera.right = d;
-    dirLight.shadow.camera.top = d;
-    dirLight.shadow.camera.bottom = - d;
-    dirLight.shadow.camera.far = 3500;
-    dirLight.shadow.bias = - 0.0001;
-    dirLight.visible = true;
-    return dirLight;
 }
 
 export default scene
