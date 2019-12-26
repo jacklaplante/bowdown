@@ -2,7 +2,7 @@ import {Clock} from 'three'
 
 import player1 from './player1/player1'
 import { players } from './players'
-import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow'
+import { addOtherPlayerArrow, stopOtherPlayerArrow } from './arrow/arrow'
 import { newChatMessage } from './chat'
 import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
@@ -15,17 +15,14 @@ var log
 var clock = new Clock()
 var ws;
 function connectToServer(serverAddress) {
-    if (ws && (ws.readyState == 0 || ws.readyState == 1)) {
+    if (ws && ws.readyState == 1) {
         ws.close();
     }
     ws = new WebSocket(serverAddress);
     ws.onmessage = onMessage;
-    ws.onopen = onConnect;
-}
-
-function onConnect(){
-    player1.init()
-    player1.respawn()
+    ws.onopen = function() {
+        player1.respawn()
+    };
 }
 
 function onMessage(message) {
@@ -61,13 +58,19 @@ function onMessage(message) {
                 let player = players.get(playerUuid)
                 if (!player || message.status==='respawn') {
                     players.respawn(playerUuid, message.position, message.rotation, message.race)
-                } else if (player.gltf && message.position && message.rotation!=null) {
-                    players.move(playerUuid, message.position, message.rotation, message.kingOfCrown)
-                } else if (player.gltf && message.playAction) {
-                    players.playAction(playerUuid, message.playAction)
-                } else if (player.gltf && message.stopAction) {
-                    players.stopAction(playerUuid, message.stopAction)
-                }   
+                } else {
+                    if (player.gltf && message.position && message.rotation!=null) {
+                        players.move(playerUuid, message.position, message.rotation, message.kingOfCrown)
+                    }
+                    if (player.gltf && message.playAction) {
+                        players.playAction(playerUuid, message.playAction)
+                    } else if (player.gltf && message.stopAction) {
+                        players.stopAction(playerUuid, message.stopAction)
+                    }
+                    if (player.gltf && message.playSound) {
+                        players.playSound(playerUuid, message.playSound)
+                    }
+                }
             }
         }
     }
@@ -109,6 +112,7 @@ function recordBot() {
 }
 
 function sendMessage(message) {
+    if (!ws) return
     if (ws.readyState == 1) {
         if (recordingBot) {
             log.push({
@@ -117,6 +121,8 @@ function sendMessage(message) {
             })
         }
         ws.send(JSON.stringify(message))
+    } else if (ws.readyState == 0) {
+        console.warn("still connecting to server")
     } else {
         console.error("error connecting to server")
         var message = document.createElement("p")

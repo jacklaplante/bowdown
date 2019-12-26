@@ -1,4 +1,6 @@
-import {Geometry, Vector3, LineBasicMaterial, Line} from 'three'
+import {Geometry, Vector3, LineBasicMaterial, Line, FontLoader, TextGeometry, Mesh, MeshStandardMaterial} from 'three'
+
+import fontJson from '../fonts/rubik.json'
 
 function uuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -13,6 +15,16 @@ function localVector(v, pos, gravityDirection) {
     } else {
         return pos.normalize().multiplyScalar(v.y)
     }
+}
+
+const font = new FontLoader().parse(fontJson)
+function createTextMesh(text, color) {
+    let geo = new TextGeometry(text, {
+        font: font,
+        size: 1,
+        height: 0.1
+    });
+    return new Mesh(geo, new MeshStandardMaterial({color: color}))
 }
 
 const displayCollisionLines = false
@@ -90,4 +102,4 @@ function initTouchElements(elements) {
     })
 }
 
-export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo, getRandom, initTouchElements}
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo, getRandom, initTouchElements, createTextMesh}

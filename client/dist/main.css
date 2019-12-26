@@ -28,10 +28,6 @@ canvas {
     padding: 2%;
 }
 
-#title svg {
-    fill: #ffdba5;
-}
-
 #title svg .cls-1 {
     fill:#754c29;
 }
@@ -251,6 +247,10 @@ ul, #server-list .server, .footer {
     padding: 1vh 1vw;
 }
 
+.playing #title {
+    display: none;
+}
+
 #kickstarter {
     font-family: monospace;
     position: absolute;
@@ -258,6 +258,28 @@ ul, #server-list .server, .footer {
     right: 0;
     margin: 0 7vw 0 0;
     font-size: 1vw;
+}
+
+#loading-game {
+    display: none;
+    font-size: 10vw;
+    text-align: center;
+    color: antiquewhite;
+    animation: pulse 2s infinite;
+    font-family: monospace;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.loading #loading-game {
+    display: block
 }
 
 #loading-indicator {

@@ -1,8 +1,8 @@
 import { Vector2, Quaternion, Vector3 } from "three";
 
 import camera from "../camera";
-import { shootArrow, retractRopeArrow } from "../arrow";
-import scene from "../scene";
+import { shootArrow, retractRopeArrow } from "../arrow/arrow";
+import scene from "../scene/scene";
 
 const movementSpeed = 7;
 const sprintModifier = 1.3;
@@ -12,8 +12,8 @@ function initControls(p1) {
     if (this.activeRopeArrow != null) {
       this.activeRopeArrow = null;
       retractRopeArrow();
-      if (this.sounds.grappleReel.isPlaying) {
-        this.sounds.grappleReel.stop();
+      if (this.sounds) {
+        this.stopSoundIfPlaying("grappleReel")
       }
     } else if (this.bowState == "unequipped") {
       this.equipBow();
@@ -21,7 +21,9 @@ function initControls(p1) {
       if (this.activeActions.includes("jumping")) {
         this.stopAction("jumping");
       }
-      this.sounds.bowDraw.play();
+      if (this.sounds) {
+        this.broadcastSound("bowDraw");
+      }
       this.playBowAction("drawBow");
       this.bowState = "drawing";
       setTimeout(function() {
@@ -36,16 +38,20 @@ function initControls(p1) {
 
   p1.onMouseUp = function(event) {
     document.getElementById("crosshair").classList.remove("aiming");
-    if (this.sounds.bowDraw.isPlaying) {
-      this.sounds.bowDraw.stop();
+    if (this.sounds) {
+      this.stopSoundIfPlaying("bowDraw")
     }
     if (this.bowState == "drawn") {
       this.playBowAction("fireBow");
       if (event.button == 2) {
         this.activeRopeArrow = shootArrow("rope");
-        this.sounds.grappleShot.play();
+        if (this.sounds) {
+          this.broadcastSound("grappleShot")
+        }
       } else {
-        this.sounds.bowShot.play();
+        if (this.sounds) {
+          this.broadcastSound("bowShot")
+        }
         shootArrow("normal");
       }
       this.bowState = "firing";

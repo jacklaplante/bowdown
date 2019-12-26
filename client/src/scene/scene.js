@@ -1,15 +1,12 @@
-import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper} from 'three'
+import { Scene, HemisphereLight, DirectionalLight, DirectionalLightHelper, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3, AxesHelper, MeshStandardMaterial, DoubleSide} from 'three'
 
-import { loader } from './loader'
-import heather_ft from '../skybox/bluecloud_ft.jpg'
-import heather_bk from '../skybox/bluecloud_bk.jpg'
-import heather_up from '../skybox/bluecloud_up.jpg'
-import heather_dn from '../skybox/bluecloud_dn.jpg'
-import heather_rt from '../skybox/bluecloud_rt.jpg'
-import heather_lf from '../skybox/bluecloud_lf.jpg'
-import spatialIndex from '../spatialIndex.json'
+import { loader } from '../loader'
+import {connectToServer} from '../websocket'
+import {createTextMesh} from '../utils'
 
-const maps = require.context('../models/maps');
+import spatialIndex from '../../spatialIndex.json'
+
+// const maps = require.context('../models/maps');
 
 var scene = new Scene();
 scene.loaded = false
@@ -17,10 +14,55 @@ var collidableEnvironment = []
 const indexMod = 5 // if you change this you need to change it on the indexer too
 var objects = {}
 
+scene.triggers = []
+let platform = new Mesh(new BoxGeometry(500,4,500), new MeshStandardMaterial({color: 0xd1736b, side: DoubleSide}));
+platform.position.y = -5
+collidableEnvironment = [platform]
+scene.loaded = true
+scene.gravityDirection = "down"
+let faceWorldBox = new Mesh(new BoxGeometry(4,4,4), new MeshStandardMaterial({color: 0x030bfc, side: DoubleSide}))
+faceWorldBox.position.z-=5
+faceWorldBox.position.y-=2
+scene.triggers.push(faceWorldBox)
+scene.add(faceWorldBox)
+scene.add(platform)
+let loadingText = createTextMesh('loading', 0x030bfc)
+loadingText.position.z -= 3
+loadingText.position.x -= 4
+scene.add(loadingText)
+import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
+    var lowild
+    loader.load(file.default, (gltf) => {
+        lowild = gltf.scene;
+        lowild.children.forEach((child) => {
+            if (objects[child.name]) throw "all object names bust be unique"
+            objects[child.name] = child
+        })
+        faceWorldBox.material.color.set(0x34eb58)
+        scene.remove(loadingText)
+        let readyText = createTextMesh('ready', 0x030bfc)
+        readyText.position.z -= 3
+        readyText.position.x -= 3
+        scene.add(readyText)
+        faceWorldBox.trigger = function() {
+            scene.add(lowild)
+            scene.remove(platform)
+            scene.gravityDirection = "center"
+            collidableEnvironment = [lowild]
+            scene.loadSkyBox()
+            if (process.env.NODE_ENV == 'development') {
+                connectToServer("ws://localhost:18181")
+            } else {
+                connectToServer("wss://ws.bowdown.io:18181")
+            }
+        }
+    })
+})
+
 scene.loadMap = function(map, gravityDirection) {
     scene.gravityDirection = gravityDirection
     loadingIndicator.add()
-    loader.load(maps(map), function (gltf) {
+    loader.load(map, function (gltf) {
         loadingIndicator.remove()
         var mesh = gltf.scene;
         mesh.children.forEach((child) => {
@@ -28,7 +70,7 @@ scene.loadMap = function(map, gravityDirection) {
             objects[child.name] = child
         })
         scene.add(mesh);
-        collidableEnvironment.push(mesh)
+        collidableEnvironment = [mesh]
         scene.loaded = true
     }, function(bytes) {
         loadingIndicator.update(Math.round((bytes.loaded / bytes.total)*100) + "%")
@@ -56,18 +98,23 @@ const loadingIndicator = {
     }
 }
 
-let materialArray = [];  
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_ft) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_bk) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_up) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_dn) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_rt) }));
-materialArray.push(new MeshBasicMaterial( { map: new TextureLoader().load(heather_lf) }));
-for (let i = 0; i < 6; i++)
-  materialArray[i].side = BackSide;
-let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
-let skybox = new Mesh( skyboxGeo, materialArray );
-scene.add( skybox );
+scene.loadSkyBox = function() {
+    var materialArray = [];  
+    ["ft", "bk", "up", "dn", "rt", "lf"].forEach((face) => {
+        import(/* webpackMode: "lazy-once" */ `../../skybox/bluecloud_${face}.jpg`).then(image => {
+            let mat = new MeshBasicMaterial( { map: new TextureLoader().load(image.default) });
+            mat.side = BackSide;
+            materialArray.push(mat);
+            if (materialArray.length == 6 && skybox == null) {
+                for (let i = 0; i < 6; i++)
+                    materialArray[i].side = BackSide;
+                let skyboxGeo = new BoxGeometry(5000, 5000, 5000);
+                skybox = new Mesh( skyboxGeo, materialArray );
+                scene.add( skybox );
+            }
+        })
+    })
+}
 
 scene.add(getHemisphereLight());
 var directionalLight = getDirectionalLight();
@@ -79,8 +126,11 @@ if (process.env.NODE_ENV == 'development') {
 }
 scene.add(getDirectionalLight());
 
+var skybox
 scene.animate = function(delta) {
-    skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
+    if (skybox) {
+        skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
+    }
 }
 
 scene.getCollidableEnvironment = function(positions) {

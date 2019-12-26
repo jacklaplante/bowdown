@@ -2,11 +2,11 @@ import { Clock } from 'three'
 import Hammer from 'hammerjs'
 
 import player1 from './player1/player1'
-import scene from './scene'
+import scene from './scene/scene'
 import camera from './camera'
 import entities from './entities/entities'
 import { renderer } from './renderer'
-import { animateArrows } from './arrow'
+import { animateArrows } from './arrow/arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
@@ -43,7 +43,7 @@ function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && player1.mixer) {
-        if (state != "gameOver" && player1.hp > 0) {
+        if (state != "gameOver" && (player1.hp==null || player1.hp > 0)) {
             player1.animate(delta, input);
             camera.animate(delta);
         }
@@ -129,10 +129,10 @@ function unlockPointer() {
 function onMouseDown() {
     if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
         document.getElementById("chat").classList.add("chatting")
-    } else if (event.target.innerText != "respawn") {
+    } else if (!event.target.classList.contains("button")) {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
-            if (state == "paused" && player1.hp > 0) {
+            if (state == "paused" && (player1.hp == null || player1.hp > 0)) {
                 lockPointer()
                 play()
             }
@@ -141,20 +141,19 @@ function onMouseDown() {
             if (document.pointerLockElement == null) {
                 lockPointer()
             }
-            player1.onMouseDown()
+            if (player1 && player1.onMouseDown) player1.onMouseDown()
         }
     }
 }
 function onMouseUp(event) {
-    if (state === "playing") {
+    if (state === "playing" && player1 && player1.onMouseUp) {
         player1.onMouseUp(event)
     }
 }
 
 function play() {
-    let root = document.getElementById("root")
-    root.classList.remove("ready")
-    root.classList.add('playing')
+    let body = document.body
+    body.classList.add('playing')
     removeMenuElement()
     state = "playing"
 }
@@ -202,17 +201,10 @@ function addMenuButton(text) {
     return button
 }
 
-let respawnCount = 0
-let kickstarterOpened = false
 function addRespawnButton() {
     var respawnButton = addMenuButton("respawn")
     respawnButton.onclick = function() {
         player1.respawn()
-        if (respawnCount > 2 && !kickstarterOpened) {
-            window.open("https://www.kickstarter.com/projects/698520615/bowdown?ref=aozya1", "_blank");
-            kickstarterOpened = true
-        }
-        respawnCount ++
         play()
         respawnButton.remove()
     }
@@ -403,7 +395,6 @@ function start() {
         }
         rotate()
     }
-
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

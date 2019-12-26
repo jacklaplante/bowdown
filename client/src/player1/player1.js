@@ -1,24 +1,17 @@
-import { Vector3, AnimationMixer, Raycaster, Vector2, Quaternion, Euler } from "three";
+import { Vector3, Raycaster, Quaternion, Euler } from "three";
 
 import { loader } from "../loader";
 import { uuid, removeCollisionLines, localVector, getRandom } from "../utils";
-import scene from "../scene";
+import scene from "../scene/scene";
 import { sendMessage } from "../websocket";
-import { init } from "../archer";
+import { init } from "../archer/archer";
 import { gameOver } from "../game";
-import { loadAudio, loadAllAudio, addAudio } from "../audio";
 import { updateCrown } from "../kingOfCrown";
 import initControls from "./controls";
 import initActions from "./actions";
 import camera from "../camera"
 
-import audioBowShot from "../../audio/effects/Bow Shot.mp3";
-import audioBowDraw from "../../audio/effects/Bow Draw.mp3";
-import audioGrappleShot from "../../audio/effects/Grapple Shot.mp3";
-import audioGrappleReel from "../../audio/effects/Grapple Reel Loop.mp3";
-
 const benji = require.context("../../models/benji");
-const footsteps = require.context("../../audio/effects/footsteps");
 
 const velocityInfluenceModifier = 30;
 const gravityAcceleration = 10;
@@ -26,30 +19,20 @@ const godMode = false;
 
 var player1 = {
   uuid: uuid(),
-  sounds: {
-    bowShot: loadAudio(audioBowShot),
-    bowDraw: loadAudio(audioBowDraw),
-    grappleShot: loadAudio(audioGrappleShot),
-    grappleReel: loadAudio(audioGrappleReel),
-    footsteps: loadAllAudio(footsteps)
-  },
   activeActions: []
 };
 
 player1.race = getRandom(["black", "brown", "white"]);
-loader.load(
-  benji("./benji_" + player1.race + ".gltf"),
-  gltf => {
+
+loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
     player1.gltf = gltf;
-    addAudio(player1.gltf.scene, player1.sounds);
     player1.bowState = "unequipped";
 
-    var mixer = new AnimationMixer(gltf.scene);
-    init(mixer, player1);
+    init(player1);
     initControls(player1);
     initActions(player1);
     player1.setVelocity(new Vector3());
-    mixer.addEventListener("finished", event => {
+    player1.mixer.addEventListener("finished", event => {
       if (event.action.getClip().name == "Draw bow") {
         player1.bowState = "drawn";
       } else {
@@ -59,6 +42,7 @@ loader.load(
         player1.idle();
       }
     });
+    scene.add(player1.gltf.scene)
 
     player1.isFalling = function(delta) {
       if (delta) {
@@ -82,7 +66,12 @@ loader.load(
       //check for collisions at foot level
       var origin = this.getPosition();
       var ray = new Raycaster(origin, vect.clone().normalize(), 0, vect.length());
-      var collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true);
+      var collisionResults = ray.intersectObjects(scene.triggers, true);
+      if (collisionResults.length > 0) {
+        let t = collisionResults[0].object
+        if (t.trigger) t.trigger()
+      }
+      collisionResults = ray.intersectObjects(scene.getCollidableEnvironment([origin, nextPos]), true);
       if (collisionResults.length > 0) {
         return true;
       }
@@ -231,8 +220,8 @@ loader.load(
         if (player1.getVelocity().angleTo(arrowToPlayer) > Math.PI / 2) {
           player1.setVelocity(player1.getVelocity().projectOnPlane(arrowToPlayer.clone().normalize()));
         }
-        if (!player1.sounds.grappleReel.isPlaying) {
-          player1.sounds.grappleReel.play();
+        if (player1.sounds) {
+          player1.broadcastSound("grappleReel")
         }
       }
       if (player1.getVelocity().length() != 0) {
@@ -250,10 +239,6 @@ loader.load(
       gameOver();
     };
 
-    player1.init = function() {
-      scene.add(this.gltf.scene);
-    };
-
     player1.respawn = function() {
       if (this.activeActions && this.activeActions.includes("death")) {
         this.activeActions = this.activeActions.filter(e => e != "death");
@@ -262,10 +247,12 @@ loader.load(
       var pos = randomSpawn();
       this.hp = 100;
       this.gltf.scene.visible = true;
-      if (scene.gravityDirection == "center") {
-        this.gltf.scene.rotation.setFromQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), pos.clone().normalize()));
-      }
       updatePosition(pos);
+      if (scene.gravityDirection == "center") {
+        this.gltf.scene.rotation.copy(new Euler())
+        let quat = new Quaternion().setFromUnitVectors(new Vector3(0, 1, 0), pos.clone().normalize())
+        this.gltf.scene.applyQuaternion(quat)
+      }
       // say hi to server
       sendMessage({
         player: this.uuid,
@@ -287,7 +274,6 @@ loader.load(
 
     player1.run = function() {
       if (!this.isRunning()) {
-        this.playFootstepSound();
         if (this.bowState == "equipped") {
           this.movementAction("runWithBow");
         } else if (this.isFiring()) {
@@ -295,18 +281,18 @@ loader.load(
         } else {
           this.movementAction("running");
         }
+        if (this.sounds) this.broadcastSound("footsteps")
       }
     };
 
-    player1.playFootstepSound = function() {
-      setTimeout(() => {
-        if (player1.isRunning()) {
-          let sound = getRandom(this.sounds.footsteps);
-          sound.play();
-          player1.playFootstepSound();
-        }
-      }, 400);
-    };
+    // this will play a sound and broadcast to the other players that the sounds needs to be played for this player
+    player1.broadcastSound = function(sound) {
+      this.playSound(sound)
+      sendMessage({
+        player: this.uuid,
+        playSound: sound
+      })
+    }
 
     function grappling() {
       return player1.activeRopeArrow != null && player1.activeRopeArrow.stopped;
@@ -315,7 +301,7 @@ loader.load(
   bytes => {
     console.log("player1 " + Math.round((bytes.loaded / bytes.total) * 100) + "% loaded");
   }
-);
+)
 
 function randomSpawn() {
   // this should be moved to the server

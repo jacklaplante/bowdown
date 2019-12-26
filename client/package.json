@@ -1,19 +1,20 @@
 {
-  "name": "best-game-ever-client",
+  "name": "bowdown-client",
   "version": "1.0.0",
   "description": "",
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config webpack.prod.js",
-    "start": "webpack-dev-server --open --config webpack.dev.js",
-    "startOnLAN": "webpack-dev-server --open --config webpack.dev.js --host 0.0.0.0"
+    "start": "webpack-dev-server --config webpack.dev.js",
+    "startOnLAN": "webpack-dev-server --config webpack.dev.js --host 0.0.0.0"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.3.2",
+    "dat.gui": "^0.7.6",
     "file-loader": "^4.1.0",
     "html-webpack-plugin": "^3.2.0",
     "html-webpack-root-plugin": "^0.10.0",
@@ -25,12 +26,7 @@
     "webpack-obfuscator": "^0.18.3"
   },
   "dependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-syntax-dynamic-import": "^6.18.0",
-    "babel-preset-react-app": "^3.1.2",
     "hammerjs": "^2.0.8",
-    "react": "^16.10.2",
-    "react-dom": "^16.10.2",
     "three": "^0.106.2"
   }
 }

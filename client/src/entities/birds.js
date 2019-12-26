@@ -1,7 +1,7 @@
 import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
 
 import {getAnimation, eachDo} from '../utils'
-import scene from '../scene';
+import scene from '../scene/scene';
 import {sendMessage} from '../websocket'
 
 import flamingo from '../../models/flamingo.gltf'
@@ -11,9 +11,15 @@ const birds = {
   hitBoxes: []
 }
 
+let flamingoGltf
+import(/* webpackMode: "lazy" */ '../../models/flamingo.gltf').then(file => {
+  flamingoGltf = file.default
+})
+
 import {loader} from '../loader'
 
 birds.add = function(uuid, state) {
+  if (flamingoGltf == null) return
   this.roster[uuid] = {}
   loader.load(flamingo, (gltf) => {
     let bird = this.roster[uuid]
