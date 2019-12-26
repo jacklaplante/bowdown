@@ -48,7 +48,7 @@ players.add = function(uuid, playerState) {
         console.error("race is undefined")
         playerState.race = 'brown'
     }
-    loader.load(benji("./benji_" + player1.race + ".gltf"), function(gltf) {
+    loader.load(benji("./benji_" + playerState.race + ".gltf"), function(gltf) {
         player.gltf = gltf;
         init(player);
         if (!playerState.rotation) {
