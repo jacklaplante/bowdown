@@ -1,4 +1,4 @@
-import {Geometry, Vector3, LineBasicMaterial, Line, FontLoader, TextGeometry, Mesh, MeshStandardMaterial} from 'three'
+import {Geometry, Vector3, LineBasicMaterial, Line, FontLoader, TextGeometry, Mesh, MeshStandardMaterial, Group} from 'three'
 
 import fontJson from '../fonts/rubik.json'
 
@@ -18,13 +18,22 @@ function localVector(v, pos, gravityDirection) {
 }
 
 const font = new FontLoader().parse(fontJson)
-function createTextMesh(text, color) {
-    let geo = new TextGeometry(text, {
-        font: font,
-        size: 1,
-        height: 0.1
-    });
-    return new Mesh(geo, new MeshStandardMaterial({color: color}))
+const fontSize = 1
+function createTextMesh(lines, color) {
+    let textGroup = new Group()
+    var i = 0
+    lines.forEach((line) => {
+        let geo = new TextGeometry(line, {
+            font: font,
+            size: fontSize,
+            height: 0.1
+        });
+        let textMesh = new Mesh(geo, new MeshStandardMaterial({color: color}))
+        textMesh.position.y -= (i*(fontSize+0.1))
+        textGroup.add(textMesh)
+        i++
+    })
+    return textGroup
 }
 
 const displayCollisionLines = false

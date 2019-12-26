@@ -30,15 +30,14 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
             if (objects[child.name]) throw "all object names bust be unique"
             objects[child.name] = child
         })
-        lobby.faceWorldBox.material.color.set(0x34eb58)
+        lobby.faceWorldBox.material.color.set(0x138E55)
         lobby.remove(lobby.loadingText)
-        let readyText = createTextMesh('ready', 0x030bfc)
-        readyText.position.z -= 3
-        readyText.position.x -= 3
+        let readyText = createTextMesh(['ready'], 0x138E55)
+        readyText.position.set(-3, 1, -3)
         scene.add(readyText)
         lobby.faceWorldBox.trigger = function() {
             scene.add(lowild)
-            lobby.remove(lobby.platform)
+            scene.remove(lobby)
             scene.gravityDirection = "center"
             collidableEnvironment = [lowild]
             scene.loadSkyBox()

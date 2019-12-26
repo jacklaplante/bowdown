@@ -10,6 +10,7 @@ import { animateArrows } from './arrow/arrow'
 import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
+import lobby from './scene/lobby'
 
 require.context('../images/');
 
@@ -32,7 +33,7 @@ var input = {
     }
 }
 var state = "playing"
-var usingTouchControls = false;
+window.usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
 var jumpTouch = {id: null}
@@ -127,7 +128,7 @@ function unlockPointer() {
 }
 
 function onMouseDown() {
-    if (event.target.id == "chat" || event.target.parentElement.id == "chat") {
+    if (event.target && (event.target.id == "chat" || (event.target.parentElement && event.target.parentElement.id == "chat"))) {
         document.getElementById("chat").classList.add("chatting")
     } else if (!event.target.classList.contains("button")) {
         document.getElementById("chat").classList.remove("chatting")
@@ -213,7 +214,7 @@ function addRespawnButton() {
 function onPointerLockChange() {
     if (document.pointerLockElement) {
         play()
-    } else if (!usingTouchControls) {
+    } else if (!window.usingTouchControls) {
         pause()
     }
 }
@@ -225,7 +226,7 @@ function pause() {
 
 let touchElements
 function touchControls(bool) {
-    if (bool!=usingTouchControls) {
+    if (bool!=window.usingTouchControls) {
         if (bool) {
             removeMenuElement()
             touchElements.forEach((elem) => elem.setAttribute("style", "display: block;"))
@@ -233,7 +234,8 @@ function touchControls(bool) {
         } else {
             touchElements.forEach((elem) => elem.setAttribute("style", "display: none;"))
         }
-        usingTouchControls = bool
+        window.usingTouchControls = bool
+        lobby.showControls()
     }
 }
 
@@ -352,8 +354,7 @@ function initTouchElements() {
         document.getElementById("shoot-button"),
         document.getElementById("rope-button"),
         document.getElementById("jump-button"),
-        document.getElementById("menu-button"),
-        renderer.domElement
+        document.getElementById("menu-button")
     ]
     touchElements.forEach((element) => {
         var mc = new Hammer.Manager(element, {recognizers:[[Hammer.Pinch, { enable: true }]]})

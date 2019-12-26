@@ -261,7 +261,6 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
         race: this.race,
         status: "respawn"
       });
-      this.equipBow();
       this.idle();
     };
 
@@ -297,6 +296,8 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
     function grappling() {
       return player1.activeRopeArrow != null && player1.activeRopeArrow.stopped;
     }
+
+    player1.equipBow();
   },
   bytes => {
     console.log("player1 " + Math.round((bytes.loaded / bytes.total) * 100) + "% loaded");
