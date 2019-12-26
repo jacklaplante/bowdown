@@ -92,7 +92,7 @@ players.move = function(playerUuid, playerState) {
         player.gltf.scene.position.copy(playerState.position)
         player.gltf.scene.rotation.copy(playerState.rotation)
         player.velocity = playerState.velocity
-        player.hp = playerState.hp
+        if (playerState.hp != null) player.hp = playerState.hp
         if (!player.gltf.scene.visible && player.hp > 100) player.gltf.scene.visible = true
     } else {
         console.warn("players.move called on a player that hasn't been loaded yet")
