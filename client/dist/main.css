@@ -108,12 +108,10 @@ svg .cls-2{
 
 #fullscreen {
     position: fixed;
-    top: 20pt;
-    left: 20pt;
-    transform: translate(-50%, -50%);
-    width: 20pt;
-    height: 20pt;
+    width: 5vh;
+    height: 5vh;
     z-index: 1;
+    margin: 1vw;
 }
 
 #crosshair {
@@ -150,10 +148,10 @@ svg .cls-2{
 #shoot-button {
     display: none;
     position: fixed;
-    top: 50%;
-    left: 80%;
-    width: 70pt;
-    height: 70pt;
+    top: 60%;
+    left: 83%;
+    width: 7vw;
+    height: 7vw;
 }
 
 #rope-button {
@@ -161,8 +159,8 @@ svg .cls-2{
     position: fixed;
     top: 40%;
     left: 70%;
-    width: 70pt;
-    height: 70pt;
+    width: 6vw;
+    height: 6vw;
 }
 
 #jump-button {
