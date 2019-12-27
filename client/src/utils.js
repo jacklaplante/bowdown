@@ -18,8 +18,9 @@ function localVector(v, pos, gravityDirection) {
 }
 
 const font = new FontLoader().parse(fontJson)
-const fontSize = 1
-function createTextMesh(lines, color) {
+const defaultFontSize = 1
+function createTextMesh(lines, color, fontSize) {
+    if (fontSize == null) fontSize = defaultFontSize
     let textGroup = new Group()
     var i = 0
     lines.forEach((line) => {
