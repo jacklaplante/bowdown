@@ -1,4 +1,4 @@
-import {AnimationMixer, Mesh, BoxGeometry, Euler, Vector3} from 'three'
+import {Mesh, BoxGeometry, Euler, Vector3} from 'three'
 
 import {loader} from './loader'
 import scene from './scene/scene'
