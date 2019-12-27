@@ -268,7 +268,7 @@ function handleTouch(event) {
             player1.onMouseDown()
             cameraTouch.rope = true
         }
-        if (newTouch.target.id === "jump-button") {
+        if (newTouch.target.id === "jump-button" || document.getElementById("jump-button").contains(event.target)) {
             input.jump = true
             jumpTouch.id = newTouch.identifier
         }

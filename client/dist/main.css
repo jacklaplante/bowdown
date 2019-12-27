@@ -166,12 +166,12 @@ svg .cls-2{
 #jump-button {
     display: none;
     position: fixed;
-    bottom: 0;
-    left: 69%;
-    width: 20%;
-    height: 5%;
-    background-color: #3e6a47;
+    width: 5vw;
+    bottom: 10%;
+    right: 23%;
 }
+
+div#jump-button {}
 
 #chat {
     display: none;
