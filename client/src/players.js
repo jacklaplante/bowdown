@@ -59,12 +59,7 @@ players.add = function(uuid, playerState) {
         }
         scene.add( gltf.scene );
 
-        var hitBox = new Mesh(new BoxGeometry(0.5, 2, 0.5));
-        hitBox.position.y += 1
-        hitBox.material.visible = false
-        gltf.scene.add(hitBox)
-        hitBox.hitBoxFor = uuid
-        playerHitBoxes.push(hitBox)
+        addHitBox(uuid, gltf) // these hitBoxes suck and I'm sorry
     });
 }
 
@@ -152,6 +147,23 @@ function killPlayer(playerUuid) {
         damage: damage,
         to: playerUuid
     })
+}
+
+function addHitBox(uuid, gltf) {
+    let bodyHitBox = new Mesh(new BoxGeometry(0.5, 1.4, 0.5));
+    bodyHitBox.position.y += 0.65
+    bodyHitBox.material.visible = false
+    gltf.scene.add(bodyHitBox)
+    bodyHitBox.hitBoxFor = uuid
+    bodyHitBox.hitBoxType = "body"
+    playerHitBoxes.push(bodyHitBox)
+    let headHitBox = new Mesh(new BoxGeometry(0.5, 0.4, 0.5));
+    headHitBox.position.y += 1.55
+    headHitBox.material.visible = false
+    gltf.scene.add(headHitBox)
+    headHitBox.hitBoxFor = uuid
+    headHitBox.hitBoxType = "head"
+    playerHitBoxes.push(headHitBox)
 }
 
 export { players, animatePlayers, playerHitBoxes, killPlayer }
