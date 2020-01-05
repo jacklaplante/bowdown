@@ -235,8 +235,10 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
 
     player1.takeDamage = function(damage) {
       this.hp -= damage;
-      this.playAction("death");
-      gameOver();
+      if (this.hp <= 0) {
+        this.playAction("death");
+        gameOver();
+      }
     };
 
     player1.respawn = function() {

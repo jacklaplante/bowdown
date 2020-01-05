@@ -1,7 +1,7 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion} from 'three'
 
 import scene from '../scene/scene'
-import {playerHitBoxes, killPlayer, players} from '../players'
+import {playerHitBoxes, broadcastDamage, players} from '../players'
 import player1 from '../player1/player1'
 import camera from '../camera'
 import {sendMessage} from '../websocket'
@@ -135,7 +135,13 @@ function animateArrows(delta) {
                 stopPlayer1Arrow(arrow)
                 let uuid = collision.object.hitBoxFor
                 if (players.get(uuid)) {
-                    killPlayer(uuid)
+                    let damage
+                    if (collision.object.hitBoxType == "head") {
+                        damage = 100
+                    } else {
+                        damage =  50
+                    }
+                    broadcastDamage(uuid, damage)
                 } else {
                     birds.kill(uuid, player1.uuid)
                     birds.die(uuid)
