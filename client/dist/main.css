@@ -148,8 +148,8 @@ svg .cls-2{
 #shoot-button {
     display: none;
     position: fixed;
-    top: 60%;
-    left: 83%;
+    top: 48%;
+    left: 75%;
     width: 7vw;
     height: 7vw;
 }
@@ -157,8 +157,8 @@ svg .cls-2{
 #rope-button {
     display: none;
     position: fixed;
-    top: 40%;
-    left: 70%;
+    top: 37%;
+    left: 59%;
     width: 6vw;
     height: 6vw;
 }
@@ -168,7 +168,7 @@ svg .cls-2{
     position: fixed;
     width: 5vw;
     bottom: 10%;
-    right: 23%;
+    right: 33%;
 }
 
 div#jump-button {}
