@@ -29,7 +29,7 @@ players.respawn = function(uuid, position, rotation, race) {
             rotation = new Euler()
         }
         if (position) {
-            players.move(uuid, position, rotation)
+            players.move(uuid, {position: position, rotation: rotation})
         }
     } else {
         players.add(uuid, {
