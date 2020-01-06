@@ -132,20 +132,24 @@ function animateArrows(delta) {
                 var collision = collisions.pop()
                 arrow.position.copy(collision.point)
                 if (arrow.hitPlayerSound) arrow.hitPlayerSound.play()
-                stopPlayer1Arrow(arrow)
-                let uuid = collision.object.hitBoxFor
-                if (players.get(uuid)) {
+                let targetUuid = collision.object.hitBoxFor
+                stopPlayer1Arrow(arrow, targetUuid)
+                let target
+                if (players.get(targetUuid)) {
+                    target = players.get(targetUuid).gltf.scene
                     let damage
                     if (collision.object.hitBoxType == "head") {
                         damage = 100
                     } else {
                         damage =  50
                     }
-                    broadcastDamage(uuid, damage)
+                    broadcastDamage(targetUuid, damage)
                 } else {
-                    birds.kill(uuid, player1.uuid)
-                    birds.die(uuid)
+                    target = birds.get(targetUuid).gltf.scene
+                    birds.kill(targetUuid, player1.uuid)
+                    birds.die(targetUuid)
                 }
+                addArrowToTarget(arrow, target)
             }
             // detect collisions with the environment
             var collidable = scene.getCollidableEnvironment([arrow.origin, arrow.position])
@@ -155,14 +159,6 @@ function animateArrows(delta) {
                     arrow.position.copy(collisions.pop().point)
                     if (arrow.hitSound) arrow.hitSound.play()
                     stopPlayer1Arrow(arrow)
-                    sendMessage({
-                        player: player1.uuid,
-                        arrow: {
-                            stopped: true,
-                            position: arrow.position,
-                            uuid: arrow.uuid
-                        }
-                    })
                 }
             }
         }
@@ -174,8 +170,23 @@ function animateArrows(delta) {
     })
 }
 
-function stopPlayer1Arrow(arrow) {
+function stopPlayer1Arrow(arrow, targetUuid) {
     arrow.stopped = true
+    sendMessage({
+        player: player1.uuid,
+        arrow: {
+            stopped: true,
+            position: arrow.position,
+            arrowUuid: arrow.uuid,
+            targetUuid: targetUuid
+        }
+    })
+}
+
+function addArrowToTarget(arrow, target) { // arrow and target must be Object3D's
+    scene.remove(arrow)
+    target.worldToLocal(arrow.position)
+    target.add(arrow)
 }
 
 function retractRopeArrow() {
@@ -199,8 +210,17 @@ function getArrowVelocity(type) {
 }
 
 function stopOtherPlayerArrow(stoppedArrow) {
-    let arrow = otherPlayerArrows[stoppedArrow.uuid]
+    let arrow = otherPlayerArrows[stoppedArrow.arrowUuid]
     arrow.position.copy(stoppedArrow.position)
+    if (stoppedArrow.targetUuid) {
+        if (players.get(stoppedArrow.targetUuid)) {
+            addArrowToTarget(arrow, players.get(stoppedArrow.targetUuid).gltf.scene)
+        } else if (player1.uuid == stoppedArrow.targetUuid) {
+            addArrowToTarget(arrow, player1.gltf.scene)
+        } else if (birds.get(stoppedArrow.targetUuid)) {
+            addArrowToTarget(arrow, birds.get(stoppedArrow.targetUuid).gltf.scene)
+        }
+    }
     arrow.stopped = true
     if (arrow.hitSound) arrow.hitSound.play()
 }
