@@ -28,4 +28,6 @@ const mouseKeyboardControlsText = [
   "  Shift"
 ]
 
-export {touchControlsText, mouseKeyboardControlsText}
+const cyan = 0x0974A5
+
+export {touchControlsText, mouseKeyboardControlsText, cyan}
