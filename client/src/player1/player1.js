@@ -235,6 +235,7 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
 
     player1.takeDamage = function(damage) {
       this.hp -= damage;
+      document.getElementById("hp").setAttribute("style", "width: " + this.hp + "%")
       if (this.hp <= 0) {
         this.playAction("death");
         gameOver();

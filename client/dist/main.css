@@ -228,6 +228,28 @@ div#jump-button {}
     width: 100px;
 }
 
+#health-bar {
+    display: none;
+    width: 40%;
+    height: 3%;
+    background-color: white;
+    position: fixed;
+    bottom: 1%;
+    left: 30%;
+    border-radius: 8px;
+    border: 2px solid #ffdba5;
+}
+
+#health-bar #hp {
+    background-color: #138E55;
+    height: 100%;
+    border-radius: 5px;
+}
+
+.playing #health-bar {
+    display: block;
+}
+
 #game-info {
     right: 0;
     position: absolute;
