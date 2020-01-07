@@ -265,6 +265,12 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
         status: "respawn"
       });
       this.idle();
+      
+      // the hunger begins
+      let hunger = setInterval(() => {
+        if (player1.hp <= 0) clearInterval(hunger)
+        player1.takeDamage(1)
+      }, 5000)
     };
 
     player1.sendChat = function(message) {
