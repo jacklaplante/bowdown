@@ -11,6 +11,8 @@ const birds = {
   hitBoxes: []
 }
 
+const flamingoScale = 0.02
+
 let flamingoGltf
 import(/* webpackMode: "lazy" */ '../../models/flamingo.gltf').then(file => {
   flamingoGltf = file.default
@@ -25,7 +27,7 @@ birds.add = function(uuid, state) {
     let bird = this.roster[uuid]
     bird.uuid = uuid
     bird.gltf = gltf
-    gltf.scene.scale.multiplyScalar(0.02)
+    gltf.scene.scale.multiplyScalar(flamingoScale)
     bird.mixer = new AnimationMixer(gltf.scene)
     initBird(bird) // this just sets up the bird functions
     bird.update(state)
@@ -58,7 +60,7 @@ birds.animate = function(delta) {
           if (collisions.length > 0) {
             bird.gltf.scene.remove(bird.hitBox)
             bird.hitBox.position.copy(collisions[0].point.add(pos.clone().normalize()))
-            bird.hitBox.scale.multiplyScalar(0.02)
+            bird.hitBox.scale.multiplyScalar(flamingoScale)
             scene.add(bird.hitBox)
             bird.remove()
             console.log("collision detected")
