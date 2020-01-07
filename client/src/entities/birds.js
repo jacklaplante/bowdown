@@ -1,4 +1,4 @@
-import {AnimationMixer, Vector3, Mesh, BoxGeometry, Raycaster} from 'three'
+import {AnimationMixer, Vector3, Mesh, BoxGeometry, Raycaster, CylinderBufferGeometry, Quaternion} from 'three'
 
 import {getAnimation, eachDo} from '../utils'
 import scene from '../scene/scene';
@@ -19,6 +19,7 @@ import(/* webpackMode: "lazy" */ '../../models/flamingo.gltf').then(file => {
 })
 
 import {loader} from '../loader'
+import player1 from '../player1/player1';
 
 birds.add = function(uuid, state) {
   if (flamingoGltf == null) return
@@ -48,25 +49,11 @@ birds.animate = function(delta) {
     let bird = birds.get(birdUuid)
     if (bird.mixer) {
       if (bird.getVelocity().length() > 0) {
-        let pos = bird.getPosition()
-        let nextPos = pos.clone().add(bird.getVelocity().multiplyScalar(delta))
         if (bird.dead) {
-          if (pos.length() < 100) {
-            bird.remove()
-          }
-          let direction = nextPos.clone().sub(pos)
-          let ray = new Raycaster(pos, direction, 0, direction.length())
-          let collisions = ray.intersectObjects(scene.getCollidableEnvironment([pos]), true);
-          if (collisions.length > 0) {
-            bird.gltf.scene.remove(bird.hitBox)
-            bird.hitBox.position.copy(collisions[0].point.add(pos.clone().normalize()))
-            bird.hitBox.scale.multiplyScalar(flamingoScale)
-            scene.add(bird.hitBox)
-            bird.remove()
-            console.log("collision detected")
-          }
+          bird.drop(delta)
+        } else {
+          bird.setPosition(bird.getPosition().add(bird.getVelocity().multiplyScalar(delta)))
         }
-        bird.setPosition(nextPos)
       }
       bird.mixer.update(delta);
     }
@@ -118,6 +105,37 @@ function initBird(bird) {
   bird.remove = function() {
     scene.remove(bird.gltf.scene)
     delete birds.roster[bird.uuid]
+  }
+  bird.drop = function(delta) {
+    let pos = bird.getPosition()
+    let nextPos = pos.clone().add(bird.getVelocity().multiplyScalar(delta))
+    if (pos.length() < 100) {
+      bird.remove()
+    }
+    let direction = nextPos.clone().sub(pos)
+    let ray = new Raycaster(pos, direction, 0, direction.length())
+    let collisions = ray.intersectObjects(scene.getCollidableEnvironment([pos]), true);
+    if (collisions.length > 0) {
+      bird.gltf.scene.remove(bird.hitBox)
+      bird.hitBox.position.copy(collisions[0].point.add(pos.clone().normalize()))
+      bird.hitBox.scale.multiplyScalar(flamingoScale)
+      scene.add(bird.hitBox)
+      let healthHitBox = new Mesh(new CylinderBufferGeometry( 0.8, 0.8, 2, 8 ));
+      healthHitBox.material.visible = false
+      healthHitBox.applyQuaternion(new Quaternion().setFromUnitVectors(new Vector3(0,1,0), bird.hitBox.position.clone().normalize()))
+      healthHitBox.position.copy(bird.hitBox.position)
+      scene.add(healthHitBox)
+      healthHitBox.trigger = function() {
+        player1.setHp(player1.hp+30)
+        scene.removeTrigger(healthHitBox)
+        scene.remove(bird.hitBox)
+      }
+      scene.triggers.push(healthHitBox)
+      bird.remove()
+      console.log("collision detected")
+    } else {
+      bird.setPosition(nextPos)
+    }
   }
 }
 

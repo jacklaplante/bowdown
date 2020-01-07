@@ -234,13 +234,19 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
     };
 
     player1.takeDamage = function(damage) {
-      this.hp -= damage;
-      document.getElementById("hp").setAttribute("style", "width: " + this.hp + "%")
+      let hp = this.hp - damage
+      this.setHp(hp)
       if (this.hp <= 0) {
         this.playAction("death");
         gameOver();
       }
     };
+
+    player1.setHp = function(hp) {
+      if (hp > 100) hp = 100
+      this.hp = hp
+      document.getElementById("hp").setAttribute("style", "width: " + this.hp + "%")
+    }
 
     player1.respawn = function() {
       if (this.activeActions && this.activeActions.includes("death")) {

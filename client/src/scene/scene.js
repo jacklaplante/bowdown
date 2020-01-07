@@ -42,6 +42,7 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
             scene.gravityDirection = "center"
             collidableEnvironment = [lowild]
             scene.loadSkyBox()
+            scene.removeTrigger(this)
             if (process.env.NODE_ENV == 'development') {
                 connectToServer("ws://localhost:18181")
             } else {
@@ -50,6 +51,11 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
         }
     })
 })
+
+scene.removeTrigger = function(trigger) { // trigger is an Object3D
+    scene.remove(trigger)
+    scene.triggers.splice(scene.triggers.indexOf(trigger), 1)
+}
 
 scene.loadMap = function(map, gravityDirection) {
     scene.gravityDirection = gravityDirection
