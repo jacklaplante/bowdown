@@ -1,4 +1,4 @@
-import {AnimationMixer, Vector3, Mesh, BoxGeometry} from 'three'
+import {AnimationMixer, Vector3, Mesh, BoxGeometry, Raycaster} from 'three'
 
 import {getAnimation, eachDo} from '../utils'
 import scene from '../scene/scene';
@@ -23,6 +23,7 @@ birds.add = function(uuid, state) {
   this.roster[uuid] = {}
   loader.load(flamingo, (gltf) => {
     let bird = this.roster[uuid]
+    bird.uuid = uuid
     bird.gltf = gltf
     gltf.scene.scale.multiplyScalar(0.02)
     bird.mixer = new AnimationMixer(gltf.scene)
@@ -34,6 +35,7 @@ birds.add = function(uuid, state) {
     let hitBox = new Mesh(new BoxGeometry(50, 20, 50)); // this is effected by the scale of the flamingo
     // hitBox.material.visible = false
     gltf.scene.add(hitBox)
+    bird.hitBox = hitBox
     hitBox.hitBoxFor = uuid
     birds.hitBoxes.push(hitBox)
   }) 
@@ -44,7 +46,25 @@ birds.animate = function(delta) {
     let bird = birds.get(birdUuid)
     if (bird.mixer) {
       if (bird.getVelocity().length() > 0) {
-        bird.setPosition(bird.getPosition().add(bird.getVelocity().multiplyScalar(delta)))
+        let pos = bird.getPosition()
+        let nextPos = pos.clone().add(bird.getVelocity().multiplyScalar(delta))
+        if (bird.dead) {
+          if (pos.length() < 100) {
+            bird.remove()
+          }
+          let direction = nextPos.clone().sub(pos)
+          let ray = new Raycaster(pos, direction, 0, direction.length())
+          let collisions = ray.intersectObjects(scene.getCollidableEnvironment([pos]), true);
+          if (collisions.length > 0) {
+            bird.gltf.scene.remove(bird.hitBox)
+            bird.hitBox.position.copy(collisions[0].point.add(pos.clone().normalize()))
+            bird.hitBox.scale.multiplyScalar(0.02)
+            scene.add(bird.hitBox)
+            bird.remove()
+            console.log("collision detected")
+          }
+        }
+        bird.setPosition(nextPos)
       }
       bird.mixer.update(delta);
     }
@@ -62,7 +82,8 @@ birds.kill = function(birdUuid, playerUuid) {
 birds.die = function(uuid) {
   let bird = birds.get(uuid)
   bird.fly.reset().stop()
-  bird.setVelocity(bird.getPosition().normalize().negate().multiplyScalar(20))
+  bird.dead = true
+  bird.setVelocity(bird.getPosition().normalize().negate().multiplyScalar(20)) // hack (this sort of thing should be done on server side)
 }
 
 birds.get = function(uuid) {
@@ -87,9 +108,14 @@ function initBird(bird) {
     this.velocity = new Vector3(vect.x, vect.y, vect.z)
   }
   bird.update = function(state) {
+    if (bird.dead) return
     bird.setPosition(state.position)
     bird.setRotation(state.rotation)
     bird.setVelocity(state.velocity)
+  }
+  bird.remove = function() {
+    scene.remove(bird.gltf.scene)
+    delete birds.roster[bird.uuid]
   }
 }
 
