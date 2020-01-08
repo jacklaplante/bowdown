@@ -245,9 +245,19 @@ function heartbeat() {
 }
     
 
-const options = {
+const serverListOptions = {
     hostname: "rvcv9mh5l1.execute-api.us-east-1.amazonaws.com",
     path: "/test/pets",
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey
+    }
+}
+
+const metricsOptions = {
+    hostname: "rvcv9mh5l1.execute-api.us-east-1.amazonaws.com",
+    path: "/test/metrics",
     method: "POST",
     headers: {
         "Content-Type": "application/json",
@@ -258,17 +268,27 @@ const options = {
 function updatePlayerCount(count) {
     if (prod) {
         console.log("updating player count to " + count)
-        var request = https.request(options)
-        request.on('error', (error) => {
-            console.error(error)
-        })
-        request.write(JSON.stringify({
+        sendApiRequest(serverListOptions, {
             serverId: serverId,
             serverIp: serverIp,
             activePlayers: count
-        }))
-        request.end();
+        })
+        sendApiRequest(metricsOptions, {
+            serverId: serverId,
+            timestamp: Date.now(),
+            serverIp: serverIp,
+            activePlayers: count
+        })
     }
+}
+
+function sendApiRequest(options, message) {
+    var request = https.request(options)
+    request.on('error', (error) => {
+        console.error(error)
+    })
+    request.write(JSON.stringify(message))
+    request.end();
 }
 
 function alphaOnly(a) {
