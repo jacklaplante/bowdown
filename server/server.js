@@ -117,7 +117,7 @@ wss.on('connection', function connection(ws, req) {
                 }
                 console.log("player "+playerUuid+" initialized");
                 connections[playerUuid] = {ws: ws}
-                updatePlayerCount(Object.keys(players).length)
+                updatePlayerCount(Object.keys(players).length, req.connection.remoteAddress, true)
             }
             if (!ws.player) {
                 ws.player = playerUuid
@@ -265,7 +265,7 @@ const metricsOptions = {
     }
 }
 
-function updatePlayerCount(count) {
+function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT BE PRESENT
     if (prod) {
         console.log("updating player count to " + count)
         sendApiRequest(serverListOptions, {
@@ -273,11 +273,14 @@ function updatePlayerCount(count) {
             serverIp: serverIp,
             activePlayers: count
         })
+        let status = connection ? 'connected' : 'disconnected'
         sendApiRequest(metricsOptions, {
             serverId: serverId,
             timestamp: Date.now(),
             serverIp: serverIp,
-            activePlayers: count
+            activePlayers: count,
+            ip: ip,
+            status: status
         })
     }
 }
