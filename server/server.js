@@ -194,7 +194,7 @@ function updatePlayer(gameName, playerUuid, key, value) {
 function removePlayer(game, playerUuid) {
     console.log("player "+playerUuid+" disconnected");
     delete game.players[playerUuid];
-    updatePlayerCount(Object.keys(game.players).length)
+    updatePlayerCount(Object.keys(game.players).length, "", false) // eventually you might want to put the ip address in here
 }
 
 function dumpPayload(gameName) {
@@ -300,4 +300,4 @@ function alphaOnly(a) {
     }
 }
 
-updatePlayerCount(0);
+updatePlayerCount(0, "", true);
