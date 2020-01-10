@@ -18,6 +18,17 @@ import(/* webpackMode: "lazy" */ '../../models/flamingo.gltf').then(file => {
   flamingoGltf = file.default
 })
 
+var initAudio
+import(/* webpackMode: "lazy" */ './audio').then((audio) => {
+    initAudio = audio.default
+    eachDo(birds.roster, (birdUuid) => {
+      let bird = birds.get(birdUuid)
+      if (!bird.sounds) {
+        initAudio(bird)
+      }
+    })
+})
+
 import {loader} from '../loader'
 import player1 from '../player1/player1';
 
@@ -71,6 +82,7 @@ birds.kill = function(birdUuid, playerUuid) {
 birds.die = function(uuid) {
   let bird = birds.get(uuid)
   bird.fly.reset().stop()
+  if (bird.sounds && bird.sounds.squawk) bird.sounds.squawk.play()
   bird.dead = true
   bird.setVelocity(bird.getPosition().normalize().negate().multiplyScalar(20)) // hack (this sort of thing should be done on server side)
 }
@@ -81,6 +93,7 @@ birds.get = function(uuid) {
 
 function initBird(bird) {
   bird.fly = bird.mixer.clipAction(getAnimation(bird.gltf, "flamingo_flyA_"))
+  if (initAudio) initAudio(bird)
   bird.setRotation = function(euler) {
     this.gltf.scene.rotation.copy(euler)
   }
