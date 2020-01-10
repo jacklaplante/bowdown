@@ -28,7 +28,7 @@ function initAudio(archer) {
     }
   }
 
-  archer.stopSoundIfPlaying = function(sound) {
+  archer.stopSound = function(sound) {
     if (this.sounds[sound].isPlaying) {
       this.sounds[sound].stop()
     }
@@ -42,7 +42,7 @@ function initAudio(archer) {
 
   archer.playFootstepSound = function() {
     setTimeout(() => {
-      if (this.isRunning()) {
+      if (this.isRunning() && !this.falling) {
         let sound = getRandom(this.sounds.footsteps);
         sound.play();
         this.playFootstepSound();
