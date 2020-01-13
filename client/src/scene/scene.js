@@ -18,9 +18,8 @@ var objects = {}
 scene.triggers = []
 scene.gravityDirection = "down"
 
-let defaultLight = new Group()
-defaultLight.add(new DirectionalLight(sunLightColor, 2))
-defaultLight.add(new AmbientLight(sunLightColor, 3))
+let defaultLight = new DirectionalLight(sunLightColor, 3)
+scene.add(new AmbientLight(sunLightColor, 1.5))
 scene.add(defaultLight) 
 
 scene.add(lobby)
@@ -122,21 +121,21 @@ scene.loadSkyBox = function() {
 
 scene.loadSkyLight = function() {
     scene.remove(defaultLight)
-    var dirLight = new DirectionalLight(sunLightColor)
+    var dirLight = new DirectionalLight(sunLightColor, 0.5)
     skyLight.add(dirLight)
-    dirLight = new DirectionalLight(sunLightColor)
+    dirLight = new DirectionalLight(sunLightColor, 0.5)
     dirLight.position.set(0, -1, 0)
     skyLight.add(dirLight)
-    dirLight = new DirectionalLight(sunLightColor)
+    dirLight = new DirectionalLight(sunLightColor, 0.5)
     dirLight.position.set(1, 0, 0)
     skyLight.add(dirLight)
-    dirLight = new DirectionalLight(sunLightColor)
+    dirLight = new DirectionalLight(sunLightColor, 0.5)
     dirLight.position.set(-1, 0, 0)
     skyLight.add(dirLight)
-    dirLight = new DirectionalLight(sunLightColor)
+    dirLight = new DirectionalLight(sunLightColor, 0.5)
     dirLight.position.set(0, 0, 1)
     skyLight.add(dirLight)
-    dirLight = new DirectionalLight(sunLightColor)
+    dirLight = new DirectionalLight(sunLightColor, 0.5)
     dirLight.position.set(0, 0, -1)
     skyLight.add(dirLight)
     scene.add(skyLight)
