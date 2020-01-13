@@ -1,10 +1,10 @@
-import { Scene, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Quaternion, Vector3} from 'three'
+import { Scene, TextureLoader, MeshBasicMaterial, BoxGeometry, Mesh, BackSide, Group, Vector3, DirectionalLight, AmbientLight} from 'three'
 
 import { loader } from '../loader'
 import {connectToServer} from '../websocket'
 import {createTextMesh} from '../utils'
 import lobby from './lobby'
-import letThereBeLight from './lights'
+import sunLightColor from '../constants'
 
 import spatialIndex from '../../spatialIndex.json'
 
@@ -17,6 +17,11 @@ const indexMod = 5 // if you change this you need to change it on the indexer to
 var objects = {}
 scene.triggers = []
 scene.gravityDirection = "down"
+
+let defaultLight = new Group()
+defaultLight.add(new DirectionalLight(sunLightColor, 2))
+defaultLight.add(new AmbientLight(sunLightColor, 3))
+scene.add(defaultLight) 
 
 scene.add(lobby)
 scene.triggers.push(lobby.faceWorldBox)
@@ -42,6 +47,7 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
             scene.gravityDirection = "center"
             collidableEnvironment = [lowild]
             scene.loadSkyBox()
+            scene.loadSkyLight()
             scene.removeTrigger(this)
             if (process.env.NODE_ENV == 'development') {
                 connectToServer("ws://localhost:18181")
@@ -114,12 +120,36 @@ scene.loadSkyBox = function() {
     })
 }
 
-letThereBeLight(scene)
+scene.loadSkyLight = function() {
+    scene.remove(defaultLight)
+    var dirLight = new DirectionalLight(sunLightColor)
+    skyLight.add(dirLight)
+    dirLight = new DirectionalLight(sunLightColor)
+    dirLight.position.set(0, -1, 0)
+    skyLight.add(dirLight)
+    dirLight = new DirectionalLight(sunLightColor)
+    dirLight.position.set(1, 0, 0)
+    skyLight.add(dirLight)
+    dirLight = new DirectionalLight(sunLightColor)
+    dirLight.position.set(-1, 0, 0)
+    skyLight.add(dirLight)
+    dirLight = new DirectionalLight(sunLightColor)
+    dirLight.position.set(0, 0, 1)
+    skyLight.add(dirLight)
+    dirLight = new DirectionalLight(sunLightColor)
+    dirLight.position.set(0, 0, -1)
+    skyLight.add(dirLight)
+    scene.add(skyLight)
+}
 
 var skybox
+let skyLight = new Group()
 scene.animate = function(delta) {
     if (skybox) {
-        skybox.applyQuaternion(new Quaternion().setFromAxisAngle(new Vector3(0,1,0), delta/20))
+        skybox.rotateOnAxis(new Vector3(0,1,0), delta/20)
+    }
+    if (skyLight) {
+        skyLight.rotateOnAxis(new Vector3(0,1,0), delta/20)
     }
 }
 

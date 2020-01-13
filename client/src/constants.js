@@ -30,4 +30,6 @@ const mouseKeyboardControlsText = [
 
 const cyan = 0x0974A5
 
-export {touchControlsText, mouseKeyboardControlsText, cyan}
+const sunLightColor = 0xfff6e0
+
+export {touchControlsText, mouseKeyboardControlsText, cyan, sunLightColor}
