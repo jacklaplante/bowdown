@@ -7,9 +7,9 @@ const touchControlsText = [
   "shoot Arrow",
   "  Target button (hold -> release)",
   "shoot Grapple",
-  "  Grapple button (hold -> release)",
+  "  rope button (hold -> release)",
   "Jump",
-  "  Green bar on bottom-right of screen"
+  "  up arrow on bottom-right of screen"
 ]
 
 const mouseKeyboardControlsText = [
