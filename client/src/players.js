@@ -44,10 +44,17 @@ players.add = function(uuid, playerState) {
     // this is a hacky way to make sure the player model isn't loaded multiple times
     roster[uuid] = {hp: 100}
     let player = roster[uuid]
+    player.setPosition = function (coords) { // this takes an {x, y, z} coord Object as it's input NOT a Vector3
+        player.position = new Vector3(coords.x, coords.y, coords.z)
+    }
+    player.getPosition = function() {
+        return player.position.clone()
+    }
     if (playerState.race==null) {
         console.error("race is undefined")
         playerState.race = 'brown'
     }
+    if (playerState.position) player.setPosition(playerState.position)
     loader.load(benji("./benji_" + playerState.race + ".gltf"), function(gltf) {
         player.gltf = gltf;
         init(player);
@@ -83,6 +90,7 @@ players.update = function(playerState) {
 
 players.move = function(playerUuid, playerState) {
     let player = roster[playerUuid]
+    player.setPosition(playerState.position)
     if (player.gltf) {
         player.gltf.scene.position.copy(playerState.position)
         player.gltf.scene.rotation.copy(playerState.rotation)
@@ -121,6 +129,10 @@ players.playSound = function(playerUuid, sound) {
 players.takeDamage = function(playerUuid, damage) {
     var player = roster[playerUuid]
     player.hp -= damage
+}
+
+players.count = function() {
+    return Object.keys(roster).length
 }
 
 function animatePlayers(delta) {

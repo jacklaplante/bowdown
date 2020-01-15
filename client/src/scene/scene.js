@@ -4,7 +4,7 @@ import { loader } from '../loader'
 import {connectToServer} from '../websocket'
 import {createTextMesh} from '../utils'
 import lobby from './lobby'
-import sunLightColor from '../constants'
+import {sunLightColor} from '../constants'
 
 import spatialIndex from '../../spatialIndex.json'
 

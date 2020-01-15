@@ -14,6 +14,7 @@ var log
 
 var clock = new Clock()
 var ws;
+var status;
 function connectToServer(serverAddress) {
     if (ws && ws.readyState == 1) {
         ws.close();
@@ -21,7 +22,7 @@ function connectToServer(serverAddress) {
     ws = new WebSocket(serverAddress);
     ws.onmessage = onMessage;
     ws.onopen = function() {
-        player1.respawn()
+        status = "joining"
     };
 }
 
@@ -32,6 +33,10 @@ function onMessage(message) {
     }
     if (message.players) {
         players.update(message.players);
+    }
+    if (status == "joining") {
+        player1.respawn();
+        status = "joined"
     }
     if (message.player) {
         var playerUuid = message.player;

@@ -10,6 +10,7 @@ import { updateCrown } from "../kingOfCrown";
 import initControls from "./controls";
 import initActions from "./actions";
 import camera from "../camera"
+import {players} from "../players"
 
 const benji = require.context("../../models/benji");
 
@@ -320,13 +321,19 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
 )
 
 function randomSpawn() {
+  let c = players.count()
   // this should be moved to the server
   if (scene.gravityDirection == "down") {
     return new Vector3(-13, 10, -9);
   }
-  if (process.env.NODE_ENV == "development") {
-    return new Vector3(-70, -70, -70);
-    // return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
+  // if (process.env.NODE_ENV == "development") {
+  //   return new Vector3(-70, -70, -70);
+  //   // return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
+  // }
+  if (c > 0) {
+    let p = players.all()
+    let pos = p[Object.keys(p)[0]].getPosition()
+    return pos
   }
   return new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(150);
 }
