@@ -328,11 +328,10 @@ function randomSpawn() {
   }
   // if (process.env.NODE_ENV == "development") {
   //   return new Vector3(-70, -70, -70);
-  //   // return new Vector3(22.96985387802124, -13.388231039047241, 17.285733222961426)
   // }
   if (c > 0) {
     let p = players.all()
-    let pos = p[Object.keys(p)[0]].getPosition()
+    let pos = p[getRandom(Object.keys(p))].getPosition().multiplyScalar(1.1)
     return pos
   }
   return new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(150);
