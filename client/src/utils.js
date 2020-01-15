@@ -99,6 +99,12 @@ function getRandom(arr) {
     return arr[Math.floor(Math.random()*arr.length)];
 }
 
+function randomVector() {
+    let v = new Vector3(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5)
+    v.normalize()
+    return v
+}
+
 function initTouchElements(elements) {
     elements.forEach((element) => {
         var mc = new Hammer.Manager(element, {recognizers:[[Hammer.Pinch, { enable: true }]]})
@@ -111,4 +117,4 @@ function initTouchElements(elements) {
     })
 }
 
-export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo, getRandom, initTouchElements, createTextMesh}
+export {uuid, addCollisionLine, removeCollisionLines, showSpatialIndexLines, localVector, getAnimation, eachDo, getRandom, initTouchElements, createTextMesh, randomVector}

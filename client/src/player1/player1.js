@@ -1,7 +1,7 @@
 import { Vector3, Raycaster, Quaternion, Euler } from "three";
 
 import { loader } from "../loader";
-import { uuid, removeCollisionLines, localVector, getRandom } from "../utils";
+import { uuid, removeCollisionLines, localVector, getRandom, randomVector } from "../utils";
 import scene from "../scene/scene";
 import { sendMessage } from "../websocket";
 import { init } from "../archer/archer";
@@ -331,8 +331,8 @@ function randomSpawn() {
   // }
   if (c > 0) {
     let p = players.all()
-    let pos = p[getRandom(Object.keys(p))].getPosition().multiplyScalar(1.1)
-    return pos
+    let pos = p[getRandom(Object.keys(p))].getPosition() // get a random player's position
+    return pos.add(randomVector().projectOnPlane(pos).normalize().multiplyScalar(25)).multiplyScalar(1.4) // spawn near that player, but not too close
   }
   return new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(150);
 }
