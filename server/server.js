@@ -281,9 +281,9 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                 body+=d
             });
             res.on('end', () => {
-                var country = ""
-                var lat = ""
-                var lon = ""
+                var country = " "
+                var lat = " "
+                var lon = " "
                 try {
                     let response = JSON.parse(body)
                     if (response.name) country = response.name
@@ -327,4 +327,4 @@ function alphaOnly(a) {
     }
 }
 
-updatePlayerCount(0, "", true);
+updatePlayerCount(0, " ", true);
