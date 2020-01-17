@@ -286,8 +286,8 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                     let response = JSON.parse(body)
                     if (response.name) country = response.name
                     if (response.geo) {
-                        if (response.geo.latitude) lat = response.geo.latitude
-                        if (response.geo.latitude) lon = response.geo.longitude
+                        if (response.geo.latitude) lat = response.geo.latitude.toString()
+                        if (response.geo.latitude) lon = response.geo.longitude.toString()
                     }
                 } catch (e) {
 
@@ -300,8 +300,8 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                     ip: ip,
                     status: status,
                     country: country,
-                    latitude: lat.toString(),
-                    longitude: lon.toString()
+                    latitude: lat,
+                    longitude: lon
                 }
                 console.log("metrics: " + message)
                 sendApiRequest(metricsOptions, message)
