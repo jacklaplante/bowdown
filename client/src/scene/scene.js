@@ -36,8 +36,8 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
         })
         lobby.faceWorldBox.material.color.set(0x138E55)
         lobby.remove(lobby.loadingText)
-        let readyText = createTextMesh(['ready'], 0x138E55, 1, new Vector3(-3, 1, -3))
-        let readyHelpText = createTextMesh(['go into the cube'], 0x138E55, 0.5, new Vector3(-4.5, 0.3, -3))
+        let readyText = createTextMesh(['ready'], 0x138E55, 1, new Vector3(-3, 1, -8))
+        let readyHelpText = createTextMesh(['go into the cube'], 0x138E55, 0.5, new Vector3(-4.5, 0.3, -8))
         scene.add(readyText)
         scene.add(readyHelpText)
         lobby.faceWorldBox.trigger = function() {

@@ -1,5 +1,4 @@
 const touchControlsText = [
-  "mobile controls",
   "Move",
   "  Touch movement on left side of screen",
   "Move Camera",
@@ -13,15 +12,14 @@ const touchControlsText = [
 ]
 
 const mouseKeyboardControlsText = [
-  "mouse + keyboard controls",
+  "move",
+  "  WASD keys",
   "move camera",
   "  mouse",
   "shoot arrow",
   "  Left click (hold -> release)",
   "shoot grapple",
   "  Right click (hold -> release)",
-  "move",
-  "  WASD",
   "jump",
   "  space",
   "sprint",
