@@ -281,11 +281,16 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                 body+=d
             });
             res.on('end', () => {
-                let response = JSON.parse(body)
-                if (response.name) country = response.name
-                if (response.geo) {
-                    if (response.geo.latitude) lat = response.geo.latitude
-                    if (response.geo.latitude) lon = response.geo.longitude
+                var country, lat, lon
+                try {
+                    let response = JSON.parse(body)
+                    if (response.name) country = response.name
+                    if (response.geo) {
+                        if (response.geo.latitude) lat = response.geo.latitude
+                        if (response.geo.latitude) lon = response.geo.longitude
+                    }
+                } catch (e) {
+
                 }
                 sendApiRequest(metricsOptions, {
                     serverId: serverId,
