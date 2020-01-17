@@ -274,13 +274,31 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
             activePlayers: count
         })
         let status = connection ? 'connected' : 'disconnected'
-        sendApiRequest(metricsOptions, {
-            serverId: serverId,
-            timestamp: Date.now(),
-            serverIp: serverIp,
-            activePlayers: count,
-            ip: ip,
-            status: status
+        ip = ip.replace("::ffff:", "")
+        https.get('https://api.ipgeolocationapi.com/geolocate/' + ip, (res) => {
+            var body = '';
+            res.on('data', (d) => {
+                body+=d
+            });
+            res.on('end', () => {
+                let response = JSON.parse(body)
+                if (response.name) country = response.name
+                if (response.geo) {
+                    if (response.geo.latitude) lat = response.geo.latitude
+                    if (response.geo.latitude) lon = response.geo.longitude
+                }
+                sendApiRequest(metricsOptions, {
+                    serverId: serverId,
+                    timestamp: Date.now(),
+                    serverIp: serverIp,
+                    activePlayers: count,
+                    ip: ip,
+                    status: status,
+                    country: country,
+                    latitude: lat,
+                    longitude: lon
+                })
+            })
         })
     }
 }
