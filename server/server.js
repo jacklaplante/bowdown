@@ -292,7 +292,7 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                 } catch (e) {
 
                 }
-                sendApiRequest(metricsOptions, {
+                let message = {
                     serverId: serverId,
                     timestamp: Date.now(),
                     serverIp: serverIp,
@@ -300,9 +300,11 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                     ip: ip,
                     status: status,
                     country: country,
-                    latitude: lat,
-                    longitude: lon
-                })
+                    latitude: lat.toString(),
+                    longitude: lon.toString()
+                }
+                console.log("metrics: " + message)
+                sendApiRequest(metricsOptions, message)
             })
         })
     }
