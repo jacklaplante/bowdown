@@ -303,7 +303,7 @@ function updatePlayerCount(count, ip, connection) { // ip and connection MAY NOT
                     latitude: lat,
                     longitude: lon
                 }
-                console.log("metrics: " + message = JSON.stringify(message))
+                console.log("metrics: " + JSON.stringify(message))
                 sendApiRequest(metricsOptions, message)
             })
         })
