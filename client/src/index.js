@@ -27,7 +27,8 @@ import(
     /* webpackChunkName: "game" */ './game').then((game) => {
         startGameButton.innerText = "Start"
         startGameButton.onclick = function() {
-            game.start()
+            let playerName = document.getElementById("player-name").value
+            game.start(playerName)
         }
   let root = document.body
   root.classList.remove("loading")

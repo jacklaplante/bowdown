@@ -96,7 +96,7 @@ function onKeyDown(event) {
     if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
         var chatTextBox = document.getElementById("chat-text-box")
         player1.sendChat(chatTextBox.value)
-        newChatMessage(chatTextBox.value)
+        newChatMessage(chatTextBox.value, window.playerName)
         chatTextBox.value = ""
         document.getElementById("chat").classList.remove("chatting")
     }
@@ -367,7 +367,10 @@ function initTouchElements() {
     })
 }
 
-function start() {
+function start(playerNameInput) {
+    if (playerNameInput.length > 0 && playerNameInput.length < 50) {
+        global.playerName = playerNameInput
+    }
     // mouse/keyboard events
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('keydown', onKeyDown);
