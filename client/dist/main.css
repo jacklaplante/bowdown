@@ -280,6 +280,11 @@ ul, #server-list .server, .footer {
     font-size: 1vw;
 }
 
+#splash {
+    top: 20vh;
+    position: relative;
+}
+
 #loading-game {
     font-size: 10vw;
     text-align: center;
@@ -305,6 +310,8 @@ ul, #server-list .server, .footer {
     animation: none;
     color: #134461;
     background-color: #ffdba5;
+    width: fit-content;
+    padding: 1vw 3vw;
 }
 
 .playing #loading-game {
