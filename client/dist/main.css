@@ -14,18 +14,19 @@ canvas {
 }
 
 #menu {
+    display: none;
     font-family: 'Rubik Mono One', sans-serif;
     color: #ffdba5;
-}
-
-#menu.centered {
-    display: inline;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     width: 100%;
     padding: 2%;
+}
+
+.playing #menu {
+    display: inline;
 }
 
 #title svg .cls-1 {
@@ -281,8 +282,26 @@ ul, #server-list .server, .footer {
 }
 
 #splash {
-    top: 20vh;
+    top: 13vh;
     position: relative;
+}
+
+.playing #splash {
+    display: none;
+}
+
+#player-name {
+    border-radius: 13pt;
+    border: 2pt solid #ffdba5;
+    z-index: 100000;
+    margin: 7vh auto;
+    display: block;
+    width: 30vw;
+    font-size: 4vh;
+    padding: 1vh;
+    background-color: #f2e4d0;
+    color: #134461;
+    font-family: monospace;
 }
 
 #loading-game {

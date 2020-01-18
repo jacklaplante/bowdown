@@ -164,7 +164,7 @@ function removeMenuElement() {
 }
 
 function getMenuElement() {
-    return document.querySelector("#menu.centered")
+    return document.querySelector("#menu")
 }
 
 function setKillCount(count) {
