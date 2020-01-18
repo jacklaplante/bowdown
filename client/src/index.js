@@ -20,10 +20,15 @@ if (document.body.requestFullscreen || document.body.mozRequestFullScreen || doc
     }
 }
 
+var startGameButton = document.getElementById("loading-game");
+
 import(
     /* webpackMode: "lazy" */
     /* webpackChunkName: "game" */ './game').then((game) => {
-  game.start()
+        startGameButton.innerText = "Start"
+        startGameButton.onclick = function() {
+            game.start()
+        }
   let root = document.body
   root.classList.remove("loading")
   root.classList.add("ready")

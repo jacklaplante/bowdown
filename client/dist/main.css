@@ -281,10 +281,9 @@ ul, #server-list .server, .footer {
 }
 
 #loading-game {
-    display: none;
     font-size: 10vw;
     text-align: center;
-    color: antiquewhite;
+    color: #ffdba5;
     animation: pulse 2s infinite;
     font-family: monospace;
 }
@@ -300,6 +299,16 @@ ul, #server-list .server, .footer {
 
 .loading #loading-game {
     display: block
+}
+
+.ready #loading-game {
+    animation: none;
+    color: #134461;
+    background-color: #ffdba5;
+}
+
+.playing #loading-game {
+    display: none;
 }
 
 #loading-indicator {
