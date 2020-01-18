@@ -26,8 +26,58 @@ const mouseKeyboardControlsText = [
   "  Shift"
 ]
 
+const adjectives = [
+  "Hairless",
+  "Soggy",
+  "Derpy",
+  "Abnormal",
+  "Slimy",
+  "Naked",
+  "Shakey",
+  "Filthy",
+  "Drunk",
+  "Thicc",
+  "Wet",
+  "Sticky",
+  "Dank",
+  "Slick",
+  "Skippy",
+  "Oily",
+  "Water-logged",
+  "Nakey",
+  "Wooden"
+]
+
+const nouns = [
+  "Slingshot",
+  "Dingaloid",
+  "Moustache",
+  "Hobo",
+  "Scholar",
+  "Meatball",
+  "Stump",
+  "Hairball",
+  "Duster",
+  "Bag",
+  "Bucket",
+  "Trap",
+  "Cowboy",
+  "Bazooka",
+  "Shooter",
+  "Snake",
+  "Goat",
+  "Bunny",
+  "Platypus",
+  "Stank",
+  "Queen",
+  "Bean",
+  "Machine",
+  "Meercat",
+  "Bee"
+]
+
 const cyan = 0x0974A5
 
 const sunLightColor = 0xfff6e0
 
-export {touchControlsText, mouseKeyboardControlsText, cyan, sunLightColor}
+export {touchControlsText, mouseKeyboardControlsText, cyan, sunLightColor, adjectives, nouns}

@@ -11,6 +11,8 @@ import { players, animatePlayers } from './players';
 import { newChatMessage } from './chat'
 import { recordBot } from './websocket'
 import lobby from './scene/lobby'
+import { getRandom } from './utils'
+import { adjectives, nouns } from './constants'
 
 require.context('../images/');
 
@@ -370,6 +372,8 @@ function initTouchElements() {
 function start(playerNameInput) {
     if (playerNameInput.length > 0 && playerNameInput.length < 50) {
         global.playerName = playerNameInput
+    } else {
+        global.playerName = getRandom(adjectives) + ' ' + getRandom(nouns)
     }
     // mouse/keyboard events
     document.addEventListener('mousemove', onMouseMove);
