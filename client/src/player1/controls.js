@@ -6,6 +6,7 @@ import scene from "../scene/scene";
 
 const movementSpeed = 7;
 const sprintModifier = 1.3;
+const firingModifier = 0.5;
 
 function initControls(p1) {
   p1.onMouseDown = function() {
@@ -109,7 +110,12 @@ function initControls(p1) {
   };
 
   p1.runOrSprint = function(input) {
-    if (input.keyboard.shift) {
+    if (this.isFiring()) {
+      if (this.isRunning()) {
+        this.anim[this.activeMovement].timeScale = firingModifier;
+      }
+      return movementSpeed * firingModifier
+    } else if (input.keyboard.shift) {
       if (this.isRunning()) {
         this.anim[this.activeMovement].timeScale = sprintModifier;
       }
