@@ -105,7 +105,7 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
       var nextPos, rotation;
       this.falling = this.isFalling(delta);
       if (this.godModeOn() || !this.falling) {
-        if (this.getVelocity().length() > 0) {
+        if (this.getVelocity().length() > 0 && !grappling()) {
           this.setVelocity(new Vector3());
           this.broadcast();
         }
