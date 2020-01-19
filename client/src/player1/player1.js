@@ -269,6 +269,7 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
         hp: this.hp,
         position: pos,
         race: this.race,
+        name: window.playerName,
         status: "respawn"
       });
       this.idle();

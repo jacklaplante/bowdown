@@ -25,7 +25,7 @@ canvas {
     padding: 2%;
 }
 
-.playing #menu {
+.playing #menu, .gameOver #menu {
     display: inline;
 }
 
@@ -209,6 +209,10 @@ div#jump-button {}
     display: block;
 }
 
+#kill-feed {
+    text-align: right;
+}
+
 .rotated #shoot-button {
     top: 85%;
     left: 50%;
@@ -286,7 +290,7 @@ ul, #server-list .server, .footer {
     position: relative;
 }
 
-.playing #splash {
+.playing #splash, .gameOver #splash {
     display: none;
 }
 

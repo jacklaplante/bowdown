@@ -8,6 +8,7 @@ import { setKillCount, setKingOfCrownStartTime } from './game'
 import { newKing } from './kingOfCrown'
 import entities from './entities/entities'
 import birds from './entities/birds'
+import killFeed from './killFeed'
 
 var recordingBot = false
 var log
@@ -48,13 +49,38 @@ function onMessage(message) {
         if (message.chatMessage && message.player.uuid != player1.uuid) {
             newChatMessage(message.chatMessage, message.player.name)
         } else {
+            let toPlayer = players.get(message.to)
+            let newKillFeed
             if (message.damage && message.to) {
                 if (message.to == player1.uuid) {
                     player1.takeDamage(message.damage)
-                } else if (players.get(message.to)) {
+                    newKillFeed = {
+                        to: window.playerName,
+                        from: players.get(playerUuid).name,
+                        hp: player1.hp
+                    }
+                } else if (toPlayer) {
                     players.takeDamage(message.to, message.damage)
+                    if (playerUuid == player1.uuid) {
+                        newKillFeed = {
+                            to: toPlayer.name,
+                            from: window.playerName,
+                            hp: toPlayer.hp
+                        }
+                    } else {
+                        newKillFeed = {
+                            to: toPlayer.name,
+                            from: players.get(playerUuid).name,
+                            hp: toPlayer.hp
+                        }
+                    }
                 } else if (birds.get(message.to)) {
                     birds.die(message.to)
+                }
+                if (newKillFeed) {
+                    if (newKillFeed.hp <= 0) {
+                        killFeed(newKillFeed.from, newKillFeed.to)
+                    }
                 }
             } else if (message.status==='disconnected') {
                 // player disconnected, remove
@@ -62,7 +88,7 @@ function onMessage(message) {
             } else if (playerUuid != player1.uuid ) {
                 let player = players.get(playerUuid)
                 if (!player || message.status==='respawn') {
-                    players.respawn(playerUuid, message.position, message.rotation, message.race)
+                    players.respawn(playerUuid, message.position, message.rotation, message.race, message.name)
                 } else {
                     if (player.gltf && message.position && message.rotation!=null) {
                         players.move(playerUuid, message.position, message.rotation, message.kingOfCrown)

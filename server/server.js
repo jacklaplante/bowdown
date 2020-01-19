@@ -134,6 +134,9 @@ wss.on('connection', function connection(ws, req) {
             if (message.race) {
                 updatePlayer(gameName, playerUuid, 'race', message.race)
             }
+            if (message.name) {
+                updatePlayer(gameName, playerUuid, 'name', message.name)
+            }
             if (message.rotation) {
                 updatePlayer(gameName, playerUuid, 'rotation', message.rotation)
             }

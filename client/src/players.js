@@ -21,7 +21,7 @@ players.get = (uuid) => {
     return roster[uuid]
 }
 
-players.respawn = function(uuid, position, rotation, race) {
+players.respawn = function(uuid, position, rotation, race, name) {
     if (roster[uuid]) {
         roster[uuid].hp = 100
         roster[uuid].gltf.scene.visible = true
@@ -35,7 +35,8 @@ players.respawn = function(uuid, position, rotation, race) {
         players.add(uuid, {
             position: position,
             rotation: rotation,
-            race: race
+            race: race,
+            name: name
         })
     }
 }
@@ -54,6 +55,12 @@ players.add = function(uuid, playerState) {
         console.error("race is undefined")
         playerState.race = 'brown'
     }
+    if (playerState.name == null) {
+        console.error("name is undefined")
+        playerState.name = 'undefined'
+    }
+    player.race = playerState.race
+    player.name = playerState.name
     if (playerState.position) player.setPosition(playerState.position)
     loader.load(benji("./benji_" + playerState.race + ".gltf"), function(gltf) {
         player.gltf = gltf;
@@ -152,7 +159,6 @@ function animatePlayers(delta) {
 }
 
 function broadcastDamage(playerUuid, damage) {
-    players.takeDamage(playerUuid, damage)
     sendMessage({
         player: player1.uuid,
         damage: damage,
