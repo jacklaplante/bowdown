@@ -334,7 +334,7 @@ ul, #server-list .server, .footer {
     color: #134461;
     background-color: #ffdba5;
     width: fit-content;
-    padding: 1vw 3vw;
+    padding: 0vw 3vw;
 }
 
 .playing #loading-game {
