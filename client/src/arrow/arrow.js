@@ -33,6 +33,7 @@ function createArrow(origin, rotation, type){
     var material = new MeshBasicMaterial({color: arrowTypes[type].color});
     var arrow = new Mesh( geometry, material );
     
+    arrow.arrow = true
     arrow.origin = origin
     arrow.position.copy(origin)
     arrow.rotation.copy(rotation)
@@ -187,6 +188,11 @@ function addArrowToTarget(arrow, target) { // arrow and target must be Object3D'
     scene.remove(arrow)
     target.worldToLocal(arrow.position)
     target.add(arrow)
+    if (target.arrows) {
+        target.arrows.push(arrow)
+    } else {
+        target.arrows = [arrow]
+    }
 }
 
 function retractRopeArrow() {

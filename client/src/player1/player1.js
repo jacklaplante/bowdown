@@ -254,6 +254,7 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
         this.activeActions = this.activeActions.filter(e => e != "death");
         this.anim["death"].stop();
       }
+      this.removeArrows()
       var pos = randomSpawn();
       this.hp = 100;
       this.gltf.scene.visible = true;

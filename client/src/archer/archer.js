@@ -98,6 +98,14 @@ function init(archer) {
     archer.globalVector = function(localVector) {
         return localVector.clone().applyEuler(this.getRotation());
     }
+
+    archer.removeArrows = function() {
+        if (this.gltf.scene && this.gltf.scene.arrows) {
+            this.gltf.scene.arrows.forEach(arrow => {
+                this.gltf.scene.remove(arrow)
+            })
+        }
+    }
 }
 
 export {init}
