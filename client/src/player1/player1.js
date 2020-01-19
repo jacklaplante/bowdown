@@ -313,6 +313,14 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
         playSound: sound
       })
     }
+    
+    player1.broadcastStopSound = function(sound) {
+      this.stopSound(sound)
+      sendMessage({
+        player: this.uuid,
+        stopSound: sound
+      })
+    }
 
     function grappling() {
       return player1.activeRopeArrow != null && player1.activeRopeArrow.stopped;

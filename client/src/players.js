@@ -137,6 +137,11 @@ players.playSound = function(playerUuid, sound) {
     if (player.sounds) player.playSound(sound)
 }
 
+players.stopSound = function(playerUuid, sound) {
+    let player = roster[playerUuid]
+    if (player.sounds) player.stopSound(sound)
+}
+
 players.takeDamage = function(playerUuid, damage) {
     var player = roster[playerUuid]
     player.hp -= damage

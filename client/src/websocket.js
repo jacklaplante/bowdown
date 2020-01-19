@@ -100,6 +100,8 @@ function onMessage(message) {
                     }
                     if (player.gltf && message.playSound) {
                         players.playSound(playerUuid, message.playSound)
+                    } else if (player.gltf && message.stopSound) {
+                        players.stopSound(playerUuid, message.stopSound)
                     }
                 }
             }

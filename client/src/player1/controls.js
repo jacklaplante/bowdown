@@ -13,7 +13,7 @@ function initControls(p1) {
       this.activeRopeArrow = null;
       retractRopeArrow();
       if (this.sounds) {
-        this.stopSound("grappleReel")
+        this.broadcastStopSound("grappleReel")
       }
     } else if (this.bowState == "unequipped") {
       this.equipBow();
@@ -39,7 +39,7 @@ function initControls(p1) {
   p1.onMouseUp = function(event) {
     document.getElementById("crosshair").classList.remove("aiming");
     if (this.sounds) {
-      this.stopSound("bowDraw")
+      this.broadcastStopSound("bowDraw")
     }
     if (this.bowState == "drawn") {
       this.playBowAction("fireBow");
