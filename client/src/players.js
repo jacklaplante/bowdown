@@ -40,7 +40,9 @@ players.respawn = function(uuid, position, rotation, race, name) {
         })
     }
     let player = players.get(uuid)
-    player.removeArrows()
+    if (player.removeArrows) {
+        player.removeArrows()
+    }
 }
 
 players.add = function(uuid, playerState) {
