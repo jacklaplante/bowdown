@@ -46,8 +46,8 @@ function onMessage(message) {
                 setKillCount(message.kills)
             }
         }
-        if (message.chatMessage && message.player.uuid != player1.uuid) {
-            newChatMessage(message.chatMessage, message.player.name)
+        if (message.chatMessage && playerUuid != player1.uuid) {
+            newChatMessage(message.chatMessage, message.name)
         } else {
             let toPlayer = players.get(message.to)
             let newKillFeed

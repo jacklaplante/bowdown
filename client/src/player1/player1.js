@@ -284,10 +284,8 @@ loader.load(benji("./benji_" + player1.race + ".gltf"), gltf => {
 
     player1.sendChat = function(message) {
       sendMessage({
-        player: {
-          uuid: player1.uuid,
-          name: window.playerName
-        },
+        player: player1.uuid,
+        name: window.playerName,
         chatMessage: message
       });
     };
