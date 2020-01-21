@@ -6,5 +6,9 @@ export function newChatMessage(message, playerName) {
     var messageElement = document.createElement("p")
     messageElement.className = "message"
     messageElement.appendChild(textNode)
-    document.getElementById("chat").appendChild(messageElement)
+    var chat = document.getElementById("chat")
+    chat.appendChild(messageElement)
+    setTimeout(() => {
+        chat.removeChild(messageElement)
+    }, 12000)
 }

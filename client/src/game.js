@@ -94,24 +94,28 @@ function toggleKey(event, toggle) {
         }   
     }
 }
+
+var chatTextBox = document.getElementById("chat-text-box")
 function onKeyDown(event) {
-    if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
-        var chatTextBox = document.getElementById("chat-text-box")
-        player1.sendChat(chatTextBox.value)
-        newChatMessage(chatTextBox.value, window.playerName)
-        chatTextBox.value = ""
-        document.getElementById("chat").classList.remove("chatting")
-    }
-    if (event.key == 'r') {
-        var style = ""
-        if (recordBot()) { // recordBot() starts recording the bot if not in production mode
-            style = "color: red"
+    if (document.activeElement == chatTextBox) {
+        if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
+            player1.sendChat(chatTextBox.value)
+            newChatMessage(chatTextBox.value, window.playerName)
+            chatTextBox.value = ""
+            document.getElementById("chat").classList.remove("chatting")
         }
-        if (process.env.NODE_ENV == 'development') {
-            document.getElementById("fps").setAttribute("style", style)
+    } else {
+        if (event.key == 'r') {
+            var style = ""
+            if (recordBot()) { // recordBot() starts recording the bot if not in production mode
+                style = "color: red"
+            }
+            if (process.env.NODE_ENV == 'development') {
+                document.getElementById("fps").setAttribute("style", style)
+            }
         }
+        toggleKey(event, true);
     }
-    toggleKey(event, true);
 }
 function onKeyUp(event) {
     toggleKey(event, false);
@@ -130,9 +134,9 @@ function unlockPointer() {
 }
 
 function onMouseDown() {
-    if (event.target && (event.target.id == "chat" || (event.target.parentElement && event.target.parentElement.id == "chat"))) {
+    if (event.target && (event.target.id == "chat-button" || event.target.parentElement.id == "chat-button")) {
         document.getElementById("chat").classList.add("chatting")
-    } else if (!event.target.classList.contains("button")) {
+    } else if (!event.target.classList.contains("button") && !event.target.parentElement.classList.contains("chatting") && !event.target.classList.contains("chatting")) {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
             if (state == "paused" && (player1.hp == null || player1.hp > 0)) {

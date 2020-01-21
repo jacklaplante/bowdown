@@ -45,7 +45,16 @@ const adjectives = [
   "Oily",
   "Water-logged",
   "Nakey",
-  "Wooden"
+  "Wooden",
+  "Janky",
+  "Stanky",
+  "Salty",
+  "Sweet",
+  "Sparkly",
+  "Spanky",
+  "Meaty",
+  "Girthy",
+  "Plump"
 ]
 
 const nouns = [
@@ -73,7 +82,9 @@ const nouns = [
   "Bean",
   "Machine",
   "Meercat",
-  "Bee"
+  "Bee",
+  "Samurai",
+  "Believer"
 ]
 
 const cyan = 0x0974A5
