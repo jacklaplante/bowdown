@@ -187,7 +187,7 @@ function updateKingOfCrownTime() {
         var totalSeconds = Math.round((Date.now()-kingOfCrownStartTime)/1000)
         var minutes = Math.floor(totalSeconds/60)
         var seconds = totalSeconds-minutes*60
-        document.getElementById("bow-king").innerHTML = minutes+":"+seconds
+        // document.getElementById("bow-king").innerHTML = minutes+":"+seconds
     }
 }
 

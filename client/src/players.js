@@ -89,7 +89,10 @@ players.remove = function(uuid) {
 players.update = function(playerState) {
     Object.keys(playerState).forEach(
         (playerUuid) => {
-            if (playerUuid == player1.uuid) {return;}
+            if (playerUuid == player1.uuid) {
+                console.error("players.update called on player1")
+                return;
+            }
             if (!players.get(playerUuid)) {
                 players.add(playerUuid, playerState[playerUuid]);
             } else {
