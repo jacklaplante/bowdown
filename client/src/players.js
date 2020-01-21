@@ -90,7 +90,6 @@ players.update = function(playerState) {
     Object.keys(playerState).forEach(
         (playerUuid) => {
             if (playerUuid == player1.uuid) {
-                console.error("players.update called on player1")
                 return;
             }
             if (!players.get(playerUuid)) {

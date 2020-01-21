@@ -25,7 +25,7 @@ canvas {
     padding: 2%;
 }
 
-.playing #menu, .gameOver #menu {
+.paused #menu {
     display: inline;
 }
 
@@ -290,7 +290,7 @@ ul, #server-list .server, .footer {
     position: relative;
 }
 
-.playing #splash, .gameOver #splash {
+.playing #splash, .paused #splash {
     display: none;
 }
 

@@ -34,19 +34,19 @@ var input = {
         y: 0
     }
 }
-var state = "playing"
 window.usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
 var jumpTouch = {id: null}
 const cameraTouchSensitivity = 4
 var rotated
+var state
 
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && player1.mixer) {
-        if (state != "gameOver" && (player1.hp==null || player1.hp > 0)) {
+        if (player1.hp==null || player1.hp > 0) {
             player1.animate(delta, input);
             camera.animate(delta);
         }
@@ -139,7 +139,7 @@ function onMouseDown() {
     } else if (!event.target.classList.contains("button") && !event.target.parentElement.classList.contains("chatting") && !event.target.classList.contains("chatting")) {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
-            if (state == "paused" && (player1.hp == null || player1.hp > 0)) {
+            if (readyToPlay()) {
                 lockPointer()
                 play()
             }
@@ -160,17 +160,13 @@ function onMouseUp(event) {
 
 function play() {
     let body = document.body
-    body.classList.add('playing')
-    removeMenuElement()
+    document.body.classList.add('playing')
+    document.body.classList.remove("paused")
     state = "playing"
 }
 
-function removeMenuElement() {
-    getMenuElement().innerHTML = ""
-}
-
-function getMenuElement() {
-    return document.querySelector("#menu")
+function readyToPlay() {
+    return state == "paused" && (player1.hp == null || player1.hp > 0)
 }
 
 function setKillCount(count) {
@@ -192,29 +188,10 @@ function updateKingOfCrownTime() {
 }
 
 function gameOver() {
-    state = "gameOver"
     document.body.classList.remove("playing")
     document.body.classList.remove("playing")
-    document.body.classList.add("gameOver")
+    pause();
     unlockPointer()
-    addRespawnButton()
-}
-
-function addMenuButton(text) {
-    var button = document.createElement('div');
-    button.classList.add("button")
-    button.innerText = text
-    getMenuElement().append(button)
-    return button
-}
-
-function addRespawnButton() {
-    var respawnButton = addMenuButton("respawn")
-    respawnButton.onclick = function() {
-        player1.respawn()
-        play()
-        respawnButton.remove()
-    }
 }
 
 function onPointerLockChange() {
@@ -227,14 +204,14 @@ function onPointerLockChange() {
 
 function pause() {
     state = "paused"
-    addRespawnButton()
+    document.body.classList.remove("playing")
+    document.body.classList.add("paused")
 }
 
 let touchElements
 function touchControls(bool) {
     if (bool!=window.usingTouchControls) {
         if (bool) {
-            removeMenuElement()
             touchElements.forEach((elem) => elem.setAttribute("style", "display: block;"))
             document.getElementById("fullscreen").setAttribute("style", "top: 8vw")
         } else {
@@ -248,6 +225,7 @@ function touchControls(bool) {
 function handleTouch(event) {
     event.preventDefault();
     touchControls(true)
+    if (readyToPlay()) play()
     var camTouch, moveTouch, newTouch
     for (var i=0; i<event.targetTouches.length; i++) {
         if (event.targetTouches.item(i).identifier == cameraTouch.id) {
@@ -410,7 +388,12 @@ function start(playerNameInput) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    play()
+    play();
+
+    document.getElementById("respawn").onclick = function() {
+        player1.respawn()
+        play()
+    }
 }
 
 export {start, gameOver, setKillCount, setKingOfCrownStartTime}
