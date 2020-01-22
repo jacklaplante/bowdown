@@ -1,4 +1,4 @@
-import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion} from 'three'
+import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion, TextureLoader, SpriteMaterial, Sprite} from 'three'
 
 import scene from '../scene/scene'
 import {playerHitBoxes, broadcastDamage, players} from '../players'
@@ -8,14 +8,18 @@ import {sendMessage} from '../websocket'
 import {uuid} from '../utils'
 import birds from '../entities/birds'
 
+import spriteMap from '../../sprites/circle.png'
+
 var player1Arrows = [] // these are arrows that were shot by player1
 var otherPlayerArrows = [] // these are arrows that were shot by other players
-var arrowWidth = 0.06
+var arrowWidth = 0.03
 var arrowLength = 0.75
+var textureLoader = new TextureLoader();
+var spriteTexture = textureLoader.load(spriteMap);
 const localOffset = new Vector3(0, 1.5, 0)
 const arrowTypes = {
     normal: {
-        color: 0x00ff62
+        color: 0x211b15
     },
     rope: {
         color: 0xff7b00
@@ -42,6 +46,14 @@ function createArrow(origin, rotation, type){
     if (initAudio) initAudio(arrow)
 
     scene.add(arrow);
+
+    var spriteMaterial = new SpriteMaterial({map: spriteTexture, color: 0xffffff});
+    spriteMaterial.sizeAttenuation = false
+    var sprite = new Sprite(spriteMaterial);
+    sprite.name = "sprite"
+    sprite.scale.set(0.03, 0.03, 0.03)
+    arrow.add(sprite);
+
     return arrow
 }
 
@@ -173,6 +185,7 @@ function animateArrows(delta) {
 
 function stopPlayer1Arrow(arrow, targetUuid) {
     arrow.stopped = true
+    arrow.remove(arrow.getObjectByName("sprite"))
     sendMessage({
         player: player1.uuid,
         arrow: {

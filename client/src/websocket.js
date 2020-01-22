@@ -107,10 +107,10 @@ function onMessage(message) {
             }
         }
     }
-    if (message.arrow) {
+    if (message.arrow && message.player != player1.uuid) {
         if (message.arrow.stopped) {
             stopOtherPlayerArrow(message.arrow)
-        } else {
+        } else  {
             addOtherPlayerArrow(message.arrow)   
         }
     } else if (message.newKing) {
