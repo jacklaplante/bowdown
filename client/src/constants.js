@@ -54,7 +54,16 @@ const adjectives = [
   "Spanky",
   "Meaty",
   "Girthy",
-  "Plump"
+  "Plump",
+  "Ouchy",
+  "Screaming",
+  "Flaming",
+  "Grubby",
+  "Juicy",
+  "Stiff",
+  "Erect",
+  "Emotional",
+  "Fancy"
 ]
 
 const nouns = [
@@ -84,7 +93,15 @@ const nouns = [
   "Meercat",
   "Bee",
   "Samurai",
-  "Believer"
+  "Believer",
+  "Gangster",
+  "Slinger",
+  "Shot",
+  "Goon",
+  "Goober",
+  "Gubbler",
+  "Grub",
+  "Bard"
 ]
 
 const cyan = 0x0974A5
