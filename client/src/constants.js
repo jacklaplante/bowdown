@@ -63,7 +63,10 @@ const adjectives = [
   "Stiff",
   "Erect",
   "Emotional",
-  "Fancy"
+  "Fancy",
+  "Pink",
+  "Shaky",
+  "Baby"
 ]
 
 const nouns = [
@@ -101,7 +104,10 @@ const nouns = [
   "Goober",
   "Gubbler",
   "Grub",
-  "Bard"
+  "Bard",
+  "Pistol",
+  "Baby",
+  "Fiasco"
 ]
 
 const cyan = 0x0974A5
