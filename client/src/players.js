@@ -12,6 +12,7 @@ const benji = require.context("../models/benji");
 var players = {};
 var roster = {}
 var playerHitBoxes = []
+var playerAimAreas = [] //this will help the bow aim closer to the player when strafing
 
 players.all = function() {
     return roster;
@@ -192,6 +193,13 @@ function addHitBox(uuid, gltf) {
     headHitBox.hitBoxFor = uuid
     headHitBox.hitBoxType = "head"
     playerHitBoxes.push(headHitBox)
+    
+    let playerAimArea = new Mesh(new BoxGeometry(2, 2, 1));
+    playerAimArea.position.y += 1;
+    playerAimArea.material.visible = false
+    playerAimArea.aimArea = true
+    gltf.scene.add(playerAimArea)
+    playerAimAreas.push(playerAimArea)
 }
 
-export { players, animatePlayers, playerHitBoxes, broadcastDamage }
+export { players, animatePlayers, playerHitBoxes, broadcastDamage, playerAimAreas }

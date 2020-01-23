@@ -1,7 +1,7 @@
 import {BoxGeometry, MeshBasicMaterial, Mesh, Vector3, Raycaster, Geometry, LineBasicMaterial, Line, Quaternion, TextureLoader, SpriteMaterial, Sprite} from 'three'
 
 import scene from '../scene/scene'
-import {playerHitBoxes, broadcastDamage, players} from '../players'
+import {playerHitBoxes, broadcastDamage, players, playerAimAreas} from '../players'
 import player1 from '../player1/player1'
 import camera from '../camera'
 import {sendMessage} from '../websocket'
@@ -67,9 +67,15 @@ function shootArrow(type){
     // if the reticle (center of screen) is pointed at something, aim arrows there! otherwise estimate where the player is aiming 
     var raycaster = new Raycaster()
     raycaster.setFromCamera({x: 0, y: 0}, camera) // the {x: 0, y: 0} means the center of the screen; there may eventually be issues with this not actually lining up with the html reticle
-    var collisions = raycaster.intersectObjects(scene.getCollidableEnvironment().concat(playerHitBoxes), true)
+    var collisions = raycaster.intersectObjects(scene.getCollidableEnvironment().concat(playerAimAreas), true)
     var direction;
     if (collisions.length > 0) {
+        if (collisions[0].object.aimArea) {
+            let hitBoxCollisions = raycaster.intersectObjects(playerHitBoxes, true)
+            if (hitBoxCollisions.length > 0) {
+                collisions = hitBoxCollisions
+            }
+        }
         direction = collisions[0].point.sub(origin)
     } else {
         direction = new Vector3()
