@@ -344,6 +344,9 @@ function randomSpawn() {
     let p = players.all()
     try {
       let pos = p[getRandom(Object.keys(p))].getPosition() // get a random player's position
+      if (scene.gravityDirection == "center" && pos.length() < 80) {
+        throw "somethings fucked with the other players position"
+      }
       return pos.add(randomVector().projectOnPlane(pos).normalize().multiplyScalar(25)).multiplyScalar(1.4) // spawn near that player, but not too close
     } catch (error) {
       console.error(error);
