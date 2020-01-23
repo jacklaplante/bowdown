@@ -342,8 +342,12 @@ function randomSpawn() {
   // }
   if (c > 0) {
     let p = players.all()
-    let pos = p[getRandom(Object.keys(p))].getPosition() // get a random player's position
-    return pos.add(randomVector().projectOnPlane(pos).normalize().multiplyScalar(25)).multiplyScalar(1.4) // spawn near that player, but not too close
+    try {
+      let pos = p[getRandom(Object.keys(p))].getPosition() // get a random player's position
+      return pos.add(randomVector().projectOnPlane(pos).normalize().multiplyScalar(25)).multiplyScalar(1.4) // spawn near that player, but not too close
+    } catch (error) {
+      console.error(error);
+    }
   }
   return new Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(150);
 }
