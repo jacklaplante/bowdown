@@ -109,7 +109,7 @@ wss.on('connection', function connection(ws, req) {
         ws.lastMessage = Date.now()
         if(message.player){
             var playerUuid = message.player
-            if (!players[playerUuid]) {
+            if (!players[playerUuid] && typeof playerUuid == "string") {
                 // init player in server
                 players[playerUuid] = {
                     hp: 100,
@@ -118,6 +118,9 @@ wss.on('connection', function connection(ws, req) {
                 console.log("player "+playerUuid+" initialized");
                 connections[playerUuid] = {ws: ws}
                 updatePlayerCount(Object.keys(players).length, req.connection.remoteAddress, true)
+            } else if (typeof playerUuid != "string") {
+                console.error("playerUuid is not a string")
+                return;
             }
             if (!ws.player) {
                 ws.player = playerUuid

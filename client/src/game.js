@@ -34,19 +34,19 @@ var input = {
         y: 0
     }
 }
-var state = "playing"
 window.usingTouchControls = false;
 var cameraTouch = {id: null, x: null, y: null, shoot: false}
 var movementTouch = {id: null, x: null, y: null}
 var jumpTouch = {id: null}
 const cameraTouchSensitivity = 4
 var rotated
+var state
 
 function animate() {
     requestAnimationFrame( animate );
     var delta = clock.getDelta();
     if (player1 && player1.mixer) {
-        if (state != "gameOver" && (player1.hp==null || player1.hp > 0)) {
+        if (player1.hp==null || player1.hp > 0) {
             player1.animate(delta, input);
             camera.animate(delta);
         }
@@ -94,24 +94,28 @@ function toggleKey(event, toggle) {
         }   
     }
 }
+
+var chatTextBox = document.getElementById("chat-text-box")
 function onKeyDown(event) {
-    if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
-        var chatTextBox = document.getElementById("chat-text-box")
-        player1.sendChat(chatTextBox.value)
-        newChatMessage(chatTextBox.value, window.playerName)
-        chatTextBox.value = ""
-        document.getElementById("chat").classList.remove("chatting")
-    }
-    if (event.key == 'r') {
-        var style = ""
-        if (recordBot()) { // recordBot() starts recording the bot if not in production mode
-            style = "color: red"
+    if (document.activeElement == chatTextBox) {
+        if (event.keyCode === 13 && document.getElementById("chat").classList.contains("chatting")) {
+            player1.sendChat(chatTextBox.value)
+            newChatMessage(chatTextBox.value, window.playerName)
+            chatTextBox.value = ""
+            document.getElementById("chat").classList.remove("chatting")
         }
-        if (process.env.NODE_ENV == 'development') {
-            document.getElementById("fps").setAttribute("style", style)
+    } else {
+        if (event.key == 'r') {
+            var style = ""
+            if (recordBot()) { // recordBot() starts recording the bot if not in production mode
+                style = "color: red"
+            }
+            if (process.env.NODE_ENV == 'development') {
+                document.getElementById("fps").setAttribute("style", style)
+            }
         }
+        toggleKey(event, true);
     }
-    toggleKey(event, true);
 }
 function onKeyUp(event) {
     toggleKey(event, false);
@@ -130,12 +134,12 @@ function unlockPointer() {
 }
 
 function onMouseDown() {
-    if (event.target && (event.target.id == "chat" || (event.target.parentElement && event.target.parentElement.id == "chat"))) {
+    if (event.target && (event.target.id == "chat-button" || event.target.parentElement.id == "chat-button")) {
         document.getElementById("chat").classList.add("chatting")
-    } else if (!event.target.classList.contains("button")) {
+    } else if (!event.target.classList.contains("button") && !event.target.parentElement.classList.contains("chatting") && !event.target.classList.contains("chatting")) {
         document.getElementById("chat").classList.remove("chatting")
         if (event.button!=2) {
-            if (state == "paused" && (player1.hp == null || player1.hp > 0)) {
+            if (readyToPlay()) {
                 lockPointer()
                 play()
             }
@@ -156,17 +160,13 @@ function onMouseUp(event) {
 
 function play() {
     let body = document.body
-    body.classList.add('playing')
-    removeMenuElement()
+    document.body.classList.add('playing')
+    document.body.classList.remove("paused")
     state = "playing"
 }
 
-function removeMenuElement() {
-    getMenuElement().innerHTML = ""
-}
-
-function getMenuElement() {
-    return document.querySelector("#menu")
+function readyToPlay() {
+    return state == "paused" && (player1.hp == null || player1.hp > 0)
 }
 
 function setKillCount(count) {
@@ -183,34 +183,15 @@ function updateKingOfCrownTime() {
         var totalSeconds = Math.round((Date.now()-kingOfCrownStartTime)/1000)
         var minutes = Math.floor(totalSeconds/60)
         var seconds = totalSeconds-minutes*60
-        document.getElementById("bow-king").innerHTML = minutes+":"+seconds
+        // document.getElementById("bow-king").innerHTML = minutes+":"+seconds
     }
 }
 
 function gameOver() {
-    state = "gameOver"
     document.body.classList.remove("playing")
     document.body.classList.remove("playing")
-    document.body.classList.add("gameOver")
+    pause();
     unlockPointer()
-    addRespawnButton()
-}
-
-function addMenuButton(text) {
-    var button = document.createElement('div');
-    button.classList.add("button")
-    button.innerText = text
-    getMenuElement().append(button)
-    return button
-}
-
-function addRespawnButton() {
-    var respawnButton = addMenuButton("respawn")
-    respawnButton.onclick = function() {
-        player1.respawn()
-        play()
-        respawnButton.remove()
-    }
 }
 
 function onPointerLockChange() {
@@ -223,14 +204,14 @@ function onPointerLockChange() {
 
 function pause() {
     state = "paused"
-    addRespawnButton()
+    document.body.classList.remove("playing")
+    document.body.classList.add("paused")
 }
 
 let touchElements
 function touchControls(bool) {
     if (bool!=window.usingTouchControls) {
         if (bool) {
-            removeMenuElement()
             touchElements.forEach((elem) => elem.setAttribute("style", "display: block;"))
             document.getElementById("fullscreen").setAttribute("style", "top: 8vw")
         } else {
@@ -244,6 +225,7 @@ function touchControls(bool) {
 function handleTouch(event) {
     event.preventDefault();
     touchControls(true)
+    if (readyToPlay()) play()
     var camTouch, moveTouch, newTouch
     for (var i=0; i<event.targetTouches.length; i++) {
         if (event.targetTouches.item(i).identifier == cameraTouch.id) {
@@ -406,7 +388,12 @@ function start(playerNameInput) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     animate();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    play()
+    play();
+
+    document.getElementById("respawn").onclick = function() {
+        player1.respawn()
+        play()
+    }
 }
 
 export {start, gameOver, setKillCount, setKingOfCrownStartTime}

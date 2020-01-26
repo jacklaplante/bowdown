@@ -45,7 +45,28 @@ const adjectives = [
   "Oily",
   "Water-logged",
   "Nakey",
-  "Wooden"
+  "Wooden",
+  "Janky",
+  "Stanky",
+  "Salty",
+  "Sweet",
+  "Sparkly",
+  "Spanky",
+  "Meaty",
+  "Girthy",
+  "Plump",
+  "Ouchy",
+  "Screaming",
+  "Flaming",
+  "Grubby",
+  "Juicy",
+  "Stiff",
+  "Erect",
+  "Emotional",
+  "Fancy",
+  "Pink",
+  "Shaky",
+  "Baby"
 ]
 
 const nouns = [
@@ -73,7 +94,20 @@ const nouns = [
   "Bean",
   "Machine",
   "Meercat",
-  "Bee"
+  "Bee",
+  "Samurai",
+  "Believer",
+  "Gangster",
+  "Slinger",
+  "Shot",
+  "Goon",
+  "Goober",
+  "Gubbler",
+  "Grub",
+  "Bard",
+  "Pistol",
+  "Baby",
+  "Fiasco"
 ]
 
 const cyan = 0x0974A5
