@@ -47,6 +47,7 @@ import(/* webpackMode: "lazy" */ '../../models/maps/lowild.glb').then( file => {
             collidableEnvironment = [lowild]
             scene.loadSkyBox()
             scene.loadSkyLight()
+            scene.loadBackgroundMusic()
             scene.removeTrigger(this)
             if (process.env.NODE_ENV == 'development') {
                 connectToServer("ws://localhost:18181")
@@ -116,6 +117,19 @@ scene.loadSkyBox = function() {
                 scene.add( skybox );
             }
         })
+    })
+}
+
+scene.loadBackgroundMusic = function() {
+    import('../../audio/Background Drum Loop.mp3').then(file => {
+        var song = new Audio(file.default);
+        song.addEventListener("load", function() {
+            song.play();
+        }, true);
+        song.autoplay=true
+        song.loop=true
+        song.volume = 0.025
+        song.load()
     })
 }
 
