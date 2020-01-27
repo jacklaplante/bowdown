@@ -24,7 +24,7 @@ simple as that.
 ## Client
 The majority of the code is in here.
 
-Everything that pertains to controlling the main character is in `player1.js`.
+Everything that pertains to controlling the main character, movement, and physics is in `player1.js`.
 
 Everything that is common between the main player character and the other players is taken care of in `archer.js` (player noises, model, actions, etc.)
 
