@@ -1,6 +1,4 @@
-# Bowdown
-
-## [bowdown.io](https://bowdown.io)
+# [Bowdown.io](https://bowdown.io)
 
 This game is written entirely in [three.js](https://threejs.org/), which is a javascript library for 3D graphics using WebGL. It's a multiplayer game with a client and server. The player downloads the client/webpage to play the game, then connects to the server via websocket. The server keeps track of who is playing, their positions, rotations, actions, etc. and relays all of that information to the clients.
 
