@@ -147,6 +147,10 @@ function recordBot() {
 function sendMessage(message) {
     if (!ws) return
     if (ws.readyState == 1) {
+        let disconnectMessage = document.getElementById("disconnect-message")
+        if (disconnectMessage) {
+            disconnectMessage.remove();
+        }
         if (recordingBot) {
             log.push({
                 elapsedTime: clock.getDelta(),
@@ -158,10 +162,12 @@ function sendMessage(message) {
         console.warn("still connecting to server")
     } else {
         console.error("error connecting to server")
-        var message = document.createElement("p")
-        message.id = "disconnect-message"
-        message.innerText = "Disconnected from server, please refresh the page"
-        document.body.append(message)
+        if (!document.getElementById("disconnect-message")) {
+            var message = document.createElement("p")
+            message.id = "disconnect-message"
+            message.innerText = "Disconnected from server, please refresh the page"
+            document.body.append(message)
+        }
     }
 }
 
