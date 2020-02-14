@@ -290,6 +290,13 @@ ul, #server-list .server, .footer {
     position: relative;
 }
 
+#splash p {
+    color: #ffdba5;
+    font-size: 5vh;
+    font-family: monospace;
+    text-align: center;
+}
+
 .playing #splash, .paused #splash {
     display: none;
 }
