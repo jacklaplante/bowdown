@@ -337,9 +337,9 @@ function randomSpawn() {
   if (scene.gravityDirection == "down") {
     return new Vector3(-13, 10, -9);
   }
-  // if (process.env.NODE_ENV == "development") {
-  //   return new Vector3(-70, -70, -70);
-  // }
+  if (process.env.NODE_ENV == "development") {
+    return new Vector3(0, -120, 0);
+  }
   if (c > 0) {
     let p = players.all()
     try {

@@ -35,23 +35,6 @@ function updateOnTop() { // this is essentially a hack, and it's not even a good
   }
 }
 
-camera.nextPosition = function(dist) {
-  if (player1!=null) {
-    updateOnTop()
-    var nextPos = new Vector3();
-    nextPos.x = dist * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-    nextPos.y = onTop * dist * Math.sin(phi * Math.PI / 360);
-    nextPos.z = onTop * dist * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
-    if (scene.gravityDirection == "down") {
-      return this.cameraTarget.clone().add(nextPos)
-    }
-    return this.cameraTarget.clone().add(
-      nextPos.applyQuaternion( // the crux of the camera issues (where it used to get fucky at the south pole) lies here. TODO: investigate further
-        new Quaternion().setFromUnitVectors(
-          new Vector3(0, onTop, 0), this.cameraTarget.clone().normalize())))
-  }
-}
-
 camera.zoomIn = function() {
   camera.zoomState = "zooming in"
 }
@@ -97,6 +80,7 @@ camera.animate = function(delta) {
 
 camera.update = function() {
   if (player1!=null && player1.gltf && scene.loaded) {
+    // this sets the location of the cameraTarget which is what the camera looks at, currently it is to the right of the characters shoulder
     var v = player1.getPosition().clone().sub(camera.position.clone())
     if (scene.gravityDirection == "down") {
       var v2 = new Vector3(-v.z, v.y, v.x).normalize().multiplyScalar(0.5)
@@ -105,8 +89,21 @@ camera.update = function() {
       var v2 = player1.getPosition().normalize().cross(v).normalize().multiplyScalar(-0.5)
       this.cameraTarget.copy(player1.getPosition().add(v2).add(player1.getPosition().normalize().multiplyScalar(1.8)))
     }
-    
-    var nextPos = camera.nextPosition(distance)
+
+    // updateOnTop()
+    var nextPos
+    var localPos = new Vector3();
+    localPos.x = distance * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+    localPos.y = onTop * distance * Math.sin(phi * Math.PI / 360);
+    localPos.z = onTop * distance * Math.cos(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
+    if (scene.gravityDirection == "down") {
+      nextPos = this.cameraTarget.clone().add(localPos)
+    } else {
+      nextPos = this.cameraTarget.clone().add(
+        localPos.applyQuaternion( // the crux of the camera issues (where it used to get fucky at the south pole) lies here. TODO: investigate further
+          new Quaternion().setFromUnitVectors(
+            new Vector3(0, onTop, 0), this.cameraTarget.clone().normalize())))
+    }
 
     // this ensures the camera doesn't go behind any meshes
     var ray = new Raycaster(this.cameraTarget, nextPos.clone().sub(this.cameraTarget).normalize(), 0.1, distance);
