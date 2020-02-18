@@ -90,7 +90,7 @@ camera.update = function() {
       this.cameraTarget.copy(player1.getPosition().add(v2).add(player1.getPosition().normalize().multiplyScalar(1.8)))
     }
 
-    // updateOnTop()
+    updateOnTop()
     var nextPos
     var localPos = new Vector3();
     localPos.x = distance * Math.sin(theta * Math.PI / 360) * Math.cos(phi * Math.PI / 360);
