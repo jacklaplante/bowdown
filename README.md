@@ -12,9 +12,10 @@ The majority of the code is in here. the important stuff is in the `player1` dir
 This project uses Webpack. I try and take advantage of lazy-loading as much as possible because a lot of the game's assets are huge! That's why you'll notice you spawn in a lobby area. This is the player can get a chance to mess around with the controls while the model for the main world is downloaded.
 
 ## Server
-The server keeps track of the game(s) state (player's states and entity (birds) states). This state is pretty big and it takes to long to send all of the players the entire game state multiple times a second. So instead I only keep track of what has changed in the game state and send that to the players (10 times per second)
+The server keeps track of the game(s) state (player's states and entity (birds) states). This state is pretty big and it takes to long to send all of the players the entire game state multiple times a second. So instead I only keep track of what has changed in the game state (the `payload`) and send that to the players (20 times per second).
+There are some messages that just get broadcasted to all players immediately, instead of being added to the payload. These include chat, respawn, sounds, and actions.
 
-To run the game locally:
+### To run the game locally:
 
 ```
 cd server
