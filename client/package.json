@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "hammerjs": "^2.0.8",
-    "three": "^0.106.2"
+    "three": "^0.125.0"
   }
 }
